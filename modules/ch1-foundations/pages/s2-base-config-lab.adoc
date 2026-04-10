@@ -1,0 +1,60 @@
+:time_estimate: 25
+
+= Lab: Deploying the Base Configuration
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Deploy ResourceFlavors to manage CPU/Memory and GPU resources, and configure GPU ResourceFlavors to tolerate specific node taints.
+
+WARNING: Not started yet.
+
+== Before you begin
+
+Ensure you have access to an OpenShift cluster with Red Hat OpenShift AI 3.4+ and the Red Hat build of Kueue 1.2+ installed.
+
+== Instructions
+
+In this lab, you will create the foundational Kueue resources needed for workload scheduling.
+
+1. Create ResourceFlavors for CPU and Memory resources.
+
+.. Apply the ResourceFlavor configuration.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc apply -f resource-flavor-cpu.yaml*
+resourceflavor.kueue.x-k8s.io/default-flavor created
+--
+
+2. Create a GPU ResourceFlavor with node taint tolerations.
+
+.. Configure the GPU ResourceFlavor to tolerate `nvidia.com/gpu=Exists:NoSchedule`.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc apply -f resource-flavor-gpu.yaml*
+resourceflavor.kueue.x-k8s.io/gpu-flavor created
+--
+
+.. Verify the ResourceFlavors were created successfully.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc get resourceflavors*
+NAME              AGE
+default-flavor    1m
+gpu-flavor        30s
+--
+
+You have successfully deployed the base Kueue configuration with ResourceFlavors for CPU/Memory and GPU resources.
+
+== What's Next
+
+In the next section, you will troubleshoot a common Day 2 scenario where operator upgrades fail due to legacy CRD versions from previous OpenShift AI deployments.
+
+////
+**Deploying the Base Configuration:**
+Create `ResourceFlavors` to manage CPU/Memory and GPU resources. Configure the GPU `ResourceFlavor` to tolerate specific node taints (e.g., `nvidia.com/gpu=Exists:NoSchedule`).
+////

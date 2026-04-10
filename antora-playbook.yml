@@ -1,5 +1,5 @@
 site:
-  title: FIXME Course Title
+  title: MaaS Workload Scheduling with Kueue
   start_page: REPLACEREPONAME::index.adoc
 
 content:

@@ -1,0 +1,59 @@
+:time_estimate: 20
+
+= Lab: Configuring Preemption
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Configure ClusterQueue preemption policies using `reclaimWithinCohort: Any` and `borrowWithinCohort: LowerPriority` to enable priority-based resource reclamation.
+
+WARNING: Not started yet.
+
+== Before you begin
+
+Ensure you have completed Chapter 2 and have ClusterQueues configured for Team A and Team B within a shared cohort.
+
+== Instructions
+
+In this lab, you will configure preemption policies on the Team A ClusterQueue to allow it to reclaim resources from lower-priority workloads.
+
+1. Update the Team A ClusterQueue with preemption policies.
+
+.. Edit the `team-a-cq` ClusterQueue configuration to add preemption settings.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc edit clusterqueue team-a-cq*
+--
++
+Add the following preemption configuration:
++
+[source,yaml]
+--
+spec:
+  preemption:
+    reclaimWithinCohort: Any
+    borrowWithinCohort: LowerPriority
+--
+
+.. Verify the preemption policy is applied.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc get clusterqueue team-a-cq -o yaml | grep -A 3 preemption*
+  preemption:
+    borrowWithinCohort: LowerPriority
+    reclaimWithinCohort: Any
+--
+
+You have successfully configured preemption policies for Team A's ClusterQueue.
+
+== What's Next
+
+In the next section, you will test the preemption behavior at scale by submitting competing workloads from both teams and observing how Kueue automatically suspends lower-priority jobs to free resources for higher-priority ones.
+
+////
+**Configuring Preemption:**
+Configure the `team-a-cq` ClusterQueue with preemption policies, setting `reclaimWithinCohort: Any` and `borrowWithinCohort: LowerPriority`.
+////

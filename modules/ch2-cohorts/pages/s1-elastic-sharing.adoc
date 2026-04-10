@@ -1,0 +1,36 @@
+:time_estimate: 15
+
+= Elastic Resource Sharing
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Understand the cohort-based model for organizational isolation and elastic utilization, and how workloads can borrow unused quota to accommodate bursty demand.
+
+WARNING: Not started yet.
+
+== Moving Beyond Rigid Quotas
+
+Lorem ipsum
+
+== The Cohort-Based Model
+
+Lorem ipsum
+
+== Resource Borrowing Mechanics
+
+Lorem ipsum
+
+== Guarantees and Fairness
+
+Lorem ipsum
+
+== What's Next
+
+Now that you understand how cohorts enable elastic resource sharing, the next section guides you through building a multi-tenant architecture with team-specific namespaces, ClusterQueues, and LocalQueues connected through a shared cohort.
+
+////
+**Elastic Resource Sharing:**
+Understand the cohort-based model for organizational isolation and elastic utilization. Learn how workloads can borrow unused quota from one another to accommodate bursty demand without violating resource guarantees.
+////

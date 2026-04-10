@@ -1,0 +1,69 @@
+:time_estimate: 20
+
+= Lab: Troubleshooting Operator Upgrades (Day 2)
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Diagnose and resolve failed Red Hat build of Kueue 1.2 installations caused by legacy OpenShift AI 2.x components and CRD version conflicts.
+
+WARNING: Not started yet.
+
+== Before you begin
+
+This lab simulates a Day 2 troubleshooting scenario. You should have completed the previous lab and be familiar with Kueue ResourceFlavors.
+
+== Instructions
+
+In this lab, you will diagnose and fix a Data Science Cluster (DSC) that enters a `Not Ready` state after a failed Kueue operator upgrade.
+
+1. Simulate a failed installation and diagnose the issue.
+
+.. Check the Data Science Cluster status.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc get datasciencecluster*
+NAME      AGE    PHASE
+default   10m    *Not Ready*
+--
+
+.. Examine the DSC events and operator logs to identify the root cause.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc describe datasciencecluster default*
+...
+Warning  CRDVersionConflict  legacy v1alpha1 CRDs detected
+--
+
+2. Resolve the issue by removing legacy CRDs.
+
+.. Delete the legacy cohorts CRD from OpenShift AI 2.x.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc delete crd cohorts.kueue.x-k8s.io/v1alpha1*
+customresourcedefinition.apiextensions.k8s.io "cohorts.kueue.x-k8s.io" deleted
+--
+
+.. Verify that the DSC returns to a Ready state.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc get datasciencecluster*
+NAME      AGE    PHASE
+default   12m    *Ready*
+--
+
+You have successfully diagnosed and resolved a common upgrade issue related to legacy CRD versions.
+
+== What's Next
+
+In the next chapter, you will learn how to configure cohorts and quota borrowing to enable elastic resource sharing across multi-tenant environments, moving beyond rigid quota boundaries.
+
+////
+**Troubleshooting Operator Upgrades (Day 2):**
+Simulate a failed Red Hat build of Kueue 1.2 installation caused by legacy OpenShift AI 2.x components. Diagnose the Data Science Cluster (DSC) `Not Ready` state and resolve it by deleting legacy CRDs (`cohorts.kueue.x-k8s.io/v1alpha1`).
+////

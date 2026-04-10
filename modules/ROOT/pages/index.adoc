@@ -1,27 +1,46 @@
-= An Example Quick Course
+= MaaS Workload Scheduling with Kueue
 :navtitle: Home
 
-== Introduction
+== Goal
 
-Course Title: Course title FIXME
-
-Description:
-Course description FIXME
-
-Duration: FIXME hours
+To equip Platform Engineers and DevOps/SREs with the knowledge and skills required to configure, manage, and deploy the workload scheduling and resource quota pillar of a Models-as-a-Service (MaaS) architecture on OpenShift AI. This course ensures teams can maximize GPU ROI by driving utilization up to 90%, enforce fair resource sharing across multi-tenant environments, and prioritize critical AI workloads using the Red Hat build of Kueue.
 
 == Objectives
 
 On completing this course, you should be able to:
 
-* Observable, measurable objective...
-* Observable, measurable objective...
-* Observable, measurable objective...
+* Understand and deploy Kueue foundations to overcome rigid Kubernetes scheduling limitations
+
+* Configure cohorts and quota borrowing for elastic resource sharing across multi-tenant environments
+
+* Implement priority and preemption to guarantee deterministic scheduling under contention
+
+== Audience
+
+* **Platform Engineers:** Responsible for designing scheduling queues, cluster quotas, resource flavors, and establishing cohort-based borrowing strategies.
+
+* **DevOps/SREs:** Focused on monitoring queue lengths, job priorities, and resource utilization, as well as troubleshooting preemption events or suspended workloads.
 
 == Prerequisites
 
-This course assumes that you have the following prior experience:
+This course assumes that you have the following experience:
 
-* Course or experience...
-* Course or experience...
-* Course or experience...
+* Successful completion of the foundational *Nvidia GPU Enablement* module.
+
+* Deep understanding of Kubernetes ResourceQuotas, Requests/Limits, and PriorityClasses.
+
+* Familiarity with Kubernetes Batch Jobs and distributed training concepts (e.g., RayClusters).
+
+== Classroom environment
+
+This course requires a virtual classroom lab with the following configuration:
+
+* **Hardware:** At least 1 worker node equipped with 4 GPUs (e.g., AWS `p3.8xlarge` instance) to properly demonstrate resource exhaustion and preemption.
+
+* **Software/Operators:** OpenShift Container Platform, Red Hat OpenShift AI 3.4+, Red Hat build of Kueue 1.2+.
+
+* **Pre-Provisioned State:** The NVIDIA GPU Operator must be installed. The GPU worker node must be pre-tainted with `nvidia.com/gpu=Exists:NoSchedule`.
+
+== Other sources of information about Kueue
+
+For documentation about Kueue, see either its https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/[Red Hat OpenShift AI product documentation^] or its https://kueue.sigs.k8s.io/[upstream Kueue project documentation^].

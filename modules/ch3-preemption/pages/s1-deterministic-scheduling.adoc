@@ -1,0 +1,36 @@
+:time_estimate: 20
+
+= Deterministic Scheduling
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Understand how Kueue integrates with Kubernetes PriorityClasses and the lifecycle of preempted jobs to enable deterministic scheduling under resource contention.
+
+WARNING: Not started yet.
+
+== The Challenge of Resource Contention
+
+Lorem ipsum
+
+== Kubernetes PriorityClasses
+
+Lorem ipsum
+
+== Preemption Lifecycle in Kueue
+
+Lorem ipsum
+
+== Workload Checkpointing
+
+Lorem ipsum
+
+== What's Next
+
+Now that you understand how priority and preemption work in Kueue, the next section guides you through configuring preemption policies on your ClusterQueues using `reclaimWithinCohort` and `borrowWithinCohort` settings.
+
+////
+**Deterministic Scheduling:**
+Understand how Kueue integrates with Kubernetes PriorityClasses. Discuss the lifecycle of a preempted job (suspended and requeued rather than terminated) and the importance of workload checkpointing.
+////

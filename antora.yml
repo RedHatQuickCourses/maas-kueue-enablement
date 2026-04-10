@@ -1,10 +1,9 @@
 name: REPLACEREPONAME
-title: FIXME Course Title
+title: MaaS Workload Scheduling with Kueue
 version: 1
 nav:
 - modules/ROOT/nav.adoc
 - modules/LABENV/nav.adoc
-- modules/chapter1/nav.adoc
-- modules/chapter2/nav.adoc
-- modules/chapter3/nav.adoc
-- modules/appendix/nav.adoc
+- modules/ch1-foundations/nav.adoc
+- modules/ch2-cohorts/nav.adoc
+- modules/ch3-preemption/nav.adoc

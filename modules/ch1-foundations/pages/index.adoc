@@ -1,0 +1,7 @@
+= Understand and Deploy Kueue Foundations
+
+Goal::
+
+Understand and deploy Kueue foundations to overcome rigid Kubernetes scheduling limitations and improve GPU efficiency.
+
+This chapter introduces Kueue as a solution to GPU underutilization caused by rigid Kubernetes ResourceQuotas. You'll learn the core Kueue resources (ResourceFlavor, ClusterQueue, and LocalQueue) and deploy a base configuration. The chapter also covers Day 2 troubleshooting scenarios related to operator upgrades.

@@ -1,0 +1,7 @@
+= Implement Priority and Preemption
+
+Goal::
+
+Implement priority and preemption to guarantee deterministic scheduling under contention using PriorityClasses and preemption policies.
+
+This chapter covers how Kueue integrates with Kubernetes PriorityClasses to provide deterministic scheduling when multiple teams compete for limited resources. You'll learn about the lifecycle of preempted jobs, configure preemption policies, and test priority-based resource reclamation at scale.

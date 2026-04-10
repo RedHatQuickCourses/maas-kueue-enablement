@@ -1,0 +1,7 @@
+= Configure Cohorts and Quota Borrowing
+
+Goal::
+
+Configure cohorts and quota borrowing for elastic resource sharing across multi-tenant environments.
+
+This chapter introduces the cohort-based model for organizational isolation and elastic utilization. You'll learn how workloads can borrow unused quota from one another to accommodate bursty demand without violating resource guarantees, and build a multi-tenant architecture with team-specific queues.

@@ -1,0 +1,82 @@
+:time_estimate: 30
+
+= Lab: Testing Preemption at Scale
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Submit competing RayCluster workloads from multiple teams and observe Kueue's automatic preemption of lower-priority workloads to accommodate higher-priority ones.
+
+WARNING: Not started yet.
+
+== Before you begin
+
+Ensure you have completed the previous lab and configured preemption policies on the Team A ClusterQueue.
+
+== Instructions
+
+In this lab, you will test preemption behavior by submitting workloads from both teams and observing resource reclamation in action.
+
+1. Submit a RayCluster workload to Team B's queue.
+
+.. Apply the Team B RayCluster workload configuration.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc apply -f team-b-raycluster.yaml -n team-b*
+raycluster.ray.io/team-b-cluster created
+--
+
+.. Wait for the workload to reach a running state.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc get raycluster -n team-b*
+NAME              STATUS    AGE
+team-b-cluster    Running   2m
+--
+
+2. Submit a higher-priority RayCluster to Team A.
+
+.. Apply the Team A RayCluster with higher priority.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc apply -f team-a-raycluster.yaml -n team-a*
+raycluster.ray.io/team-a-cluster created
+--
+
+.. Observe Kueue suspending Team B's cluster to free GPU resources.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc get raycluster -n team-b*
+NAME              STATUS      AGE
+team-b-cluster    *Suspended*   5m
+
+$ *oc get raycluster -n team-a*
+NAME              STATUS    AGE
+team-a-cluster    Running   1m
+--
+
+.. Check the workload queue status to see preemption events.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc get workload -A*
+NAMESPACE   NAME                    QUEUE       STATUS      AGE
+team-a      team-a-cluster-wl       team-a-lq   Admitted    1m
+team-b      team-b-cluster-wl       team-b-lq   Pending     5m
+--
+
+You have successfully observed Kueue's automatic preemption behavior, where higher-priority workloads reclaim resources from lower-priority ones.
+
+== What's Next
+
+In the final section, you will troubleshoot a Day 2 scenario where a preempted TrainJob fails to resume after an OpenShift AI platform upgrade due to immutable JobSet spec errors.
+
+////
+**Testing Preemption at Scale:**
+Submit a RayCluster workload to `team-b`'s queue and wait for it to reach a running state. Submit a higher-priority RayCluster to `team-a`. Observe Kueue automatically suspending the `team-b` cluster to free up GPU resources for `team-a`.
+////

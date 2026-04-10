@@ -1,0 +1,44 @@
+:time_estimate: 15
+
+= The GPU Efficiency Challenge
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Understand why rigid Kubernetes ResourceQuotas lead to idle GPUs and rejected workloads, and how Kueue provides a velvet-rope queueing layer to improve efficiency.
+
+WARNING: Not started yet.
+
+== The Problem: Idle GPUs and Rejected Workloads
+
+Lorem ipsum
+
+== Kueue: A Velvet-Rope Queueing Layer
+
+Lorem ipsum
+
+== Core Kueue Resources
+
+Lorem ipsum
+
+=== ResourceFlavor
+
+Lorem ipsum
+
+=== ClusterQueue
+
+Lorem ipsum
+
+=== LocalQueue
+
+Lorem ipsum
+
+== What's Next
+
+Now that you understand the GPU efficiency challenges and how Kueue addresses them, the next section guides you through deploying the base Kueue configuration with ResourceFlavors and queues.
+
+////
+**The GPU Efficiency Challenge:**
+Understand why rigid Kubernetes ResourceQuotas lead to idle GPUs and rejected workloads. Introduce Kueue as a velvet-rope queueing layer. Define core resources: `ResourceFlavor`, `ClusterQueue`, and `LocalQueue`.
+////

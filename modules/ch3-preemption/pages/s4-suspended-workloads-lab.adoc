@@ -1,0 +1,97 @@
+:time_estimate: 20
+
+= Lab: Troubleshooting Suspended Workloads (Day 2)
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Investigate and resolve a scenario where a preempted TrainJob fails to resume after an OpenShift AI platform upgrade due to immutable JobSet spec errors.
+
+WARNING: Not started yet.
+
+== Before you begin
+
+This lab simulates a Day 2 troubleshooting scenario. You should have completed the previous labs and be familiar with Kueue preemption behavior.
+
+== Instructions
+
+In this lab, you will diagnose and fix a TrainJob that cannot resume after being preempted, due to immutable JobSet specifications.
+
+1. Identify the suspended TrainJob.
+
+.. Check for suspended TrainJobs in your namespace.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc get trainjob -A*
+NAMESPACE   NAME            STATUS      AGE
+team-b      model-training  Suspended   15m
+--
+
+.. Examine the TrainJob events to identify the error.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc describe trainjob model-training -n team-b*
+...
+Warning  FailedResume  JobSet spec is immutable and cannot be updated
+--
+
+2. Investigate the underlying JobSet resource.
+
+.. Check the JobSet status.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc get jobset -n team-b*
+NAME                      STATUS     AGE
+model-training-jobset     *Failed*     15m
+--
+
+.. Review the JobSet error details.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc describe jobset model-training-jobset -n team-b*
+...
+Error: spec changes are not allowed after creation
+--
+
+3. Perform the workaround: delete and recreate the TrainJob.
+
+.. Delete the failed TrainJob.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc delete trainjob model-training -n team-b*
+trainjob.kubeflow.org "model-training" deleted
+--
+
+.. Recreate the TrainJob with the same configuration.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc apply -f model-training.yaml -n team-b*
+trainjob.kubeflow.org "model-training" created
+--
+
+.. Verify the TrainJob resumes successfully.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc get trainjob -n team-b*
+NAME            STATUS    AGE
+model-training  Running   30s
+--
+
+You have successfully diagnosed and resolved a common Day 2 issue with suspended workloads after platform upgrades.
+
+== What's Next
+
+Congratulations! You have completed the MaaS Workload Scheduling with Kueue course. You now have the skills to configure Kueue foundations, implement elastic quota sharing through cohorts, and manage priority-based preemption for optimal GPU utilization in multi-tenant OpenShift AI environments.
+
+////
+**Troubleshooting Suspended Workloads (Day 2):**
+Investigate a scenario where a preempted `TrainJob` fails to resume after an OpenShift AI platform upgrade. Identify the immutable `JobSet` spec error and perform the required workaround (deleting and recreating the job).
+////

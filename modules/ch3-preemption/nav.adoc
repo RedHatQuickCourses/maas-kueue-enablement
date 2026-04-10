@@ -1,0 +1,5 @@
+* xref:index.adoc[]
+** xref:s1-deterministic-scheduling.adoc[]
+** xref:s2-configure-preemption-lab.adoc[]
+** xref:s3-test-preemption-lab.adoc[]
+** xref:s4-suspended-workloads-lab.adoc[]

@@ -1,0 +1,98 @@
+:time_estimate: 45
+
+= Lab: Building the Multi-Tenant Architecture
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Create namespaces for multiple teams, define ClusterQueues grouped into a shared cohort, and configure LocalQueues for team-specific workload submission.
+
+WARNING: Not started yet.
+
+== Before you begin
+
+Ensure you have completed Chapter 1 and have ResourceFlavors configured in your cluster.
+
+== Instructions
+
+In this lab, you will build a multi-tenant Kueue architecture with elastic quota sharing between teams.
+
+1. Create team namespaces.
+
+.. Create namespaces for `team-a` and `team-b`.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc create namespace team-a*
+namespace/team-a created
+$ *oc create namespace team-b*
+namespace/team-b created
+--
+
+2. Define ClusterQueues with a shared cohort.
+
+.. Create a ClusterQueue for Team A with a nominal quota (10 CPUs, 64GB Memory).
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc apply -f team-a-clusterqueue.yaml*
+clusterqueue.kueue.x-k8s.io/team-a-cq created
+--
+
+.. Create a ClusterQueue for Team B, grouping it into the same cohort.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc apply -f team-b-clusterqueue.yaml*
+clusterqueue.kueue.x-k8s.io/team-b-cq created
+--
+
+.. Verify both ClusterQueues are in the same cohort.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc get clusterqueue*
+NAME        COHORT         PENDING WORKLOADS
+team-a-cq   shared-cohort  0
+team-b-cq   shared-cohort  0
+--
+
+3. Create LocalQueues in each namespace.
+
+.. Define a LocalQueue in the `team-a` namespace pointing to `team-a-cq`.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc apply -f team-a-localqueue.yaml -n team-a*
+localqueue.kueue.x-k8s.io/team-a-lq created
+--
+
+.. Define a LocalQueue in the `team-b` namespace pointing to `team-b-cq`.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc apply -f team-b-localqueue.yaml -n team-b*
+localqueue.kueue.x-k8s.io/team-b-lq created
+--
+
+.. Verify the LocalQueues are configured correctly.
++
+[source,console,subs="verbatim,quotes"]
+--
+$ *oc get localqueue -A*
+NAMESPACE   NAME        CLUSTERQUEUE   PENDING WORKLOADS
+team-a      team-a-lq   team-a-cq      0
+team-b      team-b-lq   team-b-cq      0
+--
+
+You have successfully built a multi-tenant architecture with cohort-based quota sharing between Team A and Team B.
+
+== What's Next
+
+In the next chapter, you will learn how to implement priority and preemption to guarantee deterministic scheduling when multiple teams compete for limited GPU resources within the cohort.
+
+////
+**Building the Multi-Tenant Architecture:**
+Create namespaces for `team-a` and `team-b`. Define a `ClusterQueue` for each team, grouping them into a shared cohort with a nominal quota (e.g., 10 CPUs, 64GB Mem). Define a `LocalQueue` in each namespace pointing to the respective `ClusterQueue`.
+////
