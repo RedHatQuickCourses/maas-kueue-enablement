@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Lab: Building the Multi-Tenant Architecture :: MaaS Workload Scheduling with Kueue</title>
+    <link rel="prev" href="s1-elastic-sharing.html">
+    <link rel="next" href="../ch3-preemption/index.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">MaaS Workload Scheduling with Kueue</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="REPLACEREPONAME" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">MaaS Workload Scheduling with Kueue</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Home</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html">Lab Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-foundations/index.html">Understand and Deploy Kueue Foundations</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s1-gpu-efficiency.html">The GPU Efficiency Challenge</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s2-base-config-lab.html">Lab: Deploying the Base Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s3-operator-upgrades-lab.html">Lab: Troubleshooting Operator Upgrades (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Configure Cohorts and Quota Borrowing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-elastic-sharing.html">Elastic Resource Sharing</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s2-multi-tenant-lab.html">Lab: Building the Multi-Tenant Architecture</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch3-preemption/index.html">Implement Priority and Preemption</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s1-deterministic-scheduling.html">Deterministic Scheduling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s2-configure-preemption-lab.html">Lab: Configuring Preemption</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s3-test-preemption-lab.html">Lab: Testing Preemption at Scale</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s4-suspended-workloads-lab.html">Lab: Troubleshooting Suspended Workloads (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">MaaS Workload Scheduling with Kueue</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">MaaS Workload Scheduling with Kueue</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">MaaS Workload Scheduling with Kueue</a></li>
+    <li><a href="index.html">Configure Cohorts and Quota Borrowing</a></li>
+    <li><a href="s2-multi-tenant-lab.html">Lab: Building the Multi-Tenant Architecture</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Lab: Building the Multi-Tenant Architecture</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>45 minutes</strong>.</em></p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Objective</dt>
+<dd>
+<p>Create namespaces for multiple teams, define ClusterQueues grouped into a shared cohort, and configure LocalQueues for team-specific workload submission.</p>
+</dd>
+</dl>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Not started yet.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_before_you_begin"><a class="anchor" href="#_before_you_begin"></a>Before you begin</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Ensure you have completed Chapter 1 and have ResourceFlavors configured in your cluster.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_instructions"><a class="anchor" href="#_instructions"></a>Instructions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In this lab, you will build a multi-tenant Kueue architecture with elastic quota sharing between teams.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Create team namespaces.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Create namespaces for <code>team-a</code> and <code>team-b</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc create namespace team-a</strong>
+namespace/team-a created
+$ <strong>oc create namespace team-b</strong>
+namespace/team-b created</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Define ClusterQueues with a shared cohort.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Create a ClusterQueue for Team A with a nominal quota (10 CPUs, 64GB Memory).</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc apply -f team-a-clusterqueue.yaml</strong>
+clusterqueue.kueue.x-k8s.io/team-a-cq created</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Create a ClusterQueue for Team B, grouping it into the same cohort.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc apply -f team-b-clusterqueue.yaml</strong>
+clusterqueue.kueue.x-k8s.io/team-b-cq created</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Verify both ClusterQueues are in the same cohort.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get clusterqueue</strong>
+NAME        COHORT         PENDING WORKLOADS
+team-a-cq   shared-cohort  0
+team-b-cq   shared-cohort  0</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</li>
+<li>
+<p>Create LocalQueues in each namespace.</p>
+<div class="olist loweralpha">
+<ol class="loweralpha" type="a">
+<li>
+<p>Define a LocalQueue in the <code>team-a</code> namespace pointing to <code>team-a-cq</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc apply -f team-a-localqueue.yaml -n team-a</strong>
+localqueue.kueue.x-k8s.io/team-a-lq created</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Define a LocalQueue in the <code>team-b</code> namespace pointing to <code>team-b-cq</code>.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc apply -f team-b-localqueue.yaml -n team-b</strong>
+localqueue.kueue.x-k8s.io/team-b-lq created</code></pre>
+</div>
+</div>
+</li>
+<li>
+<p>Verify the LocalQueues are configured correctly.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get localqueue -A</strong>
+NAMESPACE   NAME        CLUSTERQUEUE   PENDING WORKLOADS
+team-a      team-a-lq   team-a-cq      0
+team-b      team-b-lq   team-b-cq      0</code></pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>You have successfully built a multi-tenant architecture with cohort-based quota sharing between Team A and Team B.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_whats_next"><a class="anchor" href="#_whats_next"></a>What&#8217;s Next</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the next chapter, you will learn how to implement priority and preemption to guarantee deterministic scheduling when multiple teams compete for limited GPU resources within the cohort.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="s1-elastic-sharing.html">Elastic Resource Sharing</a></span>
+  <span class="next"><a href="../ch3-preemption/index.html">Implement Priority and Preemption</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
