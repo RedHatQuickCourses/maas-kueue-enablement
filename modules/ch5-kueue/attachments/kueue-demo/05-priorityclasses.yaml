@@ -1,0 +1,16 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: team-b-high
+value: 1000000
+globalDefault: false
+description: "High priority class for Team B critical workloads"
+
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: team-a-low
+value: 1000
+globalDefault: false
+description: "Low priority class for Team A background workloads"

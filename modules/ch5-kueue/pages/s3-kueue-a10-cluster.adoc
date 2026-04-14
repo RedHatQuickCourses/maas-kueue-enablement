@@ -1,0 +1,47 @@
+:time_estimate: 15
+
+= Lab: A10 cluster example — reserve 1 GPU for Llamastack, 3 GPUs for Kueue lab
+
+This page describes a small cluster scenario with four NVIDIA A10 GPUs where:
+
+- One A10 GPU is consumed by a resident `llamastack` model (non-Kueue deployment).
+- Three A10 GPUs are made available to Kueue via a dedicated `ClusterQueue` for the lab exercises.
+
+Why this layout?
+
+- Demonstrates how ResourceFlavors and ClusterQueues map to real hardware.
+- Shows how to reserve capacity for an existing service (the llamastack model) while exposing the remainder to Kueue-managed workloads.
+
+What you'll find here
+
+- Example manifests to label nodes and create a `ResourceFlavor` for A10 GPUs.
+- A `ClusterQueue` that exposes 3 GPUs for the lab, plus `LocalQueue`s for `team-a` and `team-b`.
+- A `Deployment` for the `llamastack` model that consumes one A10 GPU (not managed by Kueue).
+
+Apply the A10 example resources
+
+From the OpenShift web terminal run:
+
+[source,bash]
+----
+oc apply -f modules/ch5-kueue/attachments/kueue-demo/a10/
+----
+
+Files included
+
+- `00-llamastack-namespace.yaml` — namespace for the llamastack model
+- `10-a10-resourceflavor.yaml` — `ResourceFlavor` for A10 nodes
+- `20-a10-clusterqueue.yaml` — `ClusterQueue` exposing 3 GPUs for the lab
+- `30-a10-localqueues.yaml` — `LocalQueue`s for `team-a` and `team-b` bound to the A10 `ClusterQueue`
+- `40-llamastack-deployment.yaml` — a simple Deployment that requests 1 `nvidia.com/gpu` and schedules to A10 nodes
+
+Notes and expectations
+
+- This page assumes there are four A10-capable nodes in the cluster (or nodes with 4 A10 GPUs total). The cluster admin should label A10 nodes with `gpu-type=nvidia-a10` so the `ResourceFlavor` nodeSelector matches.
+- The `llamastack` Deployment is a normal Kubernetes Deployment (not a Kueue Workload). It reserves one physical GPU. The `ClusterQueue` for the lab is configured with `nominalQuota: 3` GPUs so Kueue will only admit workloads up to that limit.
+- If you prefer Kueue to manage the `llamastack` workload, convert the Deployment into a `Workload` with `queueName` set to a LocalQueue. For this lab we keep it separate to illustrate reserved capacity.
+
+See also
+
+- xref:s1-kueue-overview-2.adoc[ResourceFlavor: Hardware Differentiation]
+- xref:s2-kueue-lab-setup.adoc[Lab: Kueue demo - setup and verify]

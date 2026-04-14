@@ -1,0 +1,41 @@
+:time_estimate: 20
+
+= Lab: Configure GPU Quotas and Queues
+
+This lab demonstrates the minimal Kueue objects you can create to share cluster resources between teams. Use the demo manifests in the attachments directory and apply them from the OpenShift web terminal (or any `oc`-enabled shell).
+
+Prerequisites
+
+- An OpenShift cluster where the Kueue operator and CRDs are installed (or OpenShift AI with the Kueue component enabled).
+- `oc` access via the OpenShift web terminal or local CLI with cluster-admin or enough permissions to create the sample resources.
+
+Applying the demo manifests
+
+From the OpenShift web terminal run:
+
+[source,bash]
+----
+oc apply -f modules/ch5-kueue/attachments/kueue-demo/
+----
+
+This will create two namespaces, a minimal `ResourceFlavor`, a `ClusterQueue`, two `LocalQueue`s (one per namespace), and a simple `Workload` that requests resources from the local queue.
+
+Quick verification commands
+
+[source,bash]
+----
+oc get ns team-a-project team-b-project
+oc get clusterqueue -A
+oc get localqueue -A
+oc get workload -n team-a-project
+----
+
+Notes
+
+- The included manifests use `apiVersion: kueue.x-k8s.io/v1beta1` which matches many Kueue operator releases; if your cluster uses `v1beta2` adjust the manifests accordingly.
+- The manifests are intentionally minimal; edit them in the web terminal before applying if you need to adapt to your environment (GPU flavor names, quotas, etc.).
+
+End of overview. See the lab walkthrough: xref:s2-kueue-lab-setup.adoc[Lab: Kueue demo - setup and verify]
+
+
+

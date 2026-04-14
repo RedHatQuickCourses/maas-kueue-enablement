@@ -1,0 +1,207 @@
+:time_estimate: 20
+
+= Production Considerations
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Production Kueue deployments require strategic decisions about queue architecture, ResourceFlavor configuration, and priority mapping.
+
+=== Queue Strategy Decision Matrix
+
+[cols="2,2,2",options="header"]
+|===
+|Scenario |Queue Strategy |Rationale
+
+|Single team, homogeneous workloads
+|✅ Single LocalQueue
+|Simplest: one queue per namespace
+
+|Single team, mixed workloads (training + inference)
+|⚠️ Two LocalQueues → different ClusterQueues
+|Separate quotas for training vs inference
+
+|Multiple teams, shared GPU pool
+|✅ Multiple LocalQueues → single ClusterQueue
+|Fair sharing with cohort borrowing
+
+|Multiple teams, dedicated GPUs per team
+|⚠️ Multiple LocalQueues → dedicated ClusterQueues
+|Hard quota isolation, no borrowing
+
+|Enterprise multi-tenant
+|✅ Hierarchical: Cohort → ClusterQueues → LocalQueues
+|Elastic sharing + team quotas (Ch2)
+|===
+
+[TIP]
+====
+Start simple: Create one LocalQueue per namespace pointing to a shared ClusterQueue. Add complexity (cohorts, multiple ClusterQueues) only when business requirements demand quota isolation or elastic borrowing. Over-engineering queue hierarchies increases operational complexity.
+====
+
+=== ResourceFlavor Strategy
+
+[cols="2,2,2",options="header"]
+|===
+|Cluster Hardware |ResourceFlavor Strategy |Example Configuration
+
+|All nodes identical (8x A100-40GB)
+|✅ Single default flavor
+|1 ResourceFlavor: `default-gpu`
+
+|Mixed GPU types (A100 + T4)
+|✅ Flavor per GPU type
+|2 ResourceFlavors: `a100-gpu`, `t4-gpu`
+
+|Mixed memory sizes (A100-40GB + A100-80GB)
+|✅ Flavor per memory size
+|2 ResourceFlavors: `a100-40gb`, `a100-80gb`
+
+|Multi-zone availability
+|⚠️ Advanced: Flavor per zone
+|3 ResourceFlavors: `east-a100`, `west-a100`, `central-a100`
+|===
+
+Create ResourceFlavors based on workload requirements. Training teams need A100-40GB (high compute, 312 TFLOPS FP16). Inference teams can use T4-16GB (cost-effective, 65 TFLOPS FP16, 4x lower cost).
+
+=== Tiering and Priority Mapping
+
+Map business priorities to Kueue priority values to ensure revenue-generating workloads preempt lower-priority jobs.
+
+**Business Priority → Kueue Priority Mapping:**
+
+[cols="1,1,2,2",options="header"]
+|===
+|Business Tier |Kueue Priority |Use Case |Example Workload
+
+|Production Critical
+|1000
+|Customer-facing inference
+|Real-time API serving
+
+|Production Standard
+|500
+|Batch inference
+|Nightly embeddings generation
+
+|Development
+|100
+|Training experiments
+|Hyperparameter tuning
+
+|Best-Effort
+|10
+|Research/exploratory
+|Ad-hoc analysis
+|===
+
+**How to Apply Priority (preview for Chapter 3):**
+
+[source,yaml]
+----
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: WorkloadPriorityClass         # <1>
+metadata:
+  name: production-critical
+spec:
+  value: 1000                        # <2>
+  description: "Customer-facing inference workloads"
+----
+<1> WorkloadPriorityClass resource (covered in detail in Chapter 3: Preemption)
+<2> Higher values = higher priority (range: 0-1000000)
+
+[TIP]
+====
+Assign priorities based on business impact, not team seniority. Customer-facing inference (revenue-generating, SLA-bound) should have higher priority (1000) than training experiments (100). Preemption ensures production workloads always get resources.
+====
+
+---
+
+== Monitoring and Visibility
+
+Kueue provides command-line tools and Prometheus metrics for monitoring queue status, diagnosing pending workloads, and tracking quota utilization.
+
+=== Queue Status Commands
+
+**Check ClusterQueue status:**
+
+[source,bash]
+----
+$ oc get clusterqueues
+NAME                  COHORT       STRATEGY         PENDING WORKLOADS
+gpu-training-queue    gpu-cohort   BestEffortFIFO   3
+gpu-inference-queue   gpu-cohort   BestEffortFIFO   0
+----
+
+**Interpret output:**
+
+* `PENDING WORKLOADS: 3` means 3 workloads waiting for resources
+* `COHORT: gpu-cohort` indicates elastic quota sharing enabled
+* `STRATEGY: BestEffortFIFO` means first-in-first-out admission within priority tiers
+
+**Check LocalQueue status:**
+
+[source,bash]
+----
+$ oc get localqueues -n team-training
+NAME                   CLUSTERQUEUE          PENDING WORKLOADS
+training-team-queue    gpu-training-queue    1
+----
+
+**Diagnose pending workload:**
+
+[source,bash]
+----
+$ oc get workloads -n team-training
+NAME                 QUEUE                  ADMITTED   AGE
+pytorch-job-abc123   training-team-queue    False      2m
+
+$ oc describe workload pytorch-job-abc123 -n team-training
+...
+Status:
+  Conditions:
+    Message: couldn't assign flavors: insufficient quota for nvidia.com/gpu in flavor a100-gpu
+    Reason: Pending
+    Type: QuotaReserved
+----
+
+**Common Pending Reasons:**
+
+* `insufficient quota for nvidia.com/gpu`: Queue's nominalQuota exhausted (wait for running jobs to finish)
+* `couldn't assign flavors`: ResourceFlavor not available (check flavor exists, node labels match)
+* Waiting for higher-priority workload to finish (normal queueing behavior)
+
+=== Grafana Dashboards
+
+Chapter 4 (GPU-as-a-Service) covers comprehensive Grafana dashboard configuration for Kueue metrics.
+
+**Key Metrics to Monitor (preview):**
+
+* **Queue depth**: Pending workloads per ClusterQueue/LocalQueue
+* **Admission latency**: Time from job submission to admission
+* **Resource utilization**: GPU quota used vs nominal quota
+* **Workload states**: Distribution of Pending/Admitted/Running/Finished
+
+**Example PromQL queries (detailed in Chapter 4):**
+
+[source,promql]
+----
+# Pending workloads per ClusterQueue
+sum by (cluster_queue) (kueue_pending_workloads)
+
+# GPU quota utilization percentage
+(kueue_cluster_queue_resource_usage{resource="nvidia.com/gpu"} /
+ kueue_cluster_queue_nominal_quota{resource="nvidia.com/gpu"}) * 100
+----
+
+[NOTE]
+====
+Chapter 4, Section 4 provides Grafana dashboard configurations for visualizing Kueue metrics, queue depth trends, and quota utilization over time. Production platforms should monitor queue depth (alert when >10 pending workloads) and quota utilization (alert when >90% for extended periods).
+====
+
+---
+
+== What's Next
+
+In the next section (Lab: Configure GPU Quotas and Queues), you will deploy a complete Kueue configuration for a multi-tenant inference platform. You'll create ResourceFlavors for NVIDIA A100 GPUs, configure ClusterQueues with quotas, create team-specific LocalQueues, and submit workloads to verify quota enforcement and admission.
+
+This hands-on experience will reinforce your understanding of Kueue resource hierarchy, quota management, and multi-tenant GPU sharing patterns for production AI platforms.

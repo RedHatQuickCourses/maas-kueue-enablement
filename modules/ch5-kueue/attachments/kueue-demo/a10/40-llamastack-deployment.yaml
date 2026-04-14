@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llamastack
+  namespace: llamastack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: llamastack
+  template:
+    metadata:
+      labels:
+        app: llamastack
+    spec:
+      nodeSelector:
+        gpu-type: nvidia-a10
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: llamastack
+          image: registry.access.redhat.com/ubi8/ubi
+          command: ["sleep", "3600"]
+          resources:
+            limits:
+              nvidia.com/gpu: 1
+            requests:
+              nvidia.com/gpu: 1
+              cpu: "500m"
+              memory: "1Gi"

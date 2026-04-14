@@ -1,0 +1,180 @@
+:time_estimate: 20
+
+= ResourceFlavor: Hardware Differentiation
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+ResourceFlavor defines specific hardware types for heterogeneous clusters, enabling workloads to request particular GPU models, memory sizes, or availability zones.
+
+**Purpose**: Differentiate hardware resources in clusters with mixed GPU types (e.g., NVIDIA A100 for training vs T4 for inference).
+
+**Use Case**: Production cluster with NVIDIA A100-40GB for training workloads and T4-16GB for cost-effective inference.
+
+**Example ResourceFlavor:**
+
+[source,yaml]
+----
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ResourceFlavor
+metadata:
+  name: a100-gpu                     # <1>
+spec:
+  nodeLabels:                        # <2>
+    gpu-type: nvidia-a100
+    gpu-memory: 40gb
+  tolerations:                       # <3>
+  - key: "nvidia.com/gpu"
+    operator: "Exists"
+    effect: "NoSchedule"
+----
+<1> Flavor name referenced by ClusterQueue resources
+<2> Node labels to match hardware (set by cluster admin during node provisioning)
+<3> Tolerations allow pods to schedule on tainted GPU nodes
+
+**How it works**: When a ClusterQueue references the `a100-gpu` flavor, Kueue ensures admitted workloads' pods include the `gpu-type: nvidia-a100` node selector and the GPU taint toleration. The kube-scheduler then places pods only on A100 nodes.
+
+**Decision Matrix: When to Create Multiple ResourceFlavors**
+
+[cols="1,2,1",options="header"]
+|===
+|Cluster Type |ResourceFlavor Strategy |Example
+
+|Homogeneous (all identical GPUs)
+|Single default flavor
+|✅ All nodes have A100-40GB
+
+|Heterogeneous (mixed GPU types)
+|Multiple flavors
+|✅ A100 (training) + T4 (inference)
+
+|Multi-zone (availability zones)
+|Flavor per zone
+|⚠️ Advanced: east-a100, west-a100
+|===
+
+Create ResourceFlavors based on workload requirements. Training teams need A100-40GB (high compute, 312 TFLOPS FP16). Inference teams can use T4-16GB (cost-effective, 65 TFLOPS FP16).
+
+=== LocalQueue: Namespace Entry Point
+
+LocalQueue is the namespaced entry point for Kueue workloads. It acts as a bridge, funneling workloads from a specific team or namespace into a cluster-wide resource pool managed by a ClusterQueue.
+
+**Purpose**: Team-specific queue enabling multi-tenancy without requiring cluster-level permissions.
+
+**Characteristics:**
+
+* Namespaced resource (created per team/project)
+* Users submit jobs specifying `kueue.x-k8s.io/queue-name: team-a-local-queue`
+* Forwards resource requests to designated ClusterQueue
+* Enables multi-tenancy (teams don't need cluster admin access to see quotas)
+
+**Example LocalQueue:**
+
+[source,yaml]
+----
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: LocalQueue
+metadata:
+  name: team-a-local-queue           # <1>
+  namespace: team-a-project          # <2>
+spec:
+  clusterQueue: gpu-inference-queue  # <3>
+----
+<1> LocalQueue name users reference in job YAML (`kueue.x-k8s.io/queue-name` label)
+<2> Team's namespace (typically one LocalQueue per namespace)
+<3> Points to cluster-wide ClusterQueue managing quotas
+
+**How users interact**: Data scientists submit PyTorchJobs in their namespace with label:
+
+[source,yaml]
+----
+metadata:
+  labels:
+    kueue.x-k8s.io/queue-name: team-a-local-queue
+----
+
+Kueue's webhook creates a Workload object, places it in the LocalQueue, which forwards it to the ClusterQueue for admission decisions.
+
+=== ClusterQueue: Cluster-Wide Resource Manager
+
+ClusterQueue manages a cluster-wide pool of resources, defining quotas per ResourceFlavor and enforcing fair sharing across multiple LocalQueues.
+
+**Purpose**: Central resource pool manager with quota enforcement and admission policies.
+
+**Characteristics:**
+
+* Cluster-scoped (only cluster admins create ClusterQueues)
+* Defines quotas per ResourceFlavor (e.g., maximum 8 A100 GPUs)
+* Aggregates demand from multiple LocalQueues
+* Enforces fair sharing and borrowing policies (via cohorts)
+
+**Example ClusterQueue:**
+
+[source,yaml]
+----
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ClusterQueue
+metadata:
+  name: gpu-training-queue           # <1>
+spec:
+  namespaceSelector: {}              # <2>
+  cohort: gpu-cohort                 # <3>
+  resourceGroups:
+  - coveredResources: ["cpu", "memory", "nvidia.com/gpu"]  # <4>
+    flavors:
+    - name: a100-gpu                 # <5>
+      resources:
+      - name: cpu
+        nominalQuota: 32             # <6>
+      - name: memory
+        nominalQuota: 128Gi
+      - name: nvidia.com/gpu
+        nominalQuota: 8              # <7>
+----
+<1> ClusterQueue name (referenced by LocalQueues via `spec.clusterQueue`)
+<2> Empty selector allows all namespaces (or use labels for team-specific access)
+<3> Optional: Cohort for elastic quota sharing (Chapter 2 covers cohort configuration)
+<4> Resource types governed by this queue
+<5> ResourceFlavor defining hardware type (from Section 2.3)
+<6> CPU quota: 32 cores nominal quota for this queue's workloads
+<7> GPU quota: Maximum 8 A100 GPUs consumable by workloads in this queue
+
+**How quota enforcement works**: When a Workload requests 4 GPUs and the ClusterQueue has `nominalQuota: 8` with 6 GPUs already consumed, Kueue admits the workload (6 + 4 = 10 ≤ 8 nominal, but borrowing from cohort allowed). If borrowing is exhausted, the workload queues until resources free.
+
+=== Queue Hierarchy
+
+Kueue's hierarchical architecture enables multi-tenant GPU sharing:
+
+----
+┌─────────────────────────────────────────────────┐
+│  Cohort: gpu-cohort (elastic quota sharing)     │
+│                                                 │
+│  ┌──────────────────┐  ┌──────────────────┐     │
+│  │ ClusterQueue:    │  │ ClusterQueue:    │     │
+│  │ gpu-training     │  │ gpu-inference    │     │
+│  │ 8 A100 GPUs      │  │ 8 T4 GPUs        │     │
+│  └──────────────────┘  └──────────────────┘     │
+│         ↑                      ↑                │
+└─────────┼──────────────────────┼────────────────┘
+          │                      │
+  ┌───────┴────────┐     ┌───────┴────────┐
+  │ LocalQueue:    │     │ LocalQueue:    │
+  │ team-a-local   │     │ team-b-local   │
+  │ (namespace: a) │     │ (namespace: b) │
+  └────────────────┘     └────────────────┘
+          ↑                      ↑
+     [PyTorchJob]           [InferenceService]
+----
+
+**Workflow:**
+
+1. **User submits job** in namespace with `kueue.x-k8s.io/queue-name: team-a-local`
+2. **LocalQueue receives Workload**, forwards to `gpu-training` ClusterQueue
+3. **ClusterQueue checks quota**: 8 A100 GPUs nominal, 6 currently used
+4. **Admission decision**: Request 2 GPUs → admitted (6 + 2 = 8 ≤ nominal)
+5. **Kueue unsuspends job**, PyTorchJob controller creates pods
+6. **kube-scheduler places pods** on A100 nodes (via ResourceFlavor node selectors)
+
+[IMPORTANT]
+====
+A ClusterQueue's `nominalQuota` defines the maximum resources this queue can consume. In a cohort, queues can borrow unused quota from other queues (elastic borrowing). For example, if `gpu-training` needs 10 GPUs but has `nominalQuota: 8`, it can borrow 2 GPUs from `gpu-inference` if idle. Chapter 2 covers cohort configuration in depth.
+====

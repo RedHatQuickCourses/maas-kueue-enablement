@@ -1,0 +1,214 @@
+:time_estimate: 20
+
+= Enabling Kueue
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Enabling Kueue for quota management requires cluster administrator configuration of the Red Hat build of Kueue Operator and OpenShift AI integration.
+
+=== Prerequisites
+
+Before enabling Kueue, verify the following requirements:
+
+* OpenShift 4.19 or later
+* Red Hat build of Kueue Operator installed
+* cert-manager Operator for Red Hat OpenShift installed
+* Cluster administrator privileges
+* GPU nodes labeled (for ResourceFlavors with hardware differentiation)
+
+**Verify Kueue Operator is running:**
+
+[source,bash]
+----
+$ oc get pods -n openshift-kueue-operator
+NAME                                            READY   STATUS
+kueue-controller-manager-d9fc745df-ph77w        1/1     Running
+openshift-kueue-operator-69cfbf45cf-lwtpm       1/1     Running
+----
+
+If pods are not running, install the Red Hat build of Kueue Operator from OperatorHub before proceeding.
+
+=== Activate Kueue in OpenShift AI
+
+OpenShift AI integrates with Kueue through the DataScienceCluster Custom Resource. Set `managementState: Unmanaged` to activate the integration.
+
+**Step 1: Patch DataScienceCluster**
+
+[source,bash]
+----
+$ oc patch datasciencecluster default-dsc \
+  --type='merge' \
+  -p '{"spec":{"components":{"kueue":{"managementState":"Unmanaged"}}}}' \
+  -n redhat-ods-operator
+datasciencecluster.datasciencecluster.opendatahub.io/default-dsc patched
+----
+
+**What this does:**
+
+* Instructs OpenShift AI to integrate with external Kueue Operator
+* Creates default ClusterQueue if none exists (named `default-queue`)
+* Enables Kueue integration for InferenceService, Notebook, PyTorchJob, RayJob workloads
+
+**Verification:**
+
+[source,bash]
+----
+$ oc get clusterqueues
+NAME            COHORT   STRATEGY         PENDING WORKLOADS
+default-queue   -        BestEffortFIFO   0
+----
+
+[WARNING]
+====
+Do not set `managementState: Managed`. The embedded Kueue is deprecated starting with OpenShift AI 2.24. Always use `Unmanaged` with Red Hat build of Kueue Operator to avoid controller conflicts.
+====
+
+=== Enable Namespace for Kueue Management
+
+Kueue validation and queue enforcement apply only to namespaces labeled with `kueue.openshift.io/managed=true`. This label activates the admission webhook for that namespace.
+
+**Step 2: Label namespace**
+
+[source,bash]
+----
+$ oc label namespace team-a-project kueue.openshift.io/managed=true --overwrite
+namespace/team-a-project labeled
+----
+
+**What this does:**
+
+* Activates Kueue admission webhook for this namespace
+* Enforces `kueue.x-k8s.io/queue-name` label requirement on workloads
+* Creates default LocalQueue if none exists
+
+**Verification:**
+
+[source,bash]
+----
+$ oc get localqueues -n team-a-project
+NAME                  CLUSTERQUEUE    PENDING WORKLOADS
+default-localqueue    default-queue   0
+----
+
+[NOTE]
+====
+The label `kueue.openshift.io/managed=true` replaces the legacy `kueue-managed` label. Use the new label for forward compatibility with future Kueue releases.
+====
+
+=== Create ResourceFlavor for GPU Hardware
+
+ResourceFlavors define hardware types for quota management. Create flavors for each distinct GPU type in your cluster.
+
+**Step 3: Define A100 GPU flavor**
+
+[source,yaml]
+----
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ResourceFlavor
+metadata:
+  name: a100-training-gpu
+spec:
+  nodeLabels:
+    gpu-type: nvidia-a100
+  tolerations:
+  - key: "nvidia.com/gpu"
+    operator: "Exists"
+    effect: "NoSchedule"
+----
+
+**Apply:**
+
+[source,bash]
+----
+$ oc apply -f a100-resourceflavor.yaml
+resourceflavor.kueue.x-k8s.io/a100-training-gpu created
+----
+
+**Verification:**
+
+[source,bash]
+----
+$ oc get resourceflavors
+NAME                 AGE
+a100-training-gpu    5s
+----
+
+=== Configure ClusterQueue with Quotas
+
+ClusterQueues manage resource pools with quotas. Create ClusterQueues for distinct workload types (training, inference) with appropriate quota allocations.
+
+**Step 4: Create ClusterQueue with GPU quotas**
+
+[source,yaml]
+----
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: ClusterQueue
+metadata:
+  name: gpu-training-queue
+spec:
+  namespaceSelector: {}
+  resourceGroups:
+  - coveredResources: ["cpu", "memory", "nvidia.com/gpu"]
+    flavors:
+    - name: a100-training-gpu              # <1>
+      resources:
+      - name: cpu
+        nominalQuota: 64                   # <2>
+      - name: memory
+        nominalQuota: 256Gi
+      - name: nvidia.com/gpu
+        nominalQuota: 8                    # <3>
+----
+<1> References ResourceFlavor created in Step 3
+<2> CPU quota: 64 cores for this queue's workloads
+<3> GPU quota: Maximum 8 A100 GPUs consumable by this queue
+
+[IMPORTANT]
+====
+Set `nominalQuota` based on cluster capacity and team allocation. Example: Cluster with 16 total A100 GPUs → allocate 8 to training queue (`gpu-training-queue`), 8 to inference queue (`gpu-inference-queue`). Adjust based on workload mix and business priorities.
+====
+
+**Apply:**
+
+[source,bash]
+----
+$ oc apply -f gpu-training-clusterqueue.yaml
+clusterqueue.kueue.x-k8s.io/gpu-training-queue created
+----
+
+=== Create LocalQueue Pointing to ClusterQueue
+
+LocalQueues connect namespaced workloads to cluster-wide resource pools. Create one LocalQueue per namespace, pointing to the appropriate ClusterQueue.
+
+**Step 5: Create team-specific LocalQueue**
+
+[source,yaml]
+----
+apiVersion: kueue.x-k8s.io/v1beta1
+kind: LocalQueue
+metadata:
+  name: training-team-queue
+  namespace: team-training
+spec:
+  clusterQueue: gpu-training-queue         # <1>
+----
+<1> Points to ClusterQueue managing GPU training resources
+
+**Apply:**
+
+[source,bash]
+----
+$ oc apply -f training-localqueue.yaml
+localqueue.kueue.x-k8s.io/training-team-queue created
+----
+
+**Verification:**
+
+[source,bash]
+----
+$ oc get localqueues -n team-training
+NAME                   CLUSTERQUEUE          PENDING WORKLOADS
+training-team-queue    gpu-training-queue    0
+----
+
+Now workloads in the `team-training` namespace can specify `kueue.x-k8s.io/queue-name: training-team-queue` to leverage Kueue quota management.

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-a-project
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-b-project

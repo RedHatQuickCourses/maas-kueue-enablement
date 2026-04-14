@@ -1,0 +1,12 @@
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ResourceFlavor
+metadata:
+  name: a10-gpu
+spec:
+  nodeLabels:
+    gpu-type: nvidia-a10
+    gpu-memory: 24gb
+  tolerations:
+    - key: "nvidia.com/gpu"
+      operator: "Exists"
+      effect: "NoSchedule"

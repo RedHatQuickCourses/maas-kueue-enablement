@@ -1,0 +1,186 @@
+:time_estimate: 20
+
+= GPU Quota and Priority Management with Kueue
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Understand how Kueue provides GPU quota management and workload prioritization for multi-tenant AI platforms. Learn the core Kueue architecture (Workload, LocalQueue, ClusterQueue, ResourceFlavor), how to enable Kueue for quota enforcement, and production strategies for queue configuration and priority tiering.
+
+== The GPU Queueing Problem
+
+Organizations deploying AI platforms on Kubernetes face a fundamental challenge: expensive GPU resources create resource contention in multi-tenant environments, leading to underutilization, unpredictable performance, and operational overhead.
+
+=== The Multi-Tenant GPU Contention Scenario
+
+Consider a production AI cluster with 4 NVIDIA A100 GPUs shared by three teams:
+
+* **Training Team**: Submits batch training jobs (8-hour duration, 4 GPUs per job)
+* **Inference Team A**: Runs customer-facing inference API (2 GPUs required, 24/7 uptime)
+* **Inference Team B**: Performs batch embeddings generation (2 GPUs, nightly schedule)
+
+**Monday, 9:00 AM - Resource Contention Event:**
+
+The training team submits a PyTorchJob requesting 4 GPUs for hyperparameter tuning. Kubernetes operates first-come-first-served—the training job immediately consumes all 4 GPUs.
+
+**Cascade of failures:**
+
+1. Inference Team A's deployment scales up to handle morning traffic spike
+2. New inference pods request GPUs but receive `Insufficient nvidia.com/gpu` errors
+3. Customer API latency spikes: 50ms (normal) → 300ms (degraded)
+4. Inference Team B's nightly job fails
+
+30 (continued...)
+5. Platform engineer receives pages from both inference teams
+6. Engineer manually drains training job, waits 15 minutes for graceful shutdown
+7. Re-schedules inference workloads, verifies API latency recovery
+8. Total incident duration: **90 minutes from detection to resolution**
+
+=== Business Impact Without Kueue
+
+Without workload queueing and quota management, platform teams experience quantifiable operational and business costs:
+
+[cols="1,2,2,1",options="header"]
+|===
+|Metric |Without Kueue |With Kueue |Improvement
+
+|GPU Utilization
+|40% (bursty, unpredictable)
+|88% (consistent, quota-managed)
+|+120%
+
+|Manual Interventions
+|15-20 incidents/week
+|0-1 incidents/week
+|95% reduction
+
+|P99 Inference Latency
+|300ms (spike during contention)
+|52ms (stable under quota)
+|83% reduction
+
+|Training Throughput
+|Variable (blocked by inference)
+|Predictable (queued admission)
+|Consistent
+
+|Annual Cost Savings
+|-
+|$80K (reduced GPU waste + ops time)
+|-
+|===
+
+**The core problem**: Without Kueue, Kubernetes operates first-come-first-served. If 10 training jobs requesting GPUs submit simultaneously but only 4 GPUs exist, 6 jobs immediately fail with `Insufficient nvidia.com/gpu` errors. Platform engineers spend 15-20 hours weekly manually scheduling workloads, draining nodes, and coordinating team access.
+
+Kueue solves this by intercepting workload submission, placing jobs in managed queues, and admitting workloads only when quota is available—eliminating resource contention and enabling fair, predictable GPU sharing.
+
+---
+
+== Kueue Architecture and Components
+
+Kueue is a Kubernetes-native queueing system that manages quota and job admission for scarce resources like GPUs. It wraps around the standard Kubernetes scheduler, adding a queueing layer that controls when workloads can start.
+
+=== What is Kueue
+
+Kueue provides admission control for Kubernetes workloads by managing quotas, enforcing priorities, and queueing jobs when resources are unavailable. It does not replace kube-scheduler—instead, it decides **IF and WHEN** a job can create pods, while kube-scheduler decides **WHERE** those pods run.
+
+**Kueue vs kube-scheduler relationship:**
+
+----
+┌───────────────────────────────────────────────────┐
+│  Kueue: The Bouncer (Admission Control)          │
+│  - Decides IF and WHEN a job can start           │
+│  - Manages quotas across teams                   │
+│  - Queues workloads when resources unavailable   │
+└───────────────────────────────────────────────────┘
+                    ↓ (Admits workload)
+┌───────────────────────────────────────────────────┐
+│  kube-scheduler: The Seating Algorithm            │
+│  - Decides WHERE pods run (which nodes)           │
+│  - Filters/scores nodes based on requirements     │
+│  - Binds pods to nodes                            │
+└───────────────────────────────────────────────────┘
+----
+
+**Analogy**: Kueue is the registrar's office deciding if you can enroll in a course. The kube-scheduler is the classroom seating algorithm finding you an empty seat once you're admitted.
+
+[TIP]
+====
+Kueue does not replace kube-scheduler. It wraps around it, adding a queueing layer for admission control before pods are created. This preserves Kubernetes' mature scheduling logic while adding quota management and prioritization.
+====
+
+**How Kueue prevents resource contention:**
+
+Without Kueue, 10 PyTorchJobs requesting GPUs submit simultaneously. Kubernetes admits all 10 immediately. If only 4 GPUs exist, 6 jobs fail with `Insufficient nvidia.com/gpu`. With Kueue, the admission webhook intercepts job creation, creates Workload objects representing resource requests, and queues them. Kueue admits workloads sequentially as GPU quota becomes available—no failures, predictable queueing.
+
+=== Core Components
+
+Kueue uses five core resource types to manage workload admission and quota enforcement:
+
+[cols="1,1,2,1",options="header"]
+|===
+|Component |Scope |Purpose |Who Creates
+
+|Workload
+|Namespaced
+|Admission ticket representing resource request
+|Kueue (auto-created from jobs)
+
+|LocalQueue
+|Namespaced
+|Entry point for jobs in a namespace/team
+|Platform Engineer
+
+|ClusterQueue
+|Cluster-wide
+|Resource pool manager with quotas
+|Platform Engineer
+
+|ResourceFlavor
+|Cluster-wide
+|Hardware type definition (A100, T4)
+|Platform Engineer
+
+|Cohort
+|Cluster-wide
+|Group of queues sharing elastic quotas
+|Platform Engineer
+|===
+
+**Workload Lifecycle States:**
+
+A Workload moves through distinct phases managed by Kueue's controller:
+
+* **Pending**: Created and waiting in LocalQueue (no pods running)
+* **Admitted**: ClusterQueue approved resource request, job controller creates pods
+* **Running**: Job's pods executing on nodes, consuming quota
+* **Finished**: Job completed successfully or failed
+* **Suspended**: Preempted by higher-priority workload (pods deleted to free resources)
+
+**Job Submission Workflow:**
+
+----
+1. User submits PyTorchJob with label:
+   kueue.x-k8s.io/queue-name: team-a-queue
+         ↓
+2. Kueue webhook intercepts job creation,
+   creates Workload object (suspends job)
+         ↓
+3. Workload enters LocalQueue (team-a-queue)
+         ↓
+4. LocalQueue forwards request to ClusterQueue
+   (gpu-training-queue)
+         ↓
+5. ClusterQueue checks quota:
+   4 GPUs available? Yes (admits), No (queues)
+         ↓
+6. Kueue admits Workload within 2-3 seconds
+   (unsuspends job)
+         ↓
+7. PyTorchJob controller creates pods
+         ↓
+8. kube-scheduler places pods on GPU nodes
+----
+
+This workflow ensures jobs only create pods when quota is available, eliminating `Insufficient nvidia.com/gpu` failures and enabling predictable queuing.
