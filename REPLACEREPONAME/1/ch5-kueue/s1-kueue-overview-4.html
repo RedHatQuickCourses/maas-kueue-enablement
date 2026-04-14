@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Production Considerations :: MaaS Workload Scheduling with Kueue</title>
+    <link rel="prev" href="s1-kueue-overview-3.html">
+    <link rel="next" href="s1-kueue-overview-5.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">MaaS Workload Scheduling with Kueue</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="REPLACEREPONAME" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">MaaS Workload Scheduling with Kueue</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Home</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html">Lab Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-foundations/index.html">Understand and Deploy Kueue Foundations</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s1-gpu-efficiency.html">The GPU Efficiency Challenge</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s2-base-config-lab.html">Lab: Deploying the Base Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s3-operator-upgrades-lab.html">Lab: Troubleshooting Operator Upgrades (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch2-cohorts/index.html">Configure Cohorts and Quota Borrowing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s1-elastic-sharing.html">Elastic Resource Sharing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s2-multi-tenant-lab.html">Lab: Building the Multi-Tenant Architecture</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch3-preemption/index.html">Implement Priority and Preemption</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s1-deterministic-scheduling.html">Deterministic Scheduling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s2-configure-preemption-lab.html">Lab: Configuring Preemption</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s3-test-preemption-lab.html">Lab: Testing Preemption at Scale</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s4-suspended-workloads-lab.html">Lab: Troubleshooting Suspended Workloads (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch4-gpu-as-a-service/index.html">Implement GPU-as-a-Service</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s1-gpu-service-overview.html">GPU-as-a-Service Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s2-configure-quotas-lab.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s3-hardware-profiles-lab.html">Lab: Configure Hardware Profiles for Self-Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s4-monitoring-observability.html">Monitoring and Observability</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s5-troubleshooting-lab.html">Lab: Day 2 Troubleshooting Scenarios</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Chapter 5: Kueue</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-1.html">GPU Quota and Priority Management with Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-2.html">ResourceFlavor: Hardware Differentiation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-3.html">Enabling Kueue</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-4.html">Production Considerations</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-5.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s2-kueue-lab-setup.html">Lab: Kueue demo - setup and verify</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s3-kueue-a10-cluster.html">A10 cluster: Llamastack + 3-GPU lab</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">MaaS Workload Scheduling with Kueue</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">MaaS Workload Scheduling with Kueue</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">MaaS Workload Scheduling with Kueue</a></li>
+    <li><a href="index.html">Chapter 5: Kueue</a></li>
+    <li><a href="s1-kueue-overview-4.html">Production Considerations</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Production Considerations</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>20 minutes</strong>.</em></p>
+</div>
+<div class="paragraph">
+<p>Production Kueue deployments require strategic decisions about queue architecture, ResourceFlavor configuration, and priority mapping.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_queue_strategy_decision_matrix"><a class="anchor" href="#_queue_strategy_decision_matrix"></a>Queue Strategy Decision Matrix</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Scenario</th>
+<th class="tableblock halign-left valign-top">Queue Strategy</th>
+<th class="tableblock halign-left valign-top">Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Single team, homogeneous workloads</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅ Single LocalQueue</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Simplest: one queue per namespace</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Single team, mixed workloads (training + inference)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">⚠️ Two LocalQueues → different ClusterQueues</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Separate quotas for training vs inference</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multiple teams, shared GPU pool</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅ Multiple LocalQueues → single ClusterQueue</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fair sharing with cohort borrowing</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multiple teams, dedicated GPUs per team</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">⚠️ Multiple LocalQueues → dedicated ClusterQueues</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hard quota isolation, no borrowing</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Enterprise multi-tenant</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅ Hierarchical: Cohort → ClusterQueues → LocalQueues</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Elastic sharing + team quotas (Ch2)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Start simple: Create one LocalQueue per namespace pointing to a shared ClusterQueue. Add complexity (cohorts, multiple ClusterQueues) only when business requirements demand quota isolation or elastic borrowing. Over-engineering queue hierarchies increases operational complexity.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_resourceflavor_strategy"><a class="anchor" href="#_resourceflavor_strategy"></a>ResourceFlavor Strategy</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Cluster Hardware</th>
+<th class="tableblock halign-left valign-top">ResourceFlavor Strategy</th>
+<th class="tableblock halign-left valign-top">Example Configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">All nodes identical (8x A100-40GB)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅ Single default flavor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1 ResourceFlavor: <code>default-gpu</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mixed GPU types (A100 + T4)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅ Flavor per GPU type</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2 ResourceFlavors: <code>a100-gpu</code>, <code>t4-gpu</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mixed memory sizes (A100-40GB + A100-80GB)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">✅ Flavor per memory size</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2 ResourceFlavors: <code>a100-40gb</code>, <code>a100-80gb</code></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multi-zone availability</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">⚠️ Advanced: Flavor per zone</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3 ResourceFlavors: <code>east-a100</code>, <code>west-a100</code>, <code>central-a100</code></p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Create ResourceFlavors based on workload requirements. Training teams need A100-40GB (high compute, 312 TFLOPS FP16). Inference teams can use T4-16GB (cost-effective, 65 TFLOPS FP16, 4x lower cost).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_tiering_and_priority_mapping"><a class="anchor" href="#_tiering_and_priority_mapping"></a>Tiering and Priority Mapping</h3>
+<div class="paragraph">
+<p>Map business priorities to Kueue priority values to ensure revenue-generating workloads preempt lower-priority jobs.</p>
+</div>
+<div class="paragraph">
+<p><strong>Business Priority → Kueue Priority Mapping:</strong></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3335%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Business Tier</th>
+<th class="tableblock halign-left valign-top">Kueue Priority</th>
+<th class="tableblock halign-left valign-top">Use Case</th>
+<th class="tableblock halign-left valign-top">Example Workload</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Production Critical</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1000</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Customer-facing inference</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Real-time API serving</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Production Standard</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">500</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Batch inference</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Nightly embeddings generation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Development</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">100</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Training experiments</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hyperparameter tuning</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Best-Effort</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">10</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Research/exploratory</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Ad-hoc analysis</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>How to Apply Priority (preview for Chapter 3):</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: kueue.x-k8s.io/v1beta1
+kind: WorkloadPriorityClass         <i class="conum" data-value="1"></i><b>(1)</b>
+metadata:
+  name: production-critical
+spec:
+  value: 1000                        <i class="conum" data-value="2"></i><b>(2)</b>
+  description: "Customer-facing inference workloads"</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>WorkloadPriorityClass resource (covered in detail in Chapter 3: Preemption)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Higher values = higher priority (range: 0-1000000)</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Assign priorities based on business impact, not team seniority. Customer-facing inference (revenue-generating, SLA-bound) should have higher priority (1000) than training experiments (100). Preemption ensures production workloads always get resources.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+</div>
+<div class="sect1">
+<h2 id="_monitoring_and_visibility"><a class="anchor" href="#_monitoring_and_visibility"></a>Monitoring and Visibility</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kueue provides command-line tools and Prometheus metrics for monitoring queue status, diagnosing pending workloads, and tracking quota utilization.</p>
+</div>
+<div class="sect2">
+<h3 id="_queue_status_commands"><a class="anchor" href="#_queue_status_commands"></a>Queue Status Commands</h3>
+<div class="paragraph">
+<p><strong>Check ClusterQueue status:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get clusterqueues
+NAME                  COHORT       STRATEGY         PENDING WORKLOADS
+gpu-training-queue    gpu-cohort   BestEffortFIFO   3
+gpu-inference-queue   gpu-cohort   BestEffortFIFO   0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Interpret output:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>PENDING WORKLOADS: 3</code> means 3 workloads waiting for resources</p>
+</li>
+<li>
+<p><code>COHORT: gpu-cohort</code> indicates elastic quota sharing enabled</p>
+</li>
+<li>
+<p><code>STRATEGY: BestEffortFIFO</code> means first-in-first-out admission within priority tiers</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Check LocalQueue status:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get localqueues -n team-training
+NAME                   CLUSTERQUEUE          PENDING WORKLOADS
+training-team-queue    gpu-training-queue    1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Diagnose pending workload:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get workloads -n team-training
+NAME                 QUEUE                  ADMITTED   AGE
+pytorch-job-abc123   training-team-queue    False      2m
+
+$ oc describe workload pytorch-job-abc123 -n team-training
+...
+Status:
+  Conditions:
+    Message: couldn't assign flavors: insufficient quota for nvidia.com/gpu in flavor a100-gpu
+    Reason: Pending
+    Type: QuotaReserved</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Common Pending Reasons:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>insufficient quota for nvidia.com/gpu</code>: Queue&#8217;s nominalQuota exhausted (wait for running jobs to finish)</p>
+</li>
+<li>
+<p><code>couldn&#8217;t assign flavors</code>: ResourceFlavor not available (check flavor exists, node labels match)</p>
+</li>
+<li>
+<p>Waiting for higher-priority workload to finish (normal queueing behavior)</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_grafana_dashboards"><a class="anchor" href="#_grafana_dashboards"></a>Grafana Dashboards</h3>
+<div class="paragraph">
+<p>Chapter 4 (GPU-as-a-Service) covers comprehensive Grafana dashboard configuration for Kueue metrics.</p>
+</div>
+<div class="paragraph">
+<p><strong>Key Metrics to Monitor (preview):</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Queue depth</strong>: Pending workloads per ClusterQueue/LocalQueue</p>
+</li>
+<li>
+<p><strong>Admission latency</strong>: Time from job submission to admission</p>
+</li>
+<li>
+<p><strong>Resource utilization</strong>: GPU quota used vs nominal quota</p>
+</li>
+<li>
+<p><strong>Workload states</strong>: Distribution of Pending/Admitted/Running/Finished</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Example PromQL queries (detailed in Chapter 4):</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-promql hljs" data-lang="promql"># Pending workloads per ClusterQueue
+sum by (cluster_queue) (kueue_pending_workloads)
+
+# GPU quota utilization percentage
+(kueue_cluster_queue_resource_usage{resource="nvidia.com/gpu"} /
+ kueue_cluster_queue_nominal_quota{resource="nvidia.com/gpu"}) * 100</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Chapter 4, Section 4 provides Grafana dashboard configurations for visualizing Kueue metrics, queue depth trends, and quota utilization over time. Production platforms should monitor queue depth (alert when &gt;10 pending workloads) and quota utilization (alert when &gt;90% for extended periods).</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_whats_next"><a class="anchor" href="#_whats_next"></a>What&#8217;s Next</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the next section (Lab: Configure GPU Quotas and Queues), you will deploy a complete Kueue configuration for a multi-tenant inference platform. You&#8217;ll create ResourceFlavors for NVIDIA A100 GPUs, configure ClusterQueues with quotas, create team-specific LocalQueues, and submit workloads to verify quota enforcement and admission.</p>
+</div>
+<div class="paragraph">
+<p>This hands-on experience will reinforce your understanding of Kueue resource hierarchy, quota management, and multi-tenant GPU sharing patterns for production AI platforms.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="s1-kueue-overview-3.html">Enabling Kueue</a></span>
+  <span class="next"><a href="s1-kueue-overview-5.html">Lab: Configure GPU Quotas and Queues</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
