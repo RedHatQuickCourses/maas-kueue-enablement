@@ -1,0 +1,7 @@
+= Understand Kueue Fundamentals
+
+Goal::
+
+Understand Kueue's architecture for GPU quota management and workload prioritization, and learn how to configure resource flavors, queues, and cohorts for multi-tenant AI platforms.
+
+This chapter introduces Kueue as a solution to GPU underutilization and resource contention in Kubernetes. You'll learn the core Kueue resources (ResourceFlavor, ClusterQueue, LocalQueue, Workload) and understand how Kueue's admission control enables fair sharing, predictable queueing, and production-grade quota management for expensive GPU resources.

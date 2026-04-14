@@ -1,0 +1,6 @@
+* xref:index.adoc[]
+** xref:s1-gpu-service-overview.adoc[]
+** xref:s2-configure-quotas-lab.adoc[]
+** xref:s3-hardware-profiles-lab.adoc[]
+** xref:s4-monitoring-observability.adoc[]
+** xref:s5-troubleshooting-lab.adoc[]

@@ -1,0 +1,464 @@
+:time_estimate: 20
+
+= Monitoring and Observability
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Understand how to monitor GPU quota utilization, admission latency, and preemption activity using Grafana dashboards and Prometheus alerts.
+
+== The Need for GPU-as-a-Service Monitoring
+
+Operating a multi-tenant GPU platform requires real-time visibility into quota consumption, queueing behavior, and preemption activity. Without monitoring, platform teams operate blind—they can't answer critical questions like:
+
+* **Is inference hitting quota limits?** (causing customer-facing latency)
+* **Are training workloads starving?** (degrading model development velocity)
+* **Is preemption working correctly?** (or are workloads stuck pending?)
+* **What's causing admission latency spikes?** (quota exhaustion? node unavailability?)
+
+The Grafana dashboard for Kueue provides comprehensive visibility across **6 sections**, enabling proactive capacity planning and rapid incident response.
+
+== Grafana Dashboard Structure
+
+The **Kueue — OpenShift AI Monitoring** dashboard organizes metrics into 6 functional sections:
+
+[cols="2,3,3",options="header"]
+|===
+|Section |Key Metrics |Purpose
+
+|**1. Workload Overview**
+|Active Workloads, Pending Workloads, Total Admitted (24h), Evictions (24h)
+|Cluster-wide snapshot of workload state and throughput
+
+|**2. Workload Lifecycle**
+|Workloads by ClusterQueue (Active, Pending, Evictions/min)
+|Per-queue breakdown to identify bottlenecks
+
+|**3. Admission Latency**
+|p50/p95/p99 admission wait time (overall and per-queue)
+|Measure how long workloads wait for quota
+
+|**4. Resource Utilization & Quota**
+|Usage/Quota ratio, Borrowing usage, Nominal quota config
+|Track quota consumption and borrowing patterns
+
+|**5. Throughput & Rates**
+|Admission rate, Eviction rate (per minute)
+|Measure system velocity and preemption activity
+
+|**6. Prometheus Scrape Health**
+|Scrape target status, duration, sample count
+|Verify Prometheus is collecting Kueue metrics
+|===
+
+=== Dashboard Panel Layout
+
+----
+┌─────────────────────────────────────────────────────┐
+│  1. WORKLOAD OVERVIEW                               │
+│  ┌───────────┬───────────┬───────────┬──────────┐  │
+│  │  Active   │  Pending  │ Admitted  │ Evictions│  │
+│  │   15      │    3      │   240     │   12     │  │
+│  └───────────┴───────────┴───────────┴──────────┘  │
+├─────────────────────────────────────────────────────┤
+│  2. WORKLOAD LIFECYCLE (by ClusterQueue)            │
+│  ┌─────────────────────────────────────────────┐   │
+│  │  Time series: Active, Pending, Evictions    │   │
+│  └─────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────┤
+│  3. ADMISSION LATENCY                               │
+│  ┌───────────────┬────────────────────────────┐    │
+│  │  p95 Overall  │  p95 by ClusterQueue       │    │
+│  └───────────────┴────────────────────────────┘    │
+├─────────────────────────────────────────────────────┤
+│  4. RESOURCE UTILIZATION & QUOTA                    │
+│  ┌─────────────────────────────────────────────┐   │
+│  │  Usage/Quota ratio (time series + table)    │   │
+│  └─────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────┤
+│  5. THROUGHPUT & RATES                              │
+│  ┌───────────────────────────────────────────┐     │
+│  │  Admission & Eviction rates (per minute)  │     │
+│  └───────────────────────────────────────────┘     │
+├─────────────────────────────────────────────────────┤
+│  6. PROMETHEUS SCRAPE HEALTH                        │
+│  ┌───────────────────────────────────────────┐     │
+│  │  Scrape target up/down, duration, samples │     │
+│  └───────────────────────────────────────────┘     │
+└─────────────────────────────────────────────────────┘
+----
+
+== Key Kueue Metrics
+
+Kueue exposes Prometheus metrics via the Kueue controller-manager pod in the `redhat-ods-applications` namespace. The DCGM Exporter pattern from GPU monitoring applies here: ServiceMonitor configures Prometheus to scrape Kueue metrics automatically.
+
+=== Workload State Metrics
+
+[cols="3,1,3,2",options="header"]
+|===
+|Metric |Type |Description |Healthy Baseline
+
+|`kueue_pending_workloads`
+|Gauge
+|Number of workloads waiting for quota (by ClusterQueue)
+|< 5
+
+|`kueue_admitted_active_workloads`
+|Gauge
+|Number of running workloads (by ClusterQueue)
+|> 0 (utilization)
+
+|`kueue_admitted_workloads_total`
+|Counter
+|Cumulative count of admitted workloads (use `rate()` for throughput)
+|Steady rate
+
+|`kueue_evicted_workloads_total`
+|Counter
+|Cumulative count of preempted workloads (by ClusterQueue)
+|< 50/day
+|===
+
+=== Quota Metrics
+
+[cols="3,1,4",options="header"]
+|===
+|Metric |Type |Description
+
+|`kueue_cluster_queue_nominal_quota`
+|Gauge
+|Guaranteed quota allocation (e.g., inference: 3 GPUs, training: 1 GPU)
+
+|`kueue_cluster_queue_resource_usage`
+|Gauge
+|Current resource usage (includes borrowed quota)
+
+|`kueue_cluster_queue_borrowing_limit`
+|Gauge
+|Maximum borrowable quota (e.g., inference can borrow 1, training can borrow 2)
+
+|`kueue_cluster_queue_borrowing_usage`
+|Gauge
+|Amount of currently borrowed quota
+|===
+
+**Key formula for quota analysis:**
+
+* **Borrowing ratio**: `kueue_cluster_queue_resource_usage / kueue_cluster_queue_nominal_quota`
+  * Ratio > 1.0 = borrowing
+  * Ratio < 0.5 = underutilized
+
+**Example**: Inference is using 4 GPUs (3 guaranteed + 1 borrowed). Borrowing ratio = 4 / 3 = 1.33.
+
+=== Latency Metrics
+
+[cols="3,1,4",options="header"]
+|===
+|Metric |Type |Description
+
+|`kueue_admission_wait_time_seconds_bucket`
+|Histogram
+|Distribution of admission wait times (use `histogram_quantile()` for percentiles)
+|===
+
+**PromQL query for p95 admission latency:**
+
+[source,promql]
+----
+histogram_quantile(0.95,
+  sum(rate(kueue_admission_wait_time_seconds_bucket[5m]))
+  by (le, cluster_queue)
+)
+----
+
+**SLA guidance:**
+
+* **p95 < 60s**: Healthy (inference workloads admitted within 1 minute)
+* **p95 < 120s**: Acceptable (tolerable for training workloads)
+* **p95 > 120s**: Alert (investigate quota exhaustion or preemption failures)
+
+[WARNING]
+====
+**Pending workloads > 10 for 5+ minutes** indicates quota exhaustion or resource availability issues. Check:
+
+1. Are ClusterQueues at 100% of quota + borrowing limit?
+2. Are GPU nodes healthy and available?
+3. Are workloads requesting more GPUs than available in a single ResourceFlavor?
+====
+
+== Section Deep Dive: Resource Utilization & Quota
+
+The **Resource Utilization & Quota** section is the most critical for capacity planning and quota tuning.
+
+=== Panel 1: Usage / Nominal Quota Ratio
+
+**PromQL query:**
+
+[source,promql]
+----
+kueue_cluster_queue_resource_usage{resource="nvidia.com/gpu"}
+/
+kueue_cluster_queue_nominal_quota{resource="nvidia.com/gpu"}
+----
+
+**Interpretation:**
+
+[cols="1,2,3",options="header"]
+|===
+|Ratio |Meaning |Action
+
+|**< 0.5**
+|Underutilized (using less than 50% of guaranteed quota)
+|Consider reducing nominal quota if persistent (reallocate to other teams)
+
+|**0.5 - 1.0**
+|Healthy utilization (using guaranteed quota)
+|Normal operation
+
+|**> 1.0**
+|Borrowing (using more than guaranteed quota)
+|Monitor for preemption activity; acceptable if idle capacity exists
+
+|**≥ (1 + borrowing_limit / nominal_quota)**
+|At maximum quota (using guaranteed + full borrowing limit)
+|Alert: Team cannot admit more workloads until quota is released
+|===
+
+**Example**: Training is using 3 GPUs. Nominal quota is 1, borrowing limit is 2.
+
+* Ratio = 3 / 1 = 3.0
+* Max ratio = (1 + 2/1) = 3.0
+* **Result**: Training is at maximum capacity. New training workloads will stay pending until running jobs complete or are preempted.
+
+=== Panel 2: Borrowing Usage / Borrowing Limit
+
+**PromQL query:**
+
+[source,promql]
+----
+kueue_cluster_queue_borrowing_usage{resource="nvidia.com/gpu"}
+/
+kueue_cluster_queue_borrowing_limit{resource="nvidia.com/gpu"}
+> 0
+----
+
+**Interpretation:**
+
+* **1.0**: Hitting borrowing limit (cannot borrow more)
+* **0.5**: Using 50% of borrowing capacity
+* **0.0**: Not borrowing (using only guaranteed quota)
+
+This metric helps identify when teams are constrained by borrowing limits vs. guaranteed quota.
+
+[TIP]
+====
+**Establish baseline metrics over 2 weeks before configuring alerts.** Observe normal operating patterns:
+
+* What's the typical pending workload count during business hours?
+* What's the normal eviction rate (expected preemption due to inference demand)?
+* What's the p95 admission latency for each ClusterQueue?
+
+Use these baselines to set alert thresholds that avoid alert fatigue while catching genuine issues.
+====
+
+== Prometheus Alert Rules
+
+The monitoring stack includes 6 pre-configured alerts for GPU-as-a-Service operations:
+
+[cols="2,3,1,3",options="header"]
+|===
+|Alert Name |Expression |Threshold |Action Item
+
+|**KueueHighPendingWorkloads**
+|`sum by (cluster_queue) (kueue_pending_workloads)`
+|> 10 for 5m
+|Check quota exhaustion. Verify GPU nodes are healthy. Review workload resource requests.
+
+|**KueueQuotaExhausted**
+|`(kueue_cluster_queue_resource_usage / kueue_cluster_queue_nominal_quota)`
+|> 0.95 for 10m
+|Short-term: Wait for workloads to complete. Medium-term: Increase nominal quota. Long-term: Capacity planning.
+
+|**KueueAdmissionLatencyHigh**
+|`histogram_quantile(0.95, sum(rate(kueue_admission_wait_time_seconds_bucket[5m])) by (le))`
+|> 120s for 10m
+|Check if quotas are exhausted. Verify preemption is working. Review borrowing limits.
+
+|**KueueHighEvictionRate**
+|`sum by (cluster_queue) (rate(kueue_evicted_workloads_total[1h])) * 3600`
+|> 5/hour for 10m
+|**If expected** (inference preempting training): Document as normal. **If unexpected**: Increase nominal quota or reduce borrowing limits.
+
+|**KueueClusterQueueDown**
+|`kueue_cluster_queue_status{status="active"}`
+|== 0 for 2m
+|Check ClusterQueue resource: `oc get clusterqueue <name> -o yaml`. Check Kueue controller logs.
+
+|**KueueTargetDown**
+|`up{job=~".*kueue.*"}`
+|== 0 for 3m
+|Verify Kueue controller is running. Check ServiceMonitor. Verify Prometheus configuration.
+|===
+
+=== Alert Runbook Example: KueueHighEvictionRate
+
+**Trigger**: `training-cq` shows > 5 evictions per hour for 10+ minutes.
+
+**Step 1: Check Grafana Dashboard**
+
+* Navigate to **Throughput & Rates** section
+* Observe eviction rate time series by ClusterQueue
+* Identify pattern: Are evictions constant (unexpected) or spiked during business hours (expected)?
+
+**Step 2: Review Recent Preemptions**
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get events -n team-training --field-selector reason=WorkloadEvicted --sort-by='.lastTimestamp' | tail -10*
+----
+
+**Step 3: Determine Root Cause**
+
+* **Expected behavior**: Inference demand is high during business hours (9 AM - 5 PM). Inference preempts training to meet SLAs. **Action**: Document as normal, adjust alert threshold to `> 10/hour during business hours`.
+* **Unexpected behavior**: Evictions occur 24/7, including off-hours when inference is idle. **Root cause**: Possible misconfiguration in preemption policies or priority assignments. **Action**: Verify training has priority 100 and inference has priority 1000. Check that training has **no** `borrowWithinCohort` policy.
+
+**Step 4: Resolution Options**
+
+[cols="2,3,3",options="header"]
+|===
+|Condition |Resolution |Trade-off
+
+|Evictions are expected (inference SLA protection)
+|Document as normal; tune alert threshold
+|None
+
+|Training is being preempted excessively
+|Increase training's nominal quota from 1 to 2 GPUs
+|Reduces inference's guaranteed quota from 3 to 2
+
+|Critical training jobs need non-preemptible guarantee
+|Create separate ClusterQueue (`training-critical-cq`) with no cohort membership
+|Reduces elastic utilization (no borrowing)
+|===
+
+== Monitoring Best Practices
+
+=== 1. Metric Retention
+
+**Recommendation**: 15+ days with 50GB+ PersistentVolumeClaim for Prometheus.
+
+**Configuration** (in `user-workload-monitoring-config` ConfigMap):
+
+[source,yaml]
+----
+prometheus:
+  retention: 15d
+  volumeClaimTemplate:
+    spec:
+      resources:
+        requests:
+          storage: 50Gi
+----
+
+**Why 15 days?** Enables week-over-week trend analysis and correlates quota exhaustion with business cycles (e.g., monthly model training sprints).
+
+=== 2. Dashboard Access Control
+
+[cols="2,2,4",options="header"]
+|===
+|Role |Access Level |Use Case
+
+|**Platform Team**
+|Admin (edit dashboards, configure alerts)
+|Modify alert thresholds, add new panels, troubleshoot
+
+|**Team Leads**
+|Read-only (view dashboards)
+|Monitor team quota usage, review eviction rates
+
+|**Data Scientists**
+|No direct access (use OpenShift AI dashboard for workload status)
+|Self-service via Hardware Profiles
+|===
+
+**Implementation**: Use Grafana Operator's RBAC features to grant read-only access to team leads via OpenShift groups.
+
+=== 3. Alert Routing
+
+**Recommendation**: Route alerts by ClusterQueue to appropriate Slack channels.
+
+**Example Alertmanager configuration:**
+
+[source,yaml]
+----
+route:
+  routes:
+  - match:
+      cluster_queue: inference-cq
+    receiver: slack-inference-team
+  - match:
+      cluster_queue: training-cq
+    receiver: slack-training-team
+----
+
+**Why?** Team-specific routing reduces alert fatigue—teams only see alerts relevant to their ClusterQueue.
+
+=== 4. Baseline Establishment
+
+**Process:**
+
+1. **Week 1-2**: Observe metrics without alerts enabled
+2. **Record normal baselines**:
+   * Typical pending workload count: e.g., 2-5 during business hours
+   * Normal eviction rate: e.g., 3/hour for training during peak inference demand
+   * p95 admission latency: e.g., 30s for inference, 5 minutes for training
+3. **Week 3**: Enable alerts with thresholds set to 2x baseline values
+4. **Week 4+**: Tune alert thresholds based on false-positive rate
+
+**Goal**: Alerts should fire for **genuine incidents** (quota exhaustion, stuck workloads) without alert fatigue from normal operational patterns.
+
+=== 5. Capacity Planning Queries
+
+Run these PromQL queries weekly to plan GPU capacity growth:
+
+**Query 1: Peak GPU usage by ClusterQueue (last 7 days)**
+
+[source,promql]
+----
+max_over_time(
+  kueue_cluster_queue_resource_usage{resource="nvidia.com/gpu"}[7d]
+)
+----
+
+**Query 2: Average pending workload count (last 7 days)**
+
+[source,promql]
+----
+avg_over_time(kueue_pending_workloads[7d])
+----
+
+**Query 3: p95 admission latency trend (week-over-week)**
+
+[source,promql]
+----
+histogram_quantile(0.95,
+  sum(rate(kueue_admission_wait_time_seconds_bucket[7d]))
+  by (le, cluster_queue)
+)
+----
+
+**Capacity planning decision**: If peak usage consistently exceeds 90% of total GPU capacity and pending workloads average > 5, plan for GPU cluster expansion (add 4-8 GPUs).
+
+[TIP]
+====
+**Export Grafana dashboard JSON to Git** for version control and disaster recovery. Store dashboards in the same repository as Kueue configuration (GitOps pattern). This enables:
+
+* Dashboard-as-Code (review dashboard changes in pull requests)
+* Rollback to previous dashboard versions
+* Disaster recovery (restore dashboards from Git if Grafana instance is lost)
+====
+
+== What's Next
+
+The final lab covers Day 2 troubleshooting scenarios: diagnosing quota exhaustion, misconfigured queue routing, and high eviction rates. You'll use the Grafana dashboard and `oc` commands to diagnose and resolve common operational issues, reinforcing your understanding of GPU-as-a-Service monitoring.

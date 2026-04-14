@@ -1,0 +1,493 @@
+:time_estimate: 30
+
+= Lab: Day 2 Troubleshooting Scenarios
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Diagnose and resolve three common operational scenarios: quota exhaustion causing inference latency, misconfigured queue routing preventing training admission, and high eviction rates indicating preemption churn.
+
+== Before you begin
+
+This lab simulates real Day 2 operational scenarios you'll encounter when operating a GPU-as-a-Service platform. You'll use the Grafana dashboard (from Section 4) and `oc` commands to diagnose root causes and apply appropriate resolutions.
+
+**Prerequisites:**
+
+* Sections 2-4 completed (quotas deployed, Hardware Profiles configured, monitoring dashboard accessible)
+* Access to Grafana dashboard (Kueue — OpenShift AI Monitoring)
+* Cluster admin permissions for `oc` commands
+* At least one workload running in `team-inference` or `team-training` namespace
+
+**Verify Grafana dashboard access:**
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get route grafana -n grafana -o jsonpath='{.spec.host}'*
+grafana-grafana.apps.example.com
+----
+
+Open the Grafana URL in your browser and navigate to **Dashboards** → **Kueue — OpenShift AI Monitoring**.
+
+== Scenario 1: Inference Workloads Waiting Too Long
+
+=== Symptoms
+
+Your organization's customer-facing inference API is experiencing latency spikes. The platform team receives a Slack alert:
+
+* **Alert**: `KueueAdmissionLatencyHigh` fired for `inference-cq`
+* **Message**: "p95 admission latency > 120 seconds for 10+ minutes"
+
+Data scientists report that new inference workloads submitted via the OpenShift AI dashboard are stuck in "Pending" state for 2+ minutes, causing customer-facing API responses to time out.
+
+=== Diagnosis
+
+==== Step 1: Check Grafana Dashboard
+
+1. Open Grafana → **Kueue — OpenShift AI Monitoring** dashboard
+2. Navigate to **Section 1: Workload Overview**
+3. Observe the **Pending Workloads** panel
+
+**Expected observation**: `inference-cq` shows 10+ pending workloads.
+
+4. Navigate to **Section 3: Admission Latency**
+5. Observe the **p95 Admission Latency by ClusterQueue** panel
+
+**Expected observation**: `inference-cq` p95 latency is 180 seconds (3 minutes), well above the 60-second healthy baseline.
+
+==== Step 2: Check Inference Quota Usage
+
+Use `oc` to inspect the inference ClusterQueue's quota status:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get clusterqueue inference-cq -o yaml | grep -A 20 "status:"*
+----
+
+**Expected output:**
+
+[source,yaml]
+----
+status:
+  admittedWorkloads: 4
+  flavorsUsage:
+  - name: gpu-flavor
+    resources:
+    - name: nvidia.com/gpu
+      total: "4"                                  # <1>
+  reservingWorkloads: 0
+----
+<1> **total: "4"**: Inference is using all 4 GPUs (3 guaranteed + 1 borrowed). The ClusterQueue is at maximum capacity.
+
+==== Step 3: Check Training GPU Usage
+
+Verify if training workloads are consuming GPUs that inference needs:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get pods -n team-training -o wide | grep Running*
+training-job-abc123-worker-0   1/1     Running   0   team-training   worker-gpu-0
+training-job-def456-worker-0   1/1     Running   0   team-training   worker-gpu-1
+----
+
+**Expected observation**: 2 training pods are running, each using 1 GPU. Total training GPUs in use: 2.
+
+**Analysis**: Training is using 2 GPUs (1 guaranteed + 1 borrowed). Inference is using 4 GPUs (3 guaranteed + 1 borrowed from training). Since training is borrowing 1 GPU from inference's idle quota, inference should be able to reclaim it via preemption.
+
+==== Step 4: Verify Preemption is Working
+
+Check if Kueue is preempting training workloads:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get events -n team-training --field-selector reason=WorkloadEvicted --sort-by='.lastTimestamp' | tail -5*
+----
+
+**Expected output:**
+
+[source,console]
+----
+2m    Normal   WorkloadEvicted   workload/training-job-abc123   Preempted to reclaim quota for inference-cq
+----
+
+**Observation**: Preemption is working. Training workload `training-job-abc123` was evicted 2 minutes ago.
+
+**Root cause identified**: Inference workloads are waiting because preemption takes time (30-60 seconds for graceful termination). The 180-second p95 latency includes preemption time + pod startup time.
+
+=== Resolution
+
+You have three resolution options:
+
+[cols="2,3,3",options="header"]
+|===
+|Resolution |Action |Trade-off
+
+|**Option 1: Wait for preemption** (recommended)
+|No action needed. Preemption is working correctly within 30-60 seconds.
+|Temporary latency during preemption (acceptable for training workloads).
+
+|**Option 2: Increase inference nominal quota**
+|Change inference guaranteed quota from 3 to 4 GPUs (requires reducing training quota from 1 to 0).
+|Training loses guaranteed quota (not recommended unless training is purely opportunistic).
+
+|**Option 3: Verify preemption policies**
+|Confirm `borrowWithinCohort.policy: LowerPriority` is set in `inference-cq`.
+|No trade-off (this should already be configured).
+|===
+
+**Recommended action**: **Option 1** (wait for preemption). The current configuration is working as designed:
+
+1. Inference needs a 4th GPU
+2. Training is using 2 GPUs (1 guaranteed + 1 borrowed)
+3. Inference preempts training to reclaim its lent quota
+4. Training workload is suspended, freeing 1 GPU
+5. Inference workload is admitted within 30-60 seconds
+
+**Document this as normal behavior** and adjust the alert threshold to `p95 > 180s` (allowing time for preemption + pod startup).
+
+==== Verification
+
+After waiting 60 seconds, verify inference workload is admitted:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get workloads -n team-inference -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.conditions[?(@.type=="Admitted")].status}{"\n"}{end}'*
+workload-inference-api-abc   True
+----
+
+The inference workload is now **Admitted** (status: True). Check Grafana dashboard to confirm p95 latency returns to < 60 seconds.
+
+== Scenario 2: Training Workloads Never Admitted
+
+=== Symptoms
+
+The training team reports that new training jobs submitted yesterday are still pending. The platform team checks and finds:
+
+* **Grafana observation**: `training-cq` shows 5 pending workloads for 12+ hours
+* **Inference status**: Inference is using only 2 GPUs (idle capacity available)
+* **Alert**: No quota exhaustion alert (quotas appear available)
+
+**Mystery**: Why are training workloads not being admitted when there's idle GPU capacity?
+
+=== Diagnosis
+
+==== Step 1: Check Training LocalQueue Configuration
+
+Verify the training LocalQueue exists and points to the correct ClusterQueue:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get localqueue team-training -n team-training -o yaml*
+----
+
+**Expected output:**
+
+[source,yaml]
+----
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: LocalQueue
+metadata:
+  name: team-training
+  namespace: team-training
+spec:
+  clusterQueue: training-cq                      # <1>
+status:
+  pendingWorkloads: 5                             # <2>
+----
+<1> **clusterQueue: training-cq**: LocalQueue correctly references the training ClusterQueue.
+<2> **pendingWorkloads: 5**: Confirms 5 workloads are stuck in this LocalQueue.
+
+==== Step 2: Check ClusterQueue Namespace Selector
+
+Verify the ClusterQueue's namespace selector allows the `team-training` namespace:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get clusterqueue training-cq -o jsonpath='{.spec.namespaceSelector}'*
+{"matchLabels":{"kubernetes.io/metadata.name":"team-training"}}
+----
+
+The ClusterQueue expects namespaces to have the label `kubernetes.io/metadata.name=team-training`.
+
+==== Step 3: Verify Namespace Label
+
+Check if the `team-training` namespace has the required label:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get namespace team-training -o jsonpath='{.metadata.labels}'*
+{"kubernetes.io/metadata.name":"team-training"}
+----
+
+The namespace label is correct. So far, configuration looks good.
+
+==== Step 4: Check Workload Labels
+
+Inspect one of the pending workloads to verify it has the correct queue label:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get workloads -n team-training -o yaml | grep -A 5 "metadata:"*
+----
+
+**Unexpected output:**
+
+[source,yaml]
+----
+metadata:
+  labels:
+    kueue.x-k8s.io/queue-name: default            # <1>
+  name: workload-training-job-xyz
+  namespace: team-training
+----
+<1> **queue-name: default**: **Root cause found!** The workload has the wrong queue label. It's trying to use a LocalQueue named `default` instead of `team-training`.
+
+**Analysis**: The training jobs were submitted without using the `lowpriority` Hardware Profile. Instead, they were submitted manually (e.g., via `oc create job`) without the correct Kueue labels.
+
+=== Resolution
+
+==== Option 1: Fix Workload Labels (Recommended)
+
+Delete the incorrectly labeled workloads and resubmit using the `lowpriority` Hardware Profile:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc delete job training-job-xyz -n team-training*
+job.batch "training-job-xyz" deleted
+----
+
+Resubmit the job via the OpenShift AI dashboard using the **lowPriority** Hardware Profile (covered in Section 3). The Hardware Profile automatically injects the correct label: `kueue.x-k8s.io/queue-name: team-training`.
+
+==== Option 2: Manually Patch Workload Labels (Quick Fix)
+
+If resubmitting is not feasible, manually patch the workload label:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc patch workload workload-training-job-xyz -n team-training --type=merge -p '{"metadata":{"labels":{"kueue.x-k8s.io/queue-name":"team-training"}}}'*
+workload.kueue.x-k8s.io/workload-training-job-xyz patched
+----
+
+[WARNING]
+====
+**LocalQueue namespace must match ClusterQueue namespaceSelector** or workloads will never be admitted. This is a common misconfiguration when teams manually create workloads instead of using Hardware Profiles.
+
+**Best practice**: Always use Hardware Profiles for self-service submission. They eliminate label errors by automating Kueue integration.
+====
+
+==== Verification
+
+After fixing the labels, verify workloads are admitted:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get workloads -n team-training -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.status.conditions[?(@.type=="Admitted")].status}{"\n"}{end}'*
+workload-training-job-xyz   True
+----
+
+The workload is now **Admitted**. Check Grafana dashboard to confirm `training-cq` pending workloads drop to 0.
+
+== Scenario 3: High Eviction Rate Alert
+
+=== Symptoms
+
+The platform team receives an alert:
+
+* **Alert**: `KueueHighEvictionRate` fired for `training-cq`
+* **Message**: "Eviction rate > 5 per hour for 10+ minutes"
+* **Grafana observation**: Training workloads are being evicted 8-10 times per hour, continuously throughout the day (including off-hours like 2 AM).
+
+**Expected behavior**: Training workloads should be preempted during business hours (9 AM - 5 PM) when inference demand is high. **Unexpected behavior**: Evictions are occurring 24/7, even when inference is idle.
+
+=== Diagnosis
+
+==== Step 1: Check Grafana Dashboard
+
+1. Open Grafana → **Kueue — OpenShift AI Monitoring** dashboard
+2. Navigate to **Section 5: Throughput & Rates**
+3. Observe the **Eviction Rate** panel (per minute, by ClusterQueue)
+
+**Expected observation**: `training-cq` shows consistent eviction rate of 0.15/min (9/hour), including during off-hours (2 AM - 6 AM).
+
+==== Step 2: Review Recent Preemptions
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get events -n team-training --field-selector reason=WorkloadEvicted --sort-by='.lastTimestamp' | tail -20*
+----
+
+**Expected output:**
+
+[source,console]
+----
+10m   Normal   WorkloadEvicted   workload/training-job-1   Preempted to reclaim quota for inference-cq
+8m    Normal   WorkloadEvicted   workload/training-job-2   Preempted to reclaim quota for inference-cq
+6m    Normal   WorkloadEvicted   workload/training-job-3   Preempted to reclaim quota for inference-cq
+4m    Normal   WorkloadEvicted   workload/training-job-4   Preempted to reclaim quota for inference-cq
+----
+
+**Observation**: All evictions cite `inference-cq` as the reason. This suggests inference is constantly preempting training.
+
+==== Step 3: Analyze Eviction Pattern
+
+Check if evictions correlate with inference workload submissions:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get workloads -n team-inference --sort-by=.metadata.creationTimestamp | tail -10*
+----
+
+**Expected observation**: Inference workloads are being submitted every 5-10 minutes, even during off-hours. This indicates an autoscaling inference deployment that constantly scales up and down based on traffic.
+
+**Root cause identified**: Inference autoscaler is triggering frequent scale-up/scale-down cycles. Each scale-up preempts training to reclaim quota, even when overall GPU demand is low.
+
+=== Resolution
+
+You have three resolution options:
+
+[cols="2,3,3",options="header"]
+|===
+|Resolution |Action |Trade-off
+
+|**Option 1: Document as expected** (if evictions are business-driven)
+|If inference demand requires frequent scale-ups, evictions are working as designed. Adjust alert threshold to `> 15/hour`.
+|Training workloads experience frequent interruptions (acceptable if training has checkpointing).
+
+|**Option 2: Increase training nominal quota**
+|Change training guaranteed quota from 1 to 2 GPUs. Reduce inference guaranteed quota from 3 to 2.
+|Inference loses 1 guaranteed GPU (may impact SLA if inference consistently needs 3+ GPUs).
+
+|**Option 3: Create non-preemptible training queue**
+|Create a separate ClusterQueue (`training-critical-cq`) with 1 guaranteed GPU, **no cohort membership** (no borrowing, no preemption).
+|Reduces elastic utilization. Critical training jobs are protected but cannot opportunistically use idle GPUs.
+|===
+
+**Recommended action**: Depends on business requirements.
+
+* **If inference SLAs are critical and training can tolerate interruptions**: **Option 1** (document as expected). Ensure training jobs have checkpointing enabled (covered in Chapter 3, Section 1: Workload Checkpointing).
+* **If training velocity is suffering**: **Option 2** (rebalance quotas). This is a capacity planning decision—add more GPUs to the cluster or reduce inference's guaranteed quota.
+* **If specific training jobs are critical** (e.g., monthly model re-training): **Option 3** (create non-preemptible queue for critical jobs).
+
+==== Verification: Implement Option 3 (Non-Preemptible Queue)
+
+Create a new ClusterQueue for critical training workloads:
+
+[source,yaml]
+----
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata:
+  name: training-critical-cq
+spec:
+  # NO cohortName: no borrowing, no preemption      # <1>
+  namespaceSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: team-training
+  queueingStrategy: BestEffortFIFO
+  resourceGroups:
+  - coveredResources:
+    - nvidia.com/gpu
+    flavors:
+    - name: gpu-flavor
+      resources:
+      - name: nvidia.com/gpu
+        nominalQuota: "1"                          # <2>
+        # NO borrowingLimit                        # <3>
+----
+<1> **No cohortName**: This ClusterQueue is isolated. It cannot borrow from the cohort, and inference cannot preempt it.
+<2> **nominalQuota: "1"**: Dedicated 1 GPU for critical training jobs.
+<3> **No borrowingLimit**: Critical training uses only its guaranteed 1 GPU, no elastic scaling.
+
+Create a corresponding LocalQueue:
+
+[source,yaml]
+----
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: LocalQueue
+metadata:
+  name: training-critical
+  namespace: team-training
+spec:
+  clusterQueue: training-critical-cq
+----
+
+Create a HardwareProfile for critical training:
+
+[source,yaml]
+----
+apiVersion: infrastructure.opendatahub.io/v1
+kind: HardwareProfile
+metadata:
+  name: criticalpriority
+  namespace: redhat-ods-applications
+  annotations:
+    opendatahub.io/display-name: criticalPriority
+spec:
+  identifiers:
+  - identifier: nvidia.com/gpu
+    maxCount: 1                                   # <1>
+    minCount: 1
+    resourceType: Accelerator
+  scheduling:
+    type: Queue
+    kueue:
+      localQueueName: training-critical
+      priorityClass: training-priority
+----
+<1> **maxCount: 1**: Limited to 1 GPU (matches the ClusterQueue's guaranteed quota).
+
+Apply all three resources:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc apply -f training-critical-cq.yaml*
+clusterqueue.kueue.x-k8s.io/training-critical-cq created
+
+$ *oc apply -f training-critical-localqueue.yaml*
+localqueue.kueue.x-k8s.io/training-critical created
+
+$ *oc apply -f criticalpriority-hardware-profile.yaml*
+hardwareprofile.infrastructure.opendatahub.io/criticalpriority created
+----
+
+**Usage**: Data scientists select **criticalPriority** in the OpenShift AI dashboard for monthly re-training jobs that cannot tolerate interruptions. These workloads are never preempted.
+
+==== Trade-off Analysis
+
+[cols="2,3,3",options="header"]
+|===
+|Queue |Behavior |Use Case
+
+|`training-cq` (cohort member)
+|Can borrow up to 2 GPUs, subject to preemption by inference
+|Regular training jobs with checkpointing
+
+|`training-critical-cq` (isolated)
+|Guaranteed 1 GPU, never preempted, cannot borrow
+|Critical monthly re-training jobs
+|===
+
+**Result**: Critical training jobs are protected from eviction, while regular training jobs continue to benefit from elastic quota sharing.
+
+== What's Next
+
+You have completed the GPU-as-a-Service chapter. You can now:
+
+* ✅ Explain the business value of GPU-as-a-Service (improved utilization, SLA protection, self-service)
+* ✅ Design multi-tenant GPU quota architectures with asymmetric preemption
+* ✅ Deploy GPU-as-a-Service using Kustomize or ArgoCD
+* ✅ Integrate Hardware Profiles with OpenShift AI dashboard
+* ✅ Monitor GPU quota utilization, admission latency, and preemption using Grafana
+* ✅ Troubleshoot quota exhaustion, misconfigured queue routing, and eviction churn
+
+**This completes the MaaS Workload Scheduling with Kueue course.** You have learned how to deploy Kueue foundations (Chapter 1), implement elastic quota sharing with cohorts (Chapter 2), configure priority-based preemption (Chapter 3), and integrate all concepts into a production-ready GPU-as-a-Service platform (Chapter 4).
+
+**Next steps for production deployment:**
+
+1. **Customize quotas** for your cluster size and team requirements (Section 1 sizing recommendations)
+2. **Deploy monitoring** (Section 4 Grafana dashboard and alerts)
+3. **Establish operational runbooks** (Section 5 troubleshooting scenarios)
+4. **Train platform team** on Kueue architecture and Day 2 operations
+5. **Onboard data science teams** to Hardware Profiles for self-service GPU allocation
+
+For advanced Kueue topics (AdmissionChecks, ProvisioningRequests, MultiKueue), refer to the official Kueue documentation: https://kueue.sigs.k8s.io/

@@ -1,0 +1,2 @@
+* xref:index.adoc[Chapter 5: Kueue]
+** xref:s1-kueue-overview.adoc[GPU Quota and Priority Management with Kueue]

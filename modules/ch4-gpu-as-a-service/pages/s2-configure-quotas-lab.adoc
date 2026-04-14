@@ -1,0 +1,386 @@
+:time_estimate: 45
+
+= Lab: Configure GPU Quotas and Queues
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Deploy the complete GPU-as-a-Service Kueue configuration including ResourceFlavors, ClusterQueues with asymmetric preemption, LocalQueues, WorkloadPriorityClasses, and the Cohort.
+
+== Before you begin
+
+This lab deploys the GPU-as-a-Service architecture introduced in Section 1. You'll create all necessary Kueue resources to enable multi-tenant GPU quota management with asymmetric preemption.
+
+**Prerequisites:**
+
+* Kueue enabled in DataScienceCluster (verify with command below)
+* GPU Operator installed with GPU nodes labeled `nvidia.com/gpu.present=true`
+* GPU nodes tainted with `nvidia.com/gpu=Exists:NoSchedule`
+* Two namespaces created: `team-inference` and `team-training`
+
+**Verify Kueue is enabled:**
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get datasciencecluster -o jsonpath='{.items[0].spec.components.kueue.managementState}'*
+Managed
+----
+
+If the output is not `Managed`, refer to Chapter 1, Section 2 (Base Configuration Lab) to enable Kueue.
+
+**Create namespaces:**
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc create namespace team-inference*
+namespace/team-inference created
+
+$ *oc create namespace team-training*
+namespace/team-training created
+----
+
+== Option 1: Deploy with Kustomize
+
+This option uses Kustomize to deploy all GPU-as-a-Service resources in a single command. Kustomize is a Kubernetes-native configuration management tool that applies multiple YAML files declaratively.
+
+=== Step 1: Review the Kustomization Structure
+
+The GPU-as-a-Service configuration is organized in a `base/` directory with a `kustomization.yaml` file that references all resource manifests:
+
+[source,yaml]
+----
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - cohort.yaml
+  - resourceflavors.yaml
+  - workloadpriorityclasses.yaml
+  - clusterqueues.yaml
+  - localqueues.yaml
+----
+
+This structure allows you to deploy all resources with a single `oc apply -k base/` command.
+
+=== Step 2: Apply the Configuration
+
+Deploy all GPU-as-a-Service resources:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc apply -k https://github.com/example-org/gpu-as-a-service/base*  # <1>
+cohort.kueue.x-k8s.io/gpu-cohort created
+resourceflavor.kueue.x-k8s.io/gpu-flavor created
+resourceflavor.kueue.x-k8s.io/default-flavor created
+workloadpriorityclass.kueue.x-k8s.io/inference-priority created
+workloadpriorityclass.kueue.x-k8s.io/training-priority created
+clusterqueue.kueue.x-k8s.io/inference-cq created
+clusterqueue.kueue.x-k8s.io/training-cq created
+localqueue.kueue.x-k8s.io/team-inference created
+localqueue.kueue.x-k8s.io/team-training created
+----
+<1> Replace with your Git repository URL or use a local path: `oc apply -k ./base`
+
+[NOTE]
+====
+The above URL is a placeholder. In production, you would fork the reference architecture repository and customize quotas for your cluster size and team requirements.
+====
+
+=== Step 3: Verify Deployment
+
+Confirm all resources were created successfully:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get cohort*
+NAME         AGE
+gpu-cohort   30s
+
+$ *oc get clusterqueue*
+NAME            COHORT       PENDING WORKLOADS   ADMITTED WORKLOADS
+inference-cq    gpu-cohort   0                   0
+training-cq     gpu-cohort   0                   0
+
+$ *oc get resourceflavor*
+NAME              AGE
+default-flavor    30s
+gpu-flavor        30s
+
+$ *oc get workloadpriorityclass*
+NAME                  VALUE   AGE
+inference-priority    1000    30s
+training-priority     100     30s
+----
+
+You have successfully deployed the GPU-as-a-Service configuration using Kustomize. **Proceed to the "Verify Configuration" section** below to validate quota allocation and preemption policies.
+
+== Option 2: Deploy with ArgoCD (GitOps)
+
+This option uses ArgoCD for declarative, GitOps-driven deployment. ArgoCD provides automatic drift detection, rollback capabilities, and audit trails—essential for production environments.
+
+[TIP]
+====
+In production MaaS platforms, use ArgoCD for all Kueue configuration changes. This ensures quota changes are code-reviewed, version-controlled, and automatically reconciled if manual changes are made to the cluster.
+====
+
+=== Step 1: Create ArgoCD Application
+
+Create an ArgoCD Application resource that points to your GPU-as-a-Service configuration repository:
+
+[source,yaml]
+----
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gpu-as-a-service
+  namespace: openshift-gitops                     # <1>
+spec:
+  destination:
+    server: https://kubernetes.default.svc        # <2>
+  source:
+    repoURL: https://github.com/example-org/gpu-as-a-service  # <3>
+    path: base                                    # <4>
+    targetRevision: main                          # <5>
+  project: default
+  syncPolicy:
+    automated:
+      prune: true                                 # <6>
+      selfHeal: true                              # <7>
+----
+<1> **namespace: openshift-gitops**: ArgoCD operator namespace (default in OpenShift GitOps)
+<2> **destination.server**: Target cluster (in-cluster deployment)
+<3> **repoURL**: Git repository containing Kueue configuration
+<4> **path: base**: Directory containing kustomization.yaml
+<5> **targetRevision: main**: Git branch to track
+<6> **prune: true**: Automatically delete resources removed from Git
+<7> **selfHeal: true**: Automatically correct manual changes to match Git state
+
+Save this as `argocd-application.yaml`.
+
+=== Step 2: Apply ArgoCD Application
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc apply -f argocd-application.yaml*
+application.argoproj.io/gpu-as-a-service created
+----
+
+=== Step 3: Verify Sync Status
+
+Check that ArgoCD successfully synchronized the configuration:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get application gpu-as-a-service -n openshift-gitops*
+NAME                 SYNC STATUS   HEALTH STATUS
+gpu-as-a-service     Synced        Healthy
+----
+
+**Sync Status meanings:**
+
+* **Synced**: Cluster state matches Git repository
+* **OutOfSync**: Manual changes detected (ArgoCD will self-heal if `selfHeal: true`)
+* **Unknown**: Initial sync in progress
+
+=== Step 4: Verify Drift Detection
+
+To demonstrate ArgoCD's drift detection, manually modify a ClusterQueue:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc patch clusterqueue inference-cq --type=json -p='[{"op": "replace", "path": "/spec/resourceGroups/1/flavors/0/resources/0/nominalQuota", "value": "5"}]'*
+clusterqueue.kueue.x-k8s.io/inference-cq patched
+----
+
+This changes the inference GPU quota from 3 to 5. ArgoCD detects the drift within 3 minutes (default polling interval) and automatically reverts the change:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get clusterqueue inference-cq -o jsonpath='{.spec.resourceGroups[1].flavors[0].resources[0].nominalQuota}'*
+3
+----
+
+The quota is automatically restored to 3 (matching the Git repository). Check ArgoCD events:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc describe application gpu-as-a-service -n openshift-gitops | grep "Sync Status"*
+  Sync Status:  Synced (auto-healed)
+----
+
+You have successfully deployed GPU-as-a-Service using ArgoCD with automatic drift correction.
+
+== Verify Configuration
+
+Regardless of deployment method (Kustomize or ArgoCD), perform these verification steps to validate the GPU-as-a-Service configuration.
+
+=== Step 1: Verify Cohort Exists
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get cohort gpu-cohort -o yaml*
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: Cohort
+metadata:
+  name: gpu-cohort
+----
+
+The cohort has no `spec` field—it's just a named grouping that ClusterQueues reference.
+
+=== Step 2: Verify ClusterQueues Reference Cohort
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get clusterqueue -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.cohortName}{"\n"}{end}'*
+inference-cq    gpu-cohort
+training-cq     gpu-cohort
+----
+
+Both ClusterQueues are in the `gpu-cohort`, enabling quota borrowing.
+
+=== Step 3: Check Inference ClusterQueue Quotas
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get clusterqueue inference-cq -o yaml*
+----
+
+**Key fields to verify:**
+
+[source,yaml]
+----
+spec:
+  cohortName: gpu-cohort
+  preemption:
+    reclaimWithinCohort: Any                     # <1>
+    borrowWithinCohort:
+      policy: LowerPriority                      # <2>
+      maxPriorityThreshold: 100                  # <3>
+    withinClusterQueue: LowerPriority
+  resourceGroups:
+  - coveredResources:
+    - nvidia.com/gpu
+    flavors:
+    - name: gpu-flavor
+      resources:
+      - name: nvidia.com/gpu
+        nominalQuota: "3"                        # <4>
+        borrowingLimit: "1"                      # <5>
+----
+<1> **reclaimWithinCohort: Any**: Inference can reclaim from any workload (protects inference SLAs)
+<2> **borrowWithinCohort.policy: LowerPriority**: Inference can preempt lower-priority workloads to borrow
+<3> **maxPriorityThreshold: 100**: Only preempts workloads with priority ≤ 100 (training has priority 100)
+<4> **nominalQuota: "3"**: Inference is guaranteed 3 GPUs
+<5> **borrowingLimit: "1"**: Inference can borrow up to 1 additional GPU (max 4 total)
+
+[IMPORTANT]
+====
+The preemption policies are the **critical configuration** that enables asymmetric preemption. Inference can preempt training, but training (covered in Step 4) cannot preempt inference.
+====
+
+=== Step 4: Check Training ClusterQueue Quotas
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get clusterqueue training-cq -o yaml | grep -A 10 "preemption:"*
+----
+
+**Expected output:**
+
+[source,yaml]
+----
+  preemption:
+    reclaimWithinCohort: LowerPriority           # <1>
+    withinClusterQueue: LowerPriority
+----
+<1> **reclaimWithinCohort: LowerPriority**: Training can only reclaim from lower-priority workloads. Since inference has priority 1000 (higher than training's 100), training **cannot** reclaim from inference.
+
+Notice: **No `borrowWithinCohort` policy**. This means training **cannot** preempt to borrow—it can only use genuinely idle quota.
+
+Check training quotas:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get clusterqueue training-cq -o jsonpath='{.spec.resourceGroups[1].flavors[0].resources[0]}'*
+{"borrowingLimit":"2","name":"nvidia.com/gpu","nominalQuota":"1"}
+----
+
+Training has 1 guaranteed GPU and can borrow up to 2 (max 3 total).
+
+=== Step 5: Verify ResourceFlavors
+
+The `gpu-flavor` ResourceFlavor must include node selectors and tolerations to ensure GPU workloads land on GPU nodes:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get resourceflavor gpu-flavor -o yaml*
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ResourceFlavor
+metadata:
+  name: gpu-flavor
+spec:
+  nodeLabels:
+    nvidia.com/gpu.present: "true"               # <1>
+  tolerations:
+  - key: nvidia.com/gpu                          # <2>
+    operator: Exists
+    effect: NoSchedule
+----
+<1> **nodeLabels**: Ensures GPU workloads only schedule on nodes labeled by GPU Operator
+<2> **tolerations**: Allows workloads to tolerate the GPU node taint (prevents non-GPU workloads from consuming GPU nodes)
+
+The `default-flavor` has no node selectors or tolerations—it's used for CPU/memory resources.
+
+=== Step 6: Verify WorkloadPriorityClasses
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get workloadpriorityclass -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.value}{"\n"}{end}'*
+inference-priority    1000
+training-priority     100
+----
+
+Inference has priority 1000 (high), training has priority 100 (low). This 10x difference ensures clear priority separation for preemption decisions.
+
+=== Step 7: Verify LocalQueues Point to Correct ClusterQueues
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get localqueue team-inference -n team-inference -o jsonpath='{.spec.clusterQueue}'*
+inference-cq
+
+$ *oc get localqueue team-training -n team-training -o jsonpath='{.spec.clusterQueue}'*
+training-cq
+----
+
+LocalQueues correctly route to their respective ClusterQueues.
+
+=== Step 8: Verify Namespace Labels Match ClusterQueue Selectors
+
+ClusterQueues use `namespaceSelector` to restrict which namespaces can use them. Verify the namespaces have matching labels:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get namespace team-inference -o jsonpath='{.metadata.labels}'*
+{"kubernetes.io/metadata.name":"team-inference"}
+
+$ *oc get clusterqueue inference-cq -o jsonpath='{.spec.namespaceSelector}'*
+{"matchLabels":{"kubernetes.io/metadata.name":"team-inference"}}
+----
+
+The namespace label matches the ClusterQueue selector. Repeat for `team-training`:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get namespace team-training -o jsonpath='{.metadata.labels.kubernetes\.io/metadata\.name}'*
+team-training
+----
+
+All verification steps passed. The GPU-as-a-Service configuration is deployed and ready to manage multi-tenant GPU quotas with asymmetric preemption.
+
+== What's Next
+
+Now that the quota infrastructure is deployed, the next lab integrates Hardware Profiles with the OpenShift AI dashboard for self-service GPU allocation. You'll configure `highpriority` and `lowpriority` profiles that automatically route workloads to the correct LocalQueue with appropriate priority.
+
+This self-service integration eliminates the need for data scientists to understand Kueue internals—they simply select a hardware profile from the dashboard.

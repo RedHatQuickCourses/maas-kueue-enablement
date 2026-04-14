@@ -1,0 +1,483 @@
+:time_estimate: 30
+
+= GPU-as-a-Service Architecture
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+
+== The Multi-Tenant GPU Scarcity Problem
+
+Organizations running AI/ML workloads on OpenShift face a shared GPU scarcity problem: multiple teams—such as inference serving and model training—compete for the same limited pool of GPUs. Without intelligent quota management, this creates operational chaos.
+
+Consider a typical scenario: Your organization has a 4-GPU cluster. The inference team deploys a customer-facing model serving API that needs guaranteed low latency to meet SLA commitments. The training team runs long-running model fine-tuning jobs. Both teams submit workloads to Kubernetes with ResourceQuota limits, but Kubernetes scheduling is rigid—it either admits a workload immediately or rejects it. There's no queueing, no priority-based preemption, no way to say "inference workloads are more critical than training."
+
+**What happens in practice:**
+
+* **Monday 9 AM**: Training team submits 4 large training jobs, consuming all 4 GPUs
+* **Monday 10 AM**: Inference team tries to scale their serving deployment to handle production traffic
+* **Result**: Inference workloads are rejected. Kubernetes scheduler returns "insufficient nvidia.com/gpu resources." Customer-facing API latency spikes. Platform team receives an urgent Slack ping.
+* **Manual intervention**: Platform engineer spends 2 hours manually identifying training jobs, contacting the training team, negotiating which jobs to kill, and restarting inference workloads.
+
+This manual firefighting happens **multiple times per week**.
+
+=== Business Impact Without GPU-as-a-Service
+
+[cols="2,3",options="header"]
+|===
+|Problem |Business Impact
+
+|**Resource starvation**
+|Critical inference workloads wait while training jobs consume all GPUs → Customer-facing APIs degrade, SLA violations, revenue impact
+
+|**Unpredictable scheduling**
+|No guarantees about when workloads will start → Teams over-request GPUs "just in case," leading to idle resources and planning paralysis
+
+|**Manual intervention**
+|Platform team manually adjusts priorities and terminates jobs → 20+ hours/week firefighting, high operational toil, team burnout
+
+|**Poor GPU utilization**
+|Rigid ResourceQuotas prevent elastic sharing → GPU utilization drops to 40%, wasting $150K/year on idle hardware (assuming 4x A100 GPUs at $3/hour each)
+|===
+
+
+== Solution: GPU-as-a-Service with Kueue
+
+This chapter implements a **GPU-as-a-Service** model that provides:
+
+1. **Guaranteed GPU quotas per team** with elastic borrowing when capacity is idle
+2. **Priority-based preemption** so high-priority inference workloads can automatically reclaim GPUs from training
+3. **Self-service integration** via OpenShift AI dashboard Hardware Profiles
+4. **Real-time monitoring** with Grafana dashboards tracking utilization, borrowing, and preemption
+
+**Result**: GPU utilization increases from 40% to 85-90%, inference SLAs are protected with automatic preemption within 30 seconds, training throughput becomes predictable, and manual intervention drops to near zero.
+
+== GPU-as-a-Service Architecture
+
+The GPU-as-a-Service reference architecture uses a single **Cohort** (introduced in Chapter 2) to manage a shared pool of 4 GPUs across two teams: inference and training. The cohort enables elastic quota sharing—teams can borrow idle quota from each other—while **asymmetric preemption policies** (introduced in Chapter 3) ensure inference workloads can always reclaim GPUs when needed.
+
+=== Architecture Diagram
+
+----
+                    ┌────────────────────┐
+                    │   gpu-cohort       │
+                    │   (Cohort)         │
+                    │   4 GPUs total     │
+                    └──────────┬─────────┘
+                               │
+           ┌───────────────────┼───────────────────┐
+           │                                       │
+  ┌────────┴──────────┐               ┌───────────┴────────┐
+  │  inference-cq      │               │  training-cq        │
+  │  (ClusterQueue)    │               │  (ClusterQueue)     │
+  │                    │               │                     │
+  │  Guaranteed: 3 GPU │               │  Guaranteed: 1 GPU  │
+  │  Borrow: up to 1   │               │  Borrow: up to 2    │
+  │  Max: 4 GPUs       │               │  Max: 3 GPUs        │
+  │  Priority: 1000    │               │  Priority: 100      │
+  └────────┬───────────┘               └───────────┬─────────┘
+           │                                       │
+  ┌────────┴──────────┐               ┌───────────┴─────────┐
+  │  team-inference    │               │  team-training       │
+  │  (LocalQueue)      │               │  (LocalQueue)        │
+  │  ns: team-inference│               │  ns: team-training   │
+  └────────┬───────────┘               └───────────┬─────────┘
+           │                                       │
+  ┌────────┴──────────┐               ┌───────────┴─────────┐
+  │  highpriority      │               │  lowpriority         │
+  │ (HardwareProfile)  │               │ (HardwareProfile)    │
+  │  GPU: 1-4          │               │  GPU: 1-3            │
+  └────────────────────┘               └─────────────────────┘
+----
+
+=== Component Inventory
+
+[cols="2,1,3,1",options="header"]
+|===
+|Component |Scope |Purpose |Count
+
+|**Cohort**
+|Cluster
+|Groups ClusterQueues for elastic quota sharing
+|1 (`gpu-cohort`)
+
+|**ClusterQueue**
+|Cluster
+|Defines nominal quota, borrowing limits, preemption policies
+|2 (`inference-cq`, `training-cq`)
+
+|**LocalQueue**
+|Namespace
+|Namespace-scoped queue pointing to a ClusterQueue
+|2 (`team-inference`, `team-training`)
+
+|**ResourceFlavor**
+|Cluster
+|Defines node selectors and tolerations for GPU workload placement
+|2 (`gpu-flavor`, `default-flavor`)
+
+|**WorkloadPriorityClass**
+|Cluster
+|Assigns numeric priority for preemption decisions
+|2 (`inference-priority`: 1000, `training-priority`: 100)
+
+|**HardwareProfile**
+|Cluster
+|OpenShift AI dashboard integration for self-service
+|2 (`highpriority`, `lowpriority`)
+|===
+
+[NOTE]
+====
+This architecture reuses concepts from prior chapters: **ResourceFlavor** and **ClusterQueue** (Chapter 1), **Cohort** and quota borrowing (Chapter 2), and **WorkloadPriorityClass** with preemption policies (Chapter 3). Chapter 4 integrates these into a production-ready solution.
+====
+
+=== GPU Quota Allocation
+
+The reference architecture manages a **4-GPU cluster** shared between two teams. The quota allocation reflects business priorities: inference workloads are customer-facing and require SLA guarantees, so they receive more guaranteed quota.
+
+[cols="2,1,1,1,1",options="header"]
+|===
+|ClusterQueue |Guaranteed GPUs |Borrowing Limit |Max Usable GPUs |Priority Value
+
+|`inference-cq`
+|3
+|1
+|4
+|1000 (high)
+
+|`training-cq`
+|1
+|2
+|3
+|100 (low)
+
+|**Cohort Total**
+|**4**
+|—
+|—
+|—
+|===
+
+**Key design decisions:**
+
+* **Inference gets 3 guaranteed GPUs**: Even if training consumes the entire cluster, inference is guaranteed 3 GPUs. This protects customer-facing SLAs.
+* **Inference can borrow 1 additional GPU**: When training is idle, inference can use all 4 GPUs (3 guaranteed + 1 borrowed).
+* **Training gets 1 guaranteed GPU**: Training is guaranteed at least 1 GPU, preventing complete starvation.
+* **Training can borrow 2 additional GPUs**: When inference is idle, training can use up to 3 GPUs (1 guaranteed + 2 borrowed). Training is limited to 3 max to ensure at least 1 GPU is always available for inference to reclaim if needed.
+
+=== Scheduling Scenarios
+
+The following table shows how the cohort allocates GPUs under different workload patterns:
+
+[cols="3,1,1,1,3",options="header"]
+|===
+|Scenario |Inference GPUs in Use |Training GPUs in Use |Total GPUs Used |Notes
+
+|**Only inference active**
+|4 (3 guaranteed + 1 borrowed)
+|0
+|4
+|Inference borrows training's idle quota
+
+|**Only training active**
+|0
+|3 (1 guaranteed + 2 borrowed)
+|3
+|Training can borrow up to 2, hitting its max of 3
+
+|**Both teams active, no contention**
+|3 (guaranteed)
+|1 (guaranteed)
+|4
+|Fair sharing under normal load
+
+|**Inference needs 4th GPU while training uses 1**
+|4 (preempts training)
+|0 (suspended)
+|4
+|Inference reclaims its lent quota via preemption
+|===
+
+[IMPORTANT]
+====
+The cohort total is 4 GPUs (sum of guaranteed quotas: 3 + 1 = 4). Teams can temporarily exceed their guaranteed quota by borrowing from the cohort, but total usage across the cohort never exceeds 4 GPUs.
+====
+
+== Asymmetric Preemption Rules
+
+The architecture implements **asymmetric preemption** to protect high-priority inference workloads. This is the key innovation that transforms a simple quota system into a production-grade GPU-as-a-Service platform.
+
+**Asymmetric preemption** means: **Inference can preempt training, but training cannot preempt inference.**
+
+This is achieved through carefully configured preemption policies in the ClusterQueue resources (introduced in Chapter 3).
+
+=== Inference ClusterQueue Preemption Policies
+
+The `inference-cq` ClusterQueue has aggressive preemption policies:
+
+[source,yaml]
+----
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata:
+  name: inference-cq
+spec:
+  preemption:
+    reclaimWithinCohort: Any                    # <1>
+    borrowWithinCohort:
+      policy: LowerPriority                     # <2>
+      maxPriorityThreshold: 100                 # <3>
+    withinClusterQueue: LowerPriority           # <4>
+  cohortName: gpu-cohort
+  # ... resourceGroups omitted for clarity
+----
+<1> **reclaimWithinCohort: Any**: Allows inference to reclaim its lent quota from **any** workload in the cohort, regardless of priority. If training borrowed inference's idle GPUs and inference needs them back, inference preempts training immediately.
+<2> **borrowWithinCohort.policy: LowerPriority**: Allows inference to preempt **lower-priority** workloads in the cohort when borrowing beyond its guaranteed quota.
+<3> **maxPriorityThreshold: 100**: Only preempts workloads with priority ≤ 100. Since training has priority 100 and inference has priority 1000, inference can preempt training but not other high-priority inference workloads.
+<4> **withinClusterQueue: LowerPriority**: Within the inference queue itself, lower-priority workloads are preempted first.
+
+**Practical effects:**
+
+* ✅ **Inference can preempt training to borrow GPUs**: If inference needs a 4th GPU and training is using GPUs, inference can preempt a training workload to borrow from the cohort.
+* ✅ **Inference can always reclaim its lent quota**: If training borrowed inference's idle GPUs (e.g., inference was using 2 GPUs, training borrowed the idle 1 GPU), and inference now needs its full 3 guaranteed GPUs, inference preempts training regardless of priority.
+* ✅ **Inference protects critical workloads**: Within the inference queue, lower-priority jobs are preempted first, protecting high-priority serving workloads.
+
+=== Training ClusterQueue Preemption Policies
+
+The `training-cq` ClusterQueue has **limited** preemption policies:
+
+[source,yaml]
+----
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata:
+  name: training-cq
+spec:
+  preemption:
+    reclaimWithinCohort: LowerPriority          # <1>
+    # NO borrowWithinCohort policy              # <2>
+    withinClusterQueue: LowerPriority           # <3>
+  cohortName: gpu-cohort
+  # ... resourceGroups omitted for clarity
+----
+<1> **reclaimWithinCohort: LowerPriority**: Training can only reclaim its lent quota by preempting workloads with priority < 100. Since inference has priority 1000, training **cannot** reclaim from inference.
+<2> **No borrowWithinCohort policy**: Training has no `borrowWithinCohort` policy, meaning training **cannot** preempt other workloads to borrow. Training can only use GPUs that are genuinely idle in the cohort.
+<3> **withinClusterQueue: LowerPriority**: Lower-priority training jobs are preempted first within the training queue.
+
+**Practical effects:**
+
+* ❌ **Training cannot preempt inference to borrow GPUs**: Training can only borrow from the cohort if GPUs are idle. It cannot force inference workloads off GPUs.
+* ⚠️ **Training reclaim is limited**: Training can only reclaim its lent quota from workloads with priority < 100. Since inference has priority 1000, training cannot reclaim from inference.
+* ✅ **Training protects within its own queue**: Lower-priority training jobs are preempted first.
+
+=== Preemption Decision Matrix
+
+The following table shows how preemption works in common scenarios:
+
+[cols="3,2,2",options="header"]
+|===
+|Scenario |Inference Action |Training Action
+
+|Inference needs 4th GPU, training using 1 guaranteed GPU
+|**Preempts training** (reclaim lent quota)
+|Training workload suspended
+
+|Inference idle with 3 GPUs, training wants to borrow
+|No action
+|Training borrows up to 2 (total 3), no preemption needed
+
+|Training using 3 borrowed GPUs, inference needs 1
+|**Inference preempts training** (reclaim lent quota)
+|Training drops to 0, workload suspended
+
+|Both teams at guaranteed quotas (3+1), inference wants 4th
+|**Inference preempts training** (borrow via priority)
+|Training suspended
+
+|Both teams at guaranteed quotas (3+1), training wants 2nd
+|No action
+|Training **cannot** preempt inference, workload stays pending
+|===
+
+[WARNING]
+====
+**Never configure training with a `borrowWithinCohort` policy in production.** This would allow training to preempt inference, breaking inference SLA guarantees. Asymmetric preemption is the critical design pattern that protects customer-facing workloads.
+====
+
+== Hardware Profiles for Self-Service
+
+Hardware Profiles (introduced in OpenShift AI 3.3+) provide **self-service** GPU selection in the OpenShift AI dashboard. Data scientists select a profile when launching a workbench or serving runtime, and the platform automatically routes the workload to the correct LocalQueue with the appropriate priority.
+
+This eliminates the need for data scientists to understand Kueue internals—they simply choose "highPriority" or "lowPriority" from a dropdown.
+
+=== Hardware Profile Comparison
+
+[cols="2,3,3",options="header"]
+|===
+|Attribute |highpriority (Inference) |lowpriority (Training)
+
+|**Display Name**
+|highPriority
+|lowPriority
+
+|**GPU Range**
+|1-4 GPUs (can request up to 4)
+|1-3 GPUs (limited to 3 max)
+
+|**Routes to LocalQueue**
+|`team-inference` (in `team-inference` namespace)
+|`team-training` (in `team-training` namespace)
+
+|**Assigns Priority**
+|`inference-priority` (value: 1000)
+|`training-priority` (value: 100)
+
+|**Preemption Behavior**
+|Can preempt training workloads
+|Subject to preemption by inference
+
+|**Use Case**
+|Customer-facing inference APIs with SLA requirements
+|Long-running model training and fine-tuning
+|===
+
+=== User Experience Workflow
+
+When a data scientist uses a Hardware Profile in the OpenShift AI dashboard, the following workflow executes automatically:
+
+1. **Data scientist opens OpenShift AI dashboard**
+   * Navigates to **Data Science Projects** → Select project → **Workbenches**
+
+2. **Clicks "Create Workbench"**
+   * Provides workbench name, notebook image, and resource requests
+
+3. **Selects hardware profile: "highPriority"**
+   * Chooses from dropdown: `highPriority` or `lowPriority`
+   * Adjusts GPU count slider: 1-4 GPUs for highPriority
+
+4. **Clicks "Create"**
+   * Workbench creation request submitted
+
+5. **Platform automatically routes workload** (behind the scenes):
+   * OpenShift AI injects label: `kueue.x-k8s.io/queue-name: team-inference`
+   * OpenShift AI injects label: `kueue.x-k8s.io/priority-class: inference-priority`
+   * Kueue detects labels and routes workload to `team-inference` LocalQueue
+   * LocalQueue routes to `inference-cq` ClusterQueue
+   * Kueue admits workload based on quota and preemption policies
+   * Kubernetes scheduler places workload on GPU node (via ResourceFlavor node selectors)
+
+6. **Data scientist sees workload status in dashboard**
+   * **Pending**: Waiting for quota (queued in Kueue)
+   * **Running**: Admitted and scheduled
+
+[TIP]
+====
+Hardware Profiles provide a **zero-touch Kueue integration** for data scientists. They don't need to know about ClusterQueues, LocalQueues, or WorkloadPriorityClasses. The platform team configures these mappings once, and data scientists get automatic queue routing and priority assignment based on their hardware selection.
+====
+
+=== Hardware Profile Configuration Example
+
+The `highpriority` Hardware Profile YAML shows the key configuration fields:
+
+[source,yaml]
+----
+apiVersion: infrastructure.opendatahub.io/v1
+kind: HardwareProfile
+metadata:
+  name: highpriority
+  namespace: redhat-ods-applications              # <1>
+  annotations:
+    opendatahub.io/display-name: highPriority
+spec:
+  identifiers:
+  - identifier: nvidia.com/gpu                    # <2>
+    displayName: NVIDIA L4
+    resourceType: Accelerator
+    minCount: 1
+    maxCount: 4                                   # <3>
+    defaultCount: 1
+  scheduling:
+    type: Queue                                   # <4>
+    kueue:
+      localQueueName: team-inference              # <5>
+      priorityClass: inference-priority           # <6>
+----
+<1> **namespace: redhat-ods-applications**: Hardware Profiles must be created in the OpenShift AI operator namespace.
+<2> **identifier: nvidia.com/gpu**: Specifies GPU resource type (matches Kubernetes resource name).
+<3> **maxCount: 4**: Matches the inference ClusterQueue's max usable GPUs (3 guaranteed + 1 borrowed).
+<4> **scheduling.type: Queue**: Enables Kueue integration (alternative: `type: None` for direct scheduling).
+<5> **localQueueName: team-inference**: Routes workloads to the `team-inference` LocalQueue in the `team-inference` namespace.
+<6> **priorityClass: inference-priority**: Assigns priority 1000, enabling preemption of training workloads.
+
+The `lowpriority` Hardware Profile has similar structure but routes to `team-training` LocalQueue with `training-priority` (value: 100) and `maxCount: 3`.
+
+== Production Considerations
+
+=== When to Use Separate Cohorts vs. Single Cohort
+
+The reference architecture uses a **single cohort** for simplicity and maximum GPU utilization. However, some scenarios require **separate cohorts** for strict isolation.
+
+[cols="3,2,3",options="header"]
+|===
+|Use Case |Recommendation |Reason
+
+|Inference and training teams, both using GPUs regularly
+|**Single cohort**
+|Maximize utilization via borrowing. Inference can reclaim when needed via preemption.
+
+|Separate business units with strict isolation requirements
+|**Separate cohorts**
+|No quota borrowing across BUs. Each BU has guaranteed capacity with no cross-BU preemption.
+
+|Mix of preemptible (training) and non-preemptible (inference) workloads
+|**Single cohort with preemption policies**
+|Protect inference via asymmetric preemption (this chapter's pattern).
+
+|Development and production environments
+|**Separate cohorts**
+|Prevent dev workloads from affecting prod. Use separate ClusterQueues in different cohorts.
+
+|Multi-region deployments with geo-specific quotas
+|**Separate cohorts per region**
+|Each region's cohort maps to that region's GPU node pool. No cross-region borrowing.
+|===
+
+[TIP]
+====
+For revenue-generating MaaS platforms, **start with a single cohort** and asymmetric preemption. Only split into multiple cohorts if you have strict isolation requirements (compliance, multi-tenancy SLAs, geographic boundaries). Premature cohort splitting reduces GPU utilization by preventing elastic quota sharing.
+====
+
+=== Sizing Recommendations
+
+[cols="2,3,3",options="header"]
+|===
+|Cluster Size |Recommended Cohort Strategy |Notes
+
+|**< 8 GPUs**
+|Single cohort, 2-3 ClusterQueues
+|Simple, effective for small teams. Use asymmetric preemption to protect critical workloads.
+
+|**8-32 GPUs**
+|2-3 cohorts (by workload type: inference, training, interactive)
+|Balance fairness and utilization. Example: inference-cohort (12 GPUs), training-cohort (16 GPUs), dev-cohort (4 GPUs).
+
+|**> 32 GPUs**
+|Multiple cohorts + hierarchical quotas
+|Consider geographic or org-unit based cohorts. Use namespaceSelector to isolate tenants.
+|===
+
+=== Monitoring and Alerting Preview
+
+Effective GPU-as-a-Service operations require real-time visibility. Section 4 (Monitoring and Observability) covers the Grafana dashboard in detail, but key metrics to watch include:
+
+* **Quota utilization**: `kueue_cluster_queue_resource_usage / kueue_cluster_queue_nominal_quota > 0.95` indicates quota exhaustion
+* **Pending workloads**: `kueue_pending_workloads > 10` for 5+ minutes indicates backlog
+* **Eviction rate**: `rate(kueue_evicted_workloads_total[1h]) > 5` indicates high preemption activity
+
+Section 4 provides alert rules, operational runbooks, and Grafana dashboard configuration.
+
+== What's Next
+
+In the next lab, you will deploy the GPU-as-a-Service configuration using Kustomize or ArgoCD. You'll create the Cohort, ClusterQueues, LocalQueues, ResourceFlavors, and WorkloadPriorityClasses, then verify quota allocation and preemption policies.
+
+This hands-on deployment will reinforce your understanding of how the cohort architecture, asymmetric preemption, and multi-tenant quota management work together.

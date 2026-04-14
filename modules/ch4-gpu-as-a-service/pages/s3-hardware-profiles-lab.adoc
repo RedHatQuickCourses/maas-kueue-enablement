@@ -1,0 +1,310 @@
+:time_estimate: 30
+
+= Lab: Configure Hardware Profiles for Self-Service
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Create Hardware Profiles that automatically route workloads to the correct LocalQueue with appropriate priority when users create workbenches in the OpenShift AI dashboard.
+
+== Before you begin
+
+This lab configures OpenShift AI Hardware Profiles to provide self-service GPU allocation. Data scientists will select a hardware profile from the dashboard, and the platform automatically routes their workload to the appropriate Kueue queue with the correct priority.
+
+**Prerequisites:**
+
+* Section 2 completed (Cohort, ClusterQueues, and LocalQueues deployed)
+* OpenShift AI operator installed with dashboard accessible
+* Access to `redhat-ods-applications` namespace (where Hardware Profiles are created)
+
+**Verify OpenShift AI dashboard is accessible:**
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get route rhods-dashboard -n redhat-ods-applications -o jsonpath='{.spec.host}'*
+rhods-dashboard-redhat-ods-applications.apps.example.com
+----
+
+Open the URL in a browser and verify you can log in with your OpenShift credentials.
+
+== Create High-Priority Hardware Profile
+
+The `highpriority` Hardware Profile routes workloads to the `team-inference` LocalQueue with priority 1000, enabling preemption of training workloads.
+
+=== Step 1: Create the HardwareProfile Resource
+
+Create a file named `highpriority-hardware-profile.yaml`:
+
+[source,yaml]
+----
+apiVersion: infrastructure.opendatahub.io/v1
+kind: HardwareProfile
+metadata:
+  name: highpriority
+  namespace: redhat-ods-applications              # <1>
+  annotations:
+    opendatahub.io/dashboard-feature-visibility: '[]'  # <2>
+    opendatahub.io/disabled: "false"              # <3>
+    opendatahub.io/display-name: highPriority     # <4>
+spec:
+  identifiers:
+  - defaultCount: 8
+    displayName: CPU
+    identifier: cpu
+    maxCount: 32
+    minCount: 1
+    resourceType: CPU
+  - defaultCount: 16Gi
+    displayName: Memory
+    identifier: memory
+    maxCount: 128Gi
+    minCount: 2Gi
+    resourceType: Memory
+  - defaultCount: 1                               # <5>
+    displayName: NVIDIA L4
+    identifier: nvidia.com/gpu                    # <6>
+    maxCount: 4                                   # <7>
+    minCount: 1
+    resourceType: Accelerator
+  scheduling:
+    type: Queue                                   # <8>
+    kueue:
+      localQueueName: team-inference              # <9>
+      priorityClass: inference-priority           # <10>
+----
+<1> **namespace: redhat-ods-applications**: Hardware Profiles must be created in the OpenShift AI operator namespace, not in the workload namespace.
+<2> **dashboard-feature-visibility: '[]'**: Empty array makes this profile visible to all OpenShift AI features (workbenches, model serving, etc.).
+<3> **disabled: "false"**: Profile is enabled and visible in the dashboard.
+<4> **display-name: highPriority**: User-facing name shown in the OpenShift AI dashboard dropdown.
+<5> **defaultCount: 1**: Default GPU allocation when users create a workbench (most inference workloads start with 1 GPU).
+<6> **identifier: nvidia.com/gpu**: GPU resource identifier matching Kubernetes resource name.
+<7> **maxCount: 4**: Maximum GPUs a user can request with this profile. Matches the inference ClusterQueue's max usable quota (3 guaranteed + 1 borrowed).
+<8> **scheduling.type: Queue**: Enables Kueue integration. Alternative: `type: None` for direct pod scheduling (not recommended for GPU workloads).
+<9> **localQueueName: team-inference**: Routes workloads to the `team-inference` LocalQueue in the `team-inference` namespace.
+<10> **priorityClass: inference-priority**: Assigns priority 1000, enabling preemption of training workloads (priority 100).
+
+[NOTE]
+====
+The `maxCount: 4` matches the inference ClusterQueue's maximum usable GPUs (3 guaranteed + 1 borrowed). This prevents users from requesting more GPUs than the queue can provide, avoiding confusing "pending forever" scenarios.
+====
+
+=== Step 2: Apply the Hardware Profile
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc apply -f highpriority-hardware-profile.yaml*
+hardwareprofile.infrastructure.opendatahub.io/highpriority created
+----
+
+=== Step 3: Verify in OpenShift AI Dashboard
+
+1. Open the OpenShift AI dashboard in your browser
+2. Navigate to **Data Science Projects** → Select or create a project
+3. Click **Workbenches** → **Create Workbench**
+4. In the **Container size** section, you should see a **Hardware profile** dropdown
+5. Select **highPriority** from the dropdown
+6. Observe the GPU slider allows 1-4 GPUs
+
+The Hardware Profile is now available for self-service GPU allocation.
+
+== Create Low-Priority Hardware Profile
+
+The `lowpriority` Hardware Profile routes workloads to the `team-training` LocalQueue with priority 100, making them subject to preemption by inference workloads.
+
+=== Step 1: Create the HardwareProfile Resource
+
+Create a file named `lowpriority-hardware-profile.yaml`:
+
+[source,yaml]
+----
+apiVersion: infrastructure.opendatahub.io/v1
+kind: HardwareProfile
+metadata:
+  name: lowpriority
+  namespace: redhat-ods-applications
+  annotations:
+    opendatahub.io/disabled: "false"
+    opendatahub.io/display-name: lowPriority
+spec:
+  identifiers:
+  - defaultCount: 8
+    displayName: CPU
+    identifier: cpu
+    maxCount: 32
+    minCount: 1
+    resourceType: CPU
+  - defaultCount: 16Gi
+    displayName: Memory
+    identifier: memory
+    maxCount: 128Gi
+    minCount: 2Gi
+    resourceType: Memory
+  - defaultCount: 1
+    displayName: NVIDIA L4
+    identifier: nvidia.com/gpu
+    maxCount: 3                                   # <1>
+    minCount: 1
+    resourceType: Accelerator
+  scheduling:
+    type: Queue
+    kueue:
+      localQueueName: team-training               # <2>
+      priorityClass: training-priority            # <3>
+----
+<1> **maxCount: 3**: Training is limited to 3 GPUs (1 guaranteed + 2 borrowed), ensuring at least 1 GPU remains available for inference to reclaim.
+<2> **localQueueName: team-training**: Routes to the training LocalQueue.
+<3> **priorityClass: training-priority**: Assigns priority 100 (lower than inference's 1000).
+
+=== Step 2: Apply the Hardware Profile
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc apply -f lowpriority-hardware-profile.yaml*
+hardwareprofile.infrastructure.opendatahub.io/lowpriority created
+----
+
+=== Step 3: Verify Both Profiles Exist
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get hardwareprofile -n redhat-ods-applications*
+NAME            AGE
+highpriority    2m
+lowpriority     30s
+----
+
+== Test Self-Service Workflow
+
+Now test the end-to-end self-service workflow: create a workbench using a Hardware Profile and verify Kueue label injection.
+
+=== Step 1: Create a Workbench with High-Priority Profile
+
+1. Open OpenShift AI dashboard
+2. Navigate to **Data Science Projects** → Select a project (or create one named `test-inference-project`)
+3. Click **Workbenches** → **Create Workbench**
+4. Configure the workbench:
+   * **Name**: `test-inference-workbench`
+   * **Notebook image**: Select any image (e.g., Standard Data Science)
+   * **Container size**: Select **highPriority** from Hardware profile dropdown
+   * **Number of GPUs**: Set to 2
+5. Click **Create workbench**
+
+The workbench creation triggers a pod in the `test-inference-project` namespace.
+
+=== Step 2: Verify Workload Labels
+
+Check that the workbench pod has Kueue labels automatically injected:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get pods -n test-inference-project -l app=test-inference-workbench -o yaml | grep -A 5 "labels:"*
+----
+
+**Expected labels:**
+
+[source,yaml]
+----
+labels:
+  app: test-inference-workbench
+  kueue.x-k8s.io/queue-name: team-inference       # <1>
+  kueue.x-k8s.io/priority-class: inference-priority  # <2>
+----
+<1> **queue-name: team-inference**: Automatically routed to the inference LocalQueue
+<2> **priority-class: inference-priority**: Automatically assigned priority 1000
+
+[IMPORTANT]
+====
+These labels were **not** specified in the workbench creation form. The Hardware Profile automatically injected them based on the `scheduling.kueue` configuration. This is the "zero-touch" integration that hides Kueue complexity from data scientists.
+====
+
+=== Step 3: Verify Queue Assignment
+
+Check the Kueue Workload object to confirm queue assignment:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get workloads -n team-inference*  # <1>
+NAME                              QUEUE             ADMITTED   AGE
+workload-test-inference-...       team-inference    True       2m
+----
+<1> **namespace: team-inference**: Workload object is created in the LocalQueue's namespace, not the project namespace.
+
+The workload is **Admitted** (quota was available). Check the ClusterQueue status:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get clusterqueue inference-cq -o jsonpath='{.status.admittedWorkloads}'*
+1
+----
+
+The inference ClusterQueue shows 1 admitted workload.
+
+=== Step 4: Verify GPU Resource Request
+
+Confirm the pod requests 2 GPUs (as configured in the dashboard):
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get pod -n test-inference-project -l app=test-inference-workbench -o jsonpath='{.spec.containers[0].resources.requests.nvidia\.com/gpu}'*
+2
+----
+
+The Hardware Profile correctly translated the dashboard GPU slider value to a Kubernetes resource request.
+
+=== Step 5: Test Low-Priority Profile (Optional)
+
+Repeat steps 1-4 with the `lowpriority` Hardware Profile to verify it routes to `team-training` with priority 100.
+
+Expected results:
+* Label: `kueue.x-k8s.io/queue-name: team-training`
+* Label: `kueue.x-k8s.io/priority-class: training-priority`
+* Workload created in `team-training` namespace
+* Workload routed to `training-cq` ClusterQueue
+
+== Verify Priority-Based Routing
+
+To confirm priority-based routing is working correctly, check the WorkloadPriorityClass values:
+
+[source,console,subs="verbatim,quotes"]
+----
+$ *oc get workloadpriorityclass inference-priority -o jsonpath='{.value}'*
+1000
+
+$ *oc get workloadpriorityclass training-priority -o jsonpath='{.value}'*
+100
+----
+
+The 10x priority difference (1000 vs. 100) ensures inference workloads can preempt training workloads when quota contention occurs.
+
+== Understanding the Self-Service Workflow
+
+The complete workflow from dashboard to GPU scheduling:
+
+1. **Data scientist selects "highPriority" in dashboard** → Dashboard submits workbench creation request
+2. **OpenShift AI reads Hardware Profile** → Retrieves `scheduling.kueue.localQueueName` and `scheduling.kueue.priorityClass`
+3. **OpenShift AI injects Kueue labels** → Adds `kueue.x-k8s.io/queue-name: team-inference` and `kueue.x-k8s.io/priority-class: inference-priority` to the workbench pod spec
+4. **Kueue detects labels** → Creates a Workload object in the `team-inference` namespace
+5. **LocalQueue routes to ClusterQueue** → Workload is routed to `inference-cq` ClusterQueue
+6. **Kueue checks quota** → Verifies inference has quota available (3 guaranteed GPUs)
+7. **Kueue admits workload** → Sets pod `spec.suspend: false`
+8. **Kubernetes scheduler places pod** → Uses ResourceFlavor node selectors to place pod on GPU node
+9. **Pod starts running** → Data scientist sees "Running" status in dashboard
+
+This entire workflow happens automatically. Data scientists never interact with Kueue resources directly.
+
+[TIP]
+====
+For production deployments, create Hardware Profiles that match your organizational structure. Examples:
+
+* **highpriority-inference**: Customer-facing inference (priority 1000)
+* **mediumpriority-batch**: Batch inference (priority 500)
+* **lowpriority-training**: Long-running training (priority 100)
+* **dev**: Development workloads (priority 10)
+
+This provides fine-grained priority control while maintaining self-service simplicity.
+====
+
+== What's Next
+
+With the GPU-as-a-Service platform deployed and Hardware Profiles configured, the next section covers monitoring and observability using Grafana dashboards and Prometheus metrics. You'll learn how to monitor GPU quota utilization, admission latency, and preemption activity to operate the platform effectively.
