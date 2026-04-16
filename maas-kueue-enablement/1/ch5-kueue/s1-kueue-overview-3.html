@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Enabling Kueue :: MaaS Workload Scheduling with Kueue</title>
+    <link rel="prev" href="s1-kueue-overview-2.html">
+    <link rel="next" href="s1-kueue-overview-4.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">MaaS Workload Scheduling with Kueue</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="maas-kueue-enablement" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">MaaS Workload Scheduling with Kueue</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Home</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html">Lab Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-foundations/index.html">Understand and Deploy Kueue Foundations</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s1-gpu-efficiency.html">The GPU Efficiency Challenge</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s2-base-config-lab.html">Lab: Deploying the Base Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s3-operator-upgrades-lab.html">Lab: Troubleshooting Operator Upgrades (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch2-cohorts/index.html">Configure Cohorts and Quota Borrowing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s1-elastic-sharing.html">Elastic Resource Sharing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s2-multi-tenant-lab.html">Lab: Building the Multi-Tenant Architecture</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch3-preemption/index.html">Implement Priority and Preemption</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s1-deterministic-scheduling.html">Deterministic Scheduling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s2-configure-preemption-lab.html">Lab: Configuring Preemption</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s3-test-preemption-lab.html">Lab: Testing Preemption at Scale</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s4-suspended-workloads-lab.html">Lab: Troubleshooting Suspended Workloads (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch4-gpu-as-a-service/index.html">Implement GPU-as-a-Service</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s1-gpu-service-overview.html">GPU-as-a-Service Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s2-configure-quotas-lab.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s3-hardware-profiles-lab.html">Lab: Configure Hardware Profiles for Self-Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s4-monitoring-observability.html">Monitoring and Observability</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s5-troubleshooting-lab.html">Lab: Day 2 Troubleshooting Scenarios</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Chapter 5: Kueue</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-1.html">GPU Quota and Priority Management with Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-2.html">ResourceFlavor: Hardware Differentiation</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-3.html">Enabling Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-4.html">Production Considerations</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-5.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s2-kueue-lab-setup.html">Lab: Kueue demo - setup and verify</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s3-kueue-a10-cluster.html">A10 cluster: Llamastack + 3-GPU lab</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">MaaS Workload Scheduling with Kueue</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">MaaS Workload Scheduling with Kueue</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">MaaS Workload Scheduling with Kueue</a></li>
+    <li><a href="index.html">Chapter 5: Kueue</a></li>
+    <li><a href="s1-kueue-overview-3.html">Enabling Kueue</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Enabling Kueue</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>20 minutes</strong>.</em></p>
+</div>
+<div class="paragraph">
+<p>Enabling Kueue for quota management requires cluster administrator configuration of the Red Hat build of Kueue Operator and OpenShift AI integration.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_prerequisites"><a class="anchor" href="#_prerequisites"></a>Prerequisites</h3>
+<div class="paragraph">
+<p>Before enabling Kueue, verify the following requirements:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OpenShift 4.19 or later</p>
+</li>
+<li>
+<p>Red Hat build of Kueue Operator installed</p>
+</li>
+<li>
+<p>cert-manager Operator for Red Hat OpenShift installed</p>
+</li>
+<li>
+<p>Cluster administrator privileges</p>
+</li>
+<li>
+<p>GPU nodes labeled (for ResourceFlavors with hardware differentiation)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Verify Kueue Operator is running:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get pods -n openshift-kueue-operator
+NAME                                            READY   STATUS
+kueue-controller-manager-d9fc745df-ph77w        1/1     Running
+openshift-kueue-operator-69cfbf45cf-lwtpm       1/1     Running</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If pods are not running, install the Red Hat build of Kueue Operator from OperatorHub before proceeding.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_activate_kueue_in_openshift_ai"><a class="anchor" href="#_activate_kueue_in_openshift_ai"></a>Activate Kueue in OpenShift AI</h3>
+<div class="paragraph">
+<p>OpenShift AI integrates with Kueue through the DataScienceCluster Custom Resource. Set <code>managementState: Unmanaged</code> to activate the integration.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 1: Patch DataScienceCluster</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc patch datasciencecluster default-dsc \
+  --type='merge' \
+  -p '{"spec":{"components":{"kueue":{"managementState":"Unmanaged"}}}}' \
+  -n redhat-ods-operator
+datasciencecluster.datasciencecluster.opendatahub.io/default-dsc patched</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>What this does:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Instructs OpenShift AI to integrate with external Kueue Operator</p>
+</li>
+<li>
+<p>Creates default ClusterQueue if none exists (named <code>default-queue</code>)</p>
+</li>
+<li>
+<p>Enables Kueue integration for InferenceService, Notebook, PyTorchJob, RayJob workloads</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Verification:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get clusterqueues
+NAME            COHORT   STRATEGY         PENDING WORKLOADS
+default-queue   -        BestEffortFIFO   0</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Do not set <code>managementState: Managed</code>. The embedded Kueue is deprecated starting with OpenShift AI 2.24. Always use <code>Unmanaged</code> with Red Hat build of Kueue Operator to avoid controller conflicts.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_enable_namespace_for_kueue_management"><a class="anchor" href="#_enable_namespace_for_kueue_management"></a>Enable Namespace for Kueue Management</h3>
+<div class="paragraph">
+<p>Kueue validation and queue enforcement apply only to namespaces labeled with <code>kueue.openshift.io/managed=true</code>. This label activates the admission webhook for that namespace.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 2: Label namespace</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc label namespace team-a-project kueue.openshift.io/managed=true --overwrite
+namespace/team-a-project labeled</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>What this does:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Activates Kueue admission webhook for this namespace</p>
+</li>
+<li>
+<p>Enforces <code>kueue.x-k8s.io/queue-name</code> label requirement on workloads</p>
+</li>
+<li>
+<p>Creates default LocalQueue if none exists</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Verification:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get localqueues -n team-a-project
+NAME                  CLUSTERQUEUE    PENDING WORKLOADS
+default-localqueue    default-queue   0</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The label <code>kueue.openshift.io/managed=true</code> replaces the legacy <code>kueue-managed</code> label. Use the new label for forward compatibility with future Kueue releases.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_create_resourceflavor_for_gpu_hardware"><a class="anchor" href="#_create_resourceflavor_for_gpu_hardware"></a>Create ResourceFlavor for GPU Hardware</h3>
+<div class="paragraph">
+<p>ResourceFlavors define hardware types for quota management. Create flavors for each distinct GPU type in your cluster.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 3: Define A100 GPU flavor</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: kueue.x-k8s.io/v1beta1
+kind: ResourceFlavor
+metadata:
+  name: a100-training-gpu
+spec:
+  nodeLabels:
+    gpu-type: nvidia-a100
+  tolerations:
+  - key: "nvidia.com/gpu"
+    operator: "Exists"
+    effect: "NoSchedule"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Apply:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc apply -f a100-resourceflavor.yaml
+resourceflavor.kueue.x-k8s.io/a100-training-gpu created</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Verification:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get resourceflavors
+NAME                 AGE
+a100-training-gpu    5s</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configure_clusterqueue_with_quotas"><a class="anchor" href="#_configure_clusterqueue_with_quotas"></a>Configure ClusterQueue with Quotas</h3>
+<div class="paragraph">
+<p>ClusterQueues manage resource pools with quotas. Create ClusterQueues for distinct workload types (training, inference) with appropriate quota allocations.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 4: Create ClusterQueue with GPU quotas</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: kueue.x-k8s.io/v1beta1
+kind: ClusterQueue
+metadata:
+  name: gpu-training-queue
+spec:
+  namespaceSelector: {}
+  resourceGroups:
+  - coveredResources: ["cpu", "memory", "nvidia.com/gpu"]
+    flavors:
+    - name: a100-training-gpu              <i class="conum" data-value="1"></i><b>(1)</b>
+      resources:
+      - name: cpu
+        nominalQuota: 64                   <i class="conum" data-value="2"></i><b>(2)</b>
+      - name: memory
+        nominalQuota: 256Gi
+      - name: nvidia.com/gpu
+        nominalQuota: 8                    <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>References ResourceFlavor created in Step 3</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>CPU quota: 64 cores for this queue&#8217;s workloads</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>GPU quota: Maximum 8 A100 GPUs consumable by this queue</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Set <code>nominalQuota</code> based on cluster capacity and team allocation. Example: Cluster with 16 total A100 GPUs → allocate 8 to training queue (<code>gpu-training-queue</code>), 8 to inference queue (<code>gpu-inference-queue</code>). Adjust based on workload mix and business priorities.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Apply:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc apply -f gpu-training-clusterqueue.yaml
+clusterqueue.kueue.x-k8s.io/gpu-training-queue created</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_create_localqueue_pointing_to_clusterqueue"><a class="anchor" href="#_create_localqueue_pointing_to_clusterqueue"></a>Create LocalQueue Pointing to ClusterQueue</h3>
+<div class="paragraph">
+<p>LocalQueues connect namespaced workloads to cluster-wide resource pools. Create one LocalQueue per namespace, pointing to the appropriate ClusterQueue.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 5: Create team-specific LocalQueue</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: kueue.x-k8s.io/v1beta1
+kind: LocalQueue
+metadata:
+  name: training-team-queue
+  namespace: team-training
+spec:
+  clusterQueue: gpu-training-queue         <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Points to ClusterQueue managing GPU training resources</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Apply:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc apply -f training-localqueue.yaml
+localqueue.kueue.x-k8s.io/training-team-queue created</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Verification:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">$ oc get localqueues -n team-training
+NAME                   CLUSTERQUEUE          PENDING WORKLOADS
+training-team-queue    gpu-training-queue    0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now workloads in the <code>team-training</code> namespace can specify <code>kueue.x-k8s.io/queue-name: training-team-queue</code> to leverage Kueue quota management.</p>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="s1-kueue-overview-2.html">ResourceFlavor: Hardware Differentiation</a></span>
+  <span class="next"><a href="s1-kueue-overview-4.html">Production Considerations</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

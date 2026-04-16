@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>GPU Quota and Priority Management with Kueue :: MaaS Workload Scheduling with Kueue</title>
+    <link rel="prev" href="index.html">
+    <link rel="next" href="s1-kueue-overview-2.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">MaaS Workload Scheduling with Kueue</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="maas-kueue-enablement" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">MaaS Workload Scheduling with Kueue</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Home</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html">Lab Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-foundations/index.html">Understand and Deploy Kueue Foundations</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s1-gpu-efficiency.html">The GPU Efficiency Challenge</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s2-base-config-lab.html">Lab: Deploying the Base Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s3-operator-upgrades-lab.html">Lab: Troubleshooting Operator Upgrades (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch2-cohorts/index.html">Configure Cohorts and Quota Borrowing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s1-elastic-sharing.html">Elastic Resource Sharing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s2-multi-tenant-lab.html">Lab: Building the Multi-Tenant Architecture</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch3-preemption/index.html">Implement Priority and Preemption</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s1-deterministic-scheduling.html">Deterministic Scheduling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s2-configure-preemption-lab.html">Lab: Configuring Preemption</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s3-test-preemption-lab.html">Lab: Testing Preemption at Scale</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s4-suspended-workloads-lab.html">Lab: Troubleshooting Suspended Workloads (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch4-gpu-as-a-service/index.html">Implement GPU-as-a-Service</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s1-gpu-service-overview.html">GPU-as-a-Service Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s2-configure-quotas-lab.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s3-hardware-profiles-lab.html">Lab: Configure Hardware Profiles for Self-Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s4-monitoring-observability.html">Monitoring and Observability</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-gpu-as-a-service/s5-troubleshooting-lab.html">Lab: Day 2 Troubleshooting Scenarios</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Chapter 5: Kueue</a>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-1.html">GPU Quota and Priority Management with Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-2.html">ResourceFlavor: Hardware Differentiation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-3.html">Enabling Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-4.html">Production Considerations</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-kueue-overview-5.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s2-kueue-lab-setup.html">Lab: Kueue demo - setup and verify</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s3-kueue-a10-cluster.html">A10 cluster: Llamastack + 3-GPU lab</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">MaaS Workload Scheduling with Kueue</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">MaaS Workload Scheduling with Kueue</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">MaaS Workload Scheduling with Kueue</a></li>
+    <li><a href="index.html">Chapter 5: Kueue</a></li>
+    <li><a href="s1-kueue-overview-1.html">GPU Quota and Priority Management with Kueue</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">GPU Quota and Priority Management with Kueue</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>20 minutes</strong>.</em></p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Objective</dt>
+<dd>
+<p>Understand how Kueue provides GPU quota management and workload prioritization for multi-tenant AI platforms. Learn the core Kueue architecture (Workload, LocalQueue, ClusterQueue, ResourceFlavor), how to enable Kueue for quota enforcement, and production strategies for queue configuration and priority tiering.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_gpu_queueing_problem"><a class="anchor" href="#_the_gpu_queueing_problem"></a>The GPU Queueing Problem</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Organizations deploying AI platforms on Kubernetes face a fundamental challenge: expensive GPU resources create resource contention in multi-tenant environments, leading to underutilization, unpredictable performance, and operational overhead.</p>
+</div>
+<div class="sect2">
+<h3 id="_the_multi_tenant_gpu_contention_scenario"><a class="anchor" href="#_the_multi_tenant_gpu_contention_scenario"></a>The Multi-Tenant GPU Contention Scenario</h3>
+<div class="paragraph">
+<p>Consider a production AI cluster with 4 NVIDIA A100 GPUs shared by three teams:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Training Team</strong>: Submits batch training jobs (8-hour duration, 4 GPUs per job)</p>
+</li>
+<li>
+<p><strong>Inference Team A</strong>: Runs customer-facing inference API (2 GPUs required, 24/7 uptime)</p>
+</li>
+<li>
+<p><strong>Inference Team B</strong>: Performs batch embeddings generation (2 GPUs, nightly schedule)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Monday, 9:00 AM - Resource Contention Event:</strong></p>
+</div>
+<div class="paragraph">
+<p>The training team submits a PyTorchJob requesting 4 GPUs for hyperparameter tuning. Kubernetes operates first-come-first-served—the training job immediately consumes all 4 GPUs.</p>
+</div>
+<div class="paragraph">
+<p><strong>Cascade of failures:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Inference Team A&#8217;s deployment scales up to handle morning traffic spike</p>
+</li>
+<li>
+<p>New inference pods request GPUs but receive <code>Insufficient nvidia.com/gpu</code> errors</p>
+</li>
+<li>
+<p>Customer API latency spikes: 50ms (normal) → 300ms (degraded)</p>
+</li>
+<li>
+<p>Inference Team B&#8217;s nightly job fails</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>30 (continued&#8230;&#8203;)
+5. Platform engineer receives pages from both inference teams
+6. Engineer manually drains training job, waits 15 minutes for graceful shutdown
+7. Re-schedules inference workloads, verifies API latency recovery
+8. Total incident duration: <strong>90 minutes from detection to resolution</strong></p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_business_impact_without_kueue"><a class="anchor" href="#_business_impact_without_kueue"></a>Business Impact Without Kueue</h3>
+<div class="paragraph">
+<p>Without workload queueing and quota management, platform teams experience quantifiable operational and business costs:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 16.6668%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Metric</th>
+<th class="tableblock halign-left valign-top">Without Kueue</th>
+<th class="tableblock halign-left valign-top">With Kueue</th>
+<th class="tableblock halign-left valign-top">Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GPU Utilization</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">40% (bursty, unpredictable)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">88% (consistent, quota-managed)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+120%</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Manual Interventions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">15-20 incidents/week</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0-1 incidents/week</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">95% reduction</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">P99 Inference Latency</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">300ms (spike during contention)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">52ms (stable under quota)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">83% reduction</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Training Throughput</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Variable (blocked by inference)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Predictable (queued admission)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Consistent</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Annual Cost Savings</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">$80K (reduced GPU waste + ops time)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>The core problem</strong>: Without Kueue, Kubernetes operates first-come-first-served. If 10 training jobs requesting GPUs submit simultaneously but only 4 GPUs exist, 6 jobs immediately fail with <code>Insufficient nvidia.com/gpu</code> errors. Platform engineers spend 15-20 hours weekly manually scheduling workloads, draining nodes, and coordinating team access.</p>
+</div>
+<div class="paragraph">
+<p>Kueue solves this by intercepting workload submission, placing jobs in managed queues, and admitting workloads only when quota is available—eliminating resource contention and enabling fair, predictable GPU sharing.</p>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_kueue_architecture_and_components"><a class="anchor" href="#_kueue_architecture_and_components"></a>Kueue Architecture and Components</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kueue is a Kubernetes-native queueing system that manages quota and job admission for scarce resources like GPUs. It wraps around the standard Kubernetes scheduler, adding a queueing layer that controls when workloads can start.</p>
+</div>
+<div class="sect2">
+<h3 id="_what_is_kueue"><a class="anchor" href="#_what_is_kueue"></a>What is Kueue</h3>
+<div class="paragraph">
+<p>Kueue provides admission control for Kubernetes workloads by managing quotas, enforcing priorities, and queueing jobs when resources are unavailable. It does not replace kube-scheduler—instead, it decides <strong>IF and WHEN</strong> a job can create pods, while kube-scheduler decides <strong>WHERE</strong> those pods run.</p>
+</div>
+<div class="paragraph">
+<p><strong>Kueue vs kube-scheduler relationship:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>┌───────────────────────────────────────────────────┐
+│  Kueue: The Bouncer (Admission Control)          │
+│  - Decides IF and WHEN a job can start           │
+│  - Manages quotas across teams                   │
+│  - Queues workloads when resources unavailable   │
+└───────────────────────────────────────────────────┘
+                    ↓ (Admits workload)
+┌───────────────────────────────────────────────────┐
+│  kube-scheduler: The Seating Algorithm            │
+│  - Decides WHERE pods run (which nodes)           │
+│  - Filters/scores nodes based on requirements     │
+│  - Binds pods to nodes                            │
+└───────────────────────────────────────────────────┘</pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Analogy</strong>: Kueue is the registrar&#8217;s office deciding if you can enroll in a course. The kube-scheduler is the classroom seating algorithm finding you an empty seat once you&#8217;re admitted.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Kueue does not replace kube-scheduler. It wraps around it, adding a queueing layer for admission control before pods are created. This preserves Kubernetes' mature scheduling logic while adding quota management and prioritization.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>How Kueue prevents resource contention:</strong></p>
+</div>
+<div class="paragraph">
+<p>Without Kueue, 10 PyTorchJobs requesting GPUs submit simultaneously. Kubernetes admits all 10 immediately. If only 4 GPUs exist, 6 jobs fail with <code>Insufficient nvidia.com/gpu</code>. With Kueue, the admission webhook intercepts job creation, creates Workload objects representing resource requests, and queues them. Kueue admits workloads sequentially as GPU quota becomes available—no failures, predictable queueing.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_core_components"><a class="anchor" href="#_core_components"></a>Core Components</h3>
+<div class="paragraph">
+<p>Kueue uses five core resource types to manage workload admission and quota enforcement:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 40%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Component</th>
+<th class="tableblock halign-left valign-top">Scope</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+<th class="tableblock halign-left valign-top">Who Creates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workload</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Namespaced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Admission ticket representing resource request</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Kueue (auto-created from jobs)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">LocalQueue</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Namespaced</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Entry point for jobs in a namespace/team</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Platform Engineer</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ClusterQueue</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cluster-wide</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Resource pool manager with quotas</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Platform Engineer</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">ResourceFlavor</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cluster-wide</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Hardware type definition (A100, T4)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Platform Engineer</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cohort</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cluster-wide</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Group of queues sharing elastic quotas</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Platform Engineer</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>Workload Lifecycle States:</strong></p>
+</div>
+<div class="paragraph">
+<p>A Workload moves through distinct phases managed by Kueue&#8217;s controller:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Pending</strong>: Created and waiting in LocalQueue (no pods running)</p>
+</li>
+<li>
+<p><strong>Admitted</strong>: ClusterQueue approved resource request, job controller creates pods</p>
+</li>
+<li>
+<p><strong>Running</strong>: Job&#8217;s pods executing on nodes, consuming quota</p>
+</li>
+<li>
+<p><strong>Finished</strong>: Job completed successfully or failed</p>
+</li>
+<li>
+<p><strong>Suspended</strong>: Preempted by higher-priority workload (pods deleted to free resources)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Job Submission Workflow:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>1. User submits PyTorchJob with label:
+   kueue.x-k8s.io/queue-name: team-a-queue
+         ↓
+2. Kueue webhook intercepts job creation,
+   creates Workload object (suspends job)
+         ↓
+3. Workload enters LocalQueue (team-a-queue)
+         ↓
+4. LocalQueue forwards request to ClusterQueue
+   (gpu-training-queue)
+         ↓
+5. ClusterQueue checks quota:
+   4 GPUs available? Yes (admits), No (queues)
+         ↓
+6. Kueue admits Workload within 2-3 seconds
+   (unsuspends job)
+         ↓
+7. PyTorchJob controller creates pods
+         ↓
+8. kube-scheduler places pods on GPU nodes</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This workflow ensures jobs only create pods when quota is available, eliminating <code>Insufficient nvidia.com/gpu</code> failures and enabling predictable queuing.</p>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="index.html">Chapter 5: Kueue</a></span>
+  <span class="next"><a href="s1-kueue-overview-2.html">ResourceFlavor: Hardware Differentiation</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

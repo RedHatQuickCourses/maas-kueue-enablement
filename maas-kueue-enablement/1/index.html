@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>MaaS Workload Scheduling with Kueue :: MaaS Workload Scheduling with Kueue</title>
+    <link rel="next" href="LABENV/index.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../_/css/site.css">
+    <script>var uiRootPath = '../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../..">MaaS Workload Scheduling with Kueue</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="maas-kueue-enablement" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html">MaaS Workload Scheduling with Kueue</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="index.html">Home</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="LABENV/index.html">Lab Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="ch1-foundations/index.html">Understand and Deploy Kueue Foundations</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch1-foundations/s1-gpu-efficiency.html">The GPU Efficiency Challenge</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch1-foundations/s2-base-config-lab.html">Lab: Deploying the Base Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch1-foundations/s3-operator-upgrades-lab.html">Lab: Troubleshooting Operator Upgrades (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="ch2-cohorts/index.html">Configure Cohorts and Quota Borrowing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch2-cohorts/s1-elastic-sharing.html">Elastic Resource Sharing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch2-cohorts/s2-multi-tenant-lab.html">Lab: Building the Multi-Tenant Architecture</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="ch3-preemption/index.html">Implement Priority and Preemption</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch3-preemption/s1-deterministic-scheduling.html">Deterministic Scheduling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch3-preemption/s2-configure-preemption-lab.html">Lab: Configuring Preemption</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch3-preemption/s3-test-preemption-lab.html">Lab: Testing Preemption at Scale</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch3-preemption/s4-suspended-workloads-lab.html">Lab: Troubleshooting Suspended Workloads (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="ch4-gpu-as-a-service/index.html">Implement GPU-as-a-Service</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch4-gpu-as-a-service/s1-gpu-service-overview.html">GPU-as-a-Service Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch4-gpu-as-a-service/s2-configure-quotas-lab.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch4-gpu-as-a-service/s3-hardware-profiles-lab.html">Lab: Configure Hardware Profiles for Self-Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch4-gpu-as-a-service/s4-monitoring-observability.html">Monitoring and Observability</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch4-gpu-as-a-service/s5-troubleshooting-lab.html">Lab: Day 2 Troubleshooting Scenarios</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="ch5-kueue/index.html">Chapter 5: Kueue</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch5-kueue/s1-kueue-overview-1.html">GPU Quota and Priority Management with Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch5-kueue/s1-kueue-overview-2.html">ResourceFlavor: Hardware Differentiation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch5-kueue/s1-kueue-overview-3.html">Enabling Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch5-kueue/s1-kueue-overview-4.html">Production Considerations</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch5-kueue/s1-kueue-overview-5.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch5-kueue/s2-kueue-lab-setup.html">Lab: Kueue demo - setup and verify</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="ch5-kueue/s3-kueue-a10-cluster.html">A10 cluster: Llamastack + 3-GPU lab</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">MaaS Workload Scheduling with Kueue</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="index.html">MaaS Workload Scheduling with Kueue</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link is-current"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">MaaS Workload Scheduling with Kueue</a></li>
+    <li><a href="index.html">Home</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">MaaS Workload Scheduling with Kueue</h1>
+<div class="sect1">
+<h2 id="_goal"><a class="anchor" href="#_goal"></a>Goal</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To equip Platform Engineers and DevOps/SREs with the knowledge and skills required to configure, manage, and deploy the workload scheduling and resource quota pillar of a Models-as-a-Service (MaaS) architecture on OpenShift AI. This course ensures teams can maximize GPU ROI by driving utilization up to 90%, enforce fair resource sharing across multi-tenant environments, and prioritize critical AI workloads using the Red Hat build of Kueue.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_objectives"><a class="anchor" href="#_objectives"></a>Objectives</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>On completing this course, you should be able to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Understand and deploy Kueue foundations to overcome rigid Kubernetes scheduling limitations</p>
+</li>
+<li>
+<p>Configure cohorts and quota borrowing for elastic resource sharing across multi-tenant environments</p>
+</li>
+<li>
+<p>Implement priority and preemption to guarantee deterministic scheduling under contention</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_audience"><a class="anchor" href="#_audience"></a>Audience</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Platform Engineers:</strong> Responsible for designing scheduling queues, cluster quotas, resource flavors, and establishing cohort-based borrowing strategies.</p>
+</li>
+<li>
+<p><strong>DevOps/SREs:</strong> Focused on monitoring queue lengths, job priorities, and resource utilization, as well as troubleshooting preemption events or suspended workloads.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_prerequisites"><a class="anchor" href="#_prerequisites"></a>Prerequisites</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This course assumes that you have the following experience:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Successful completion of the foundational <strong>Nvidia GPU Enablement</strong> module.</p>
+</li>
+<li>
+<p>Deep understanding of Kubernetes ResourceQuotas, Requests/Limits, and PriorityClasses.</p>
+</li>
+<li>
+<p>Familiarity with Kubernetes Batch Jobs and distributed training concepts (e.g., RayClusters).</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_classroom_environment"><a class="anchor" href="#_classroom_environment"></a>Classroom environment</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This course requires a virtual classroom lab with the following configuration:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Hardware:</strong> At least 1 worker node equipped with 4 GPUs (e.g., AWS <code>p3.8xlarge</code> instance) to properly demonstrate resource exhaustion and preemption.</p>
+</li>
+<li>
+<p><strong>Software/Operators:</strong> OpenShift Container Platform, Red Hat OpenShift AI 3.4+, Red Hat build of Kueue 1.2+.</p>
+</li>
+<li>
+<p><strong>Pre-Provisioned State:</strong> The NVIDIA GPU Operator must be installed. The GPU worker node must be pre-tainted with <code>nvidia.com/gpu=Exists:NoSchedule</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_other_sources_of_information_about_kueue"><a class="anchor" href="#_other_sources_of_information_about_kueue"></a>Other sources of information about Kueue</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For documentation about Kueue, see either its <a href="https://docs.redhat.com/en/documentation/red_hat_openshift_ai_self-managed/" target="_blank" rel="noopener">Red Hat OpenShift AI product documentation</a> or its <a href="https://kueue.sigs.k8s.io/" target="_blank" rel="noopener">upstream Kueue project documentation</a>.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="next"><a href="LABENV/index.html">Lab Environment</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../_/js/site.js" data-ui-root-path="../../_"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

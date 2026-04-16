@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Lab: Configure Hardware Profiles for Self-Service :: MaaS Workload Scheduling with Kueue</title>
+    <link rel="prev" href="s2-configure-quotas-lab.html">
+    <link rel="next" href="s4-monitoring-observability.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">MaaS Workload Scheduling with Kueue</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="maas-kueue-enablement" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">MaaS Workload Scheduling with Kueue</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Home</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html">Lab Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-foundations/index.html">Understand and Deploy Kueue Foundations</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s1-gpu-efficiency.html">The GPU Efficiency Challenge</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s2-base-config-lab.html">Lab: Deploying the Base Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s3-operator-upgrades-lab.html">Lab: Troubleshooting Operator Upgrades (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch2-cohorts/index.html">Configure Cohorts and Quota Borrowing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s1-elastic-sharing.html">Elastic Resource Sharing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s2-multi-tenant-lab.html">Lab: Building the Multi-Tenant Architecture</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch3-preemption/index.html">Implement Priority and Preemption</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s1-deterministic-scheduling.html">Deterministic Scheduling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s2-configure-preemption-lab.html">Lab: Configuring Preemption</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s3-test-preemption-lab.html">Lab: Testing Preemption at Scale</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s4-suspended-workloads-lab.html">Lab: Troubleshooting Suspended Workloads (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Implement GPU-as-a-Service</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-gpu-service-overview.html">GPU-as-a-Service Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s2-configure-quotas-lab.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s3-hardware-profiles-lab.html">Lab: Configure Hardware Profiles for Self-Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s4-monitoring-observability.html">Monitoring and Observability</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s5-troubleshooting-lab.html">Lab: Day 2 Troubleshooting Scenarios</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch5-kueue/index.html">Chapter 5: Kueue</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-1.html">GPU Quota and Priority Management with Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-2.html">ResourceFlavor: Hardware Differentiation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-3.html">Enabling Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-4.html">Production Considerations</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-5.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s2-kueue-lab-setup.html">Lab: Kueue demo - setup and verify</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s3-kueue-a10-cluster.html">A10 cluster: Llamastack + 3-GPU lab</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">MaaS Workload Scheduling with Kueue</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">MaaS Workload Scheduling with Kueue</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">MaaS Workload Scheduling with Kueue</a></li>
+    <li><a href="index.html">Implement GPU-as-a-Service</a></li>
+    <li><a href="s3-hardware-profiles-lab.html">Lab: Configure Hardware Profiles for Self-Service</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Lab: Configure Hardware Profiles for Self-Service</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>30 minutes</strong>.</em></p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Objective</dt>
+<dd>
+<p>Create Hardware Profiles that automatically route workloads to the correct LocalQueue with appropriate priority when users create workbenches in the OpenShift AI dashboard.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_before_you_begin"><a class="anchor" href="#_before_you_begin"></a>Before you begin</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This lab configures OpenShift AI Hardware Profiles to provide self-service GPU allocation. Data scientists will select a hardware profile from the dashboard, and the platform automatically routes their workload to the appropriate Kueue queue with the correct priority.</p>
+</div>
+<div class="paragraph">
+<p><strong>Prerequisites:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Section 2 completed (Cohort, ClusterQueues, and LocalQueues deployed)</p>
+</li>
+<li>
+<p>OpenShift AI operator installed with dashboard accessible</p>
+</li>
+<li>
+<p>Access to <code>redhat-ods-applications</code> namespace (where Hardware Profiles are created)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Verify OpenShift AI dashboard is accessible:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get route rhods-dashboard -n redhat-ods-applications -o jsonpath='{.spec.host}'</strong>
+rhods-dashboard-redhat-ods-applications.apps.example.com</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Open the URL in a browser and verify you can log in with your OpenShift credentials.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_create_high_priority_hardware_profile"><a class="anchor" href="#_create_high_priority_hardware_profile"></a>Create High-Priority Hardware Profile</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>highpriority</code> Hardware Profile routes workloads to the <code>team-inference</code> LocalQueue with priority 1000, enabling preemption of training workloads.</p>
+</div>
+<div class="sect2">
+<h3 id="_step_1_create_the_hardwareprofile_resource"><a class="anchor" href="#_step_1_create_the_hardwareprofile_resource"></a>Step 1: Create the HardwareProfile Resource</h3>
+<div class="paragraph">
+<p>Create a file named <code>highpriority-hardware-profile.yaml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: infrastructure.opendatahub.io/v1
+kind: HardwareProfile
+metadata:
+  name: highpriority
+  namespace: redhat-ods-applications              <i class="conum" data-value="1"></i><b>(1)</b>
+  annotations:
+    opendatahub.io/dashboard-feature-visibility: '[]'  <i class="conum" data-value="2"></i><b>(2)</b>
+    opendatahub.io/disabled: "false"              <i class="conum" data-value="3"></i><b>(3)</b>
+    opendatahub.io/display-name: highPriority     <i class="conum" data-value="4"></i><b>(4)</b>
+spec:
+  identifiers:
+  - defaultCount: 8
+    displayName: CPU
+    identifier: cpu
+    maxCount: 32
+    minCount: 1
+    resourceType: CPU
+  - defaultCount: 16Gi
+    displayName: Memory
+    identifier: memory
+    maxCount: 128Gi
+    minCount: 2Gi
+    resourceType: Memory
+  - defaultCount: 1                               <i class="conum" data-value="5"></i><b>(5)</b>
+    displayName: NVIDIA L4
+    identifier: nvidia.com/gpu                    <i class="conum" data-value="6"></i><b>(6)</b>
+    maxCount: 4                                   <i class="conum" data-value="7"></i><b>(7)</b>
+    minCount: 1
+    resourceType: Accelerator
+  scheduling:
+    type: Queue                                   <i class="conum" data-value="8"></i><b>(8)</b>
+    kueue:
+      localQueueName: team-inference              <i class="conum" data-value="9"></i><b>(9)</b>
+      priorityClass: inference-priority           <i class="conum" data-value="10"></i><b>(10)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>namespace: redhat-ods-applications</strong>: Hardware Profiles must be created in the OpenShift AI operator namespace, not in the workload namespace.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><strong>dashboard-feature-visibility: '[]'</strong>: Empty array makes this profile visible to all OpenShift AI features (workbenches, model serving, etc.).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><strong>disabled: "false"</strong>: Profile is enabled and visible in the dashboard.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><strong>display-name: highPriority</strong>: User-facing name shown in the OpenShift AI dashboard dropdown.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><strong>defaultCount: 1</strong>: Default GPU allocation when users create a workbench (most inference workloads start with 1 GPU).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td><strong>identifier: nvidia.com/gpu</strong>: GPU resource identifier matching Kubernetes resource name.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td><strong>maxCount: 4</strong>: Maximum GPUs a user can request with this profile. Matches the inference ClusterQueue&#8217;s max usable quota (3 guaranteed + 1 borrowed).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td><strong>scheduling.type: Queue</strong>: Enables Kueue integration. Alternative: <code>type: None</code> for direct pod scheduling (not recommended for GPU workloads).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="9"></i><b>9</b></td>
+<td><strong>localQueueName: team-inference</strong>: Routes workloads to the <code>team-inference</code> LocalQueue in the <code>team-inference</code> namespace.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="10"></i><b>10</b></td>
+<td><strong>priorityClass: inference-priority</strong>: Assigns priority 1000, enabling preemption of training workloads (priority 100).</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The <code>maxCount: 4</code> matches the inference ClusterQueue&#8217;s maximum usable GPUs (3 guaranteed + 1 borrowed). This prevents users from requesting more GPUs than the queue can provide, avoiding confusing "pending forever" scenarios.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_2_apply_the_hardware_profile"><a class="anchor" href="#_step_2_apply_the_hardware_profile"></a>Step 2: Apply the Hardware Profile</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc apply -f highpriority-hardware-profile.yaml</strong>
+hardwareprofile.infrastructure.opendatahub.io/highpriority created</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_3_verify_in_openshift_ai_dashboard"><a class="anchor" href="#_step_3_verify_in_openshift_ai_dashboard"></a>Step 3: Verify in OpenShift AI Dashboard</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open the OpenShift AI dashboard in your browser</p>
+</li>
+<li>
+<p>Navigate to <strong>Data Science Projects</strong> → Select or create a project</p>
+</li>
+<li>
+<p>Click <strong>Workbenches</strong> → <strong>Create Workbench</strong></p>
+</li>
+<li>
+<p>In the <strong>Container size</strong> section, you should see a <strong>Hardware profile</strong> dropdown</p>
+</li>
+<li>
+<p>Select <strong>highPriority</strong> from the dropdown</p>
+</li>
+<li>
+<p>Observe the GPU slider allows 1-4 GPUs</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The Hardware Profile is now available for self-service GPU allocation.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_create_low_priority_hardware_profile"><a class="anchor" href="#_create_low_priority_hardware_profile"></a>Create Low-Priority Hardware Profile</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>lowpriority</code> Hardware Profile routes workloads to the <code>team-training</code> LocalQueue with priority 100, making them subject to preemption by inference workloads.</p>
+</div>
+<div class="sect2">
+<h3 id="_step_1_create_the_hardwareprofile_resource_2"><a class="anchor" href="#_step_1_create_the_hardwareprofile_resource_2"></a>Step 1: Create the HardwareProfile Resource</h3>
+<div class="paragraph">
+<p>Create a file named <code>lowpriority-hardware-profile.yaml</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: infrastructure.opendatahub.io/v1
+kind: HardwareProfile
+metadata:
+  name: lowpriority
+  namespace: redhat-ods-applications
+  annotations:
+    opendatahub.io/disabled: "false"
+    opendatahub.io/display-name: lowPriority
+spec:
+  identifiers:
+  - defaultCount: 8
+    displayName: CPU
+    identifier: cpu
+    maxCount: 32
+    minCount: 1
+    resourceType: CPU
+  - defaultCount: 16Gi
+    displayName: Memory
+    identifier: memory
+    maxCount: 128Gi
+    minCount: 2Gi
+    resourceType: Memory
+  - defaultCount: 1
+    displayName: NVIDIA L4
+    identifier: nvidia.com/gpu
+    maxCount: 3                                   <i class="conum" data-value="1"></i><b>(1)</b>
+    minCount: 1
+    resourceType: Accelerator
+  scheduling:
+    type: Queue
+    kueue:
+      localQueueName: team-training               <i class="conum" data-value="2"></i><b>(2)</b>
+      priorityClass: training-priority            <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>maxCount: 3</strong>: Training is limited to 3 GPUs (1 guaranteed + 2 borrowed), ensuring at least 1 GPU remains available for inference to reclaim.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><strong>localQueueName: team-training</strong>: Routes to the training LocalQueue.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><strong>priorityClass: training-priority</strong>: Assigns priority 100 (lower than inference&#8217;s 1000).</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_2_apply_the_hardware_profile_2"><a class="anchor" href="#_step_2_apply_the_hardware_profile_2"></a>Step 2: Apply the Hardware Profile</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc apply -f lowpriority-hardware-profile.yaml</strong>
+hardwareprofile.infrastructure.opendatahub.io/lowpriority created</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_3_verify_both_profiles_exist"><a class="anchor" href="#_step_3_verify_both_profiles_exist"></a>Step 3: Verify Both Profiles Exist</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get hardwareprofile -n redhat-ods-applications</strong>
+NAME            AGE
+highpriority    2m
+lowpriority     30s</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_test_self_service_workflow"><a class="anchor" href="#_test_self_service_workflow"></a>Test Self-Service Workflow</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now test the end-to-end self-service workflow: create a workbench using a Hardware Profile and verify Kueue label injection.</p>
+</div>
+<div class="sect2">
+<h3 id="_step_1_create_a_workbench_with_high_priority_profile"><a class="anchor" href="#_step_1_create_a_workbench_with_high_priority_profile"></a>Step 1: Create a Workbench with High-Priority Profile</h3>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open OpenShift AI dashboard</p>
+</li>
+<li>
+<p>Navigate to <strong>Data Science Projects</strong> → Select a project (or create one named <code>test-inference-project</code>)</p>
+</li>
+<li>
+<p>Click <strong>Workbenches</strong> → <strong>Create Workbench</strong></p>
+</li>
+<li>
+<p>Configure the workbench:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Name</strong>: <code>test-inference-workbench</code></p>
+</li>
+<li>
+<p><strong>Notebook image</strong>: Select any image (e.g., Standard Data Science)</p>
+</li>
+<li>
+<p><strong>Container size</strong>: Select <strong>highPriority</strong> from Hardware profile dropdown</p>
+</li>
+<li>
+<p><strong>Number of GPUs</strong>: Set to 2</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Click <strong>Create workbench</strong></p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The workbench creation triggers a pod in the <code>test-inference-project</code> namespace.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_2_verify_workload_labels"><a class="anchor" href="#_step_2_verify_workload_labels"></a>Step 2: Verify Workload Labels</h3>
+<div class="paragraph">
+<p>Check that the workbench pod has Kueue labels automatically injected:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get pods -n test-inference-project -l app=test-inference-workbench -o yaml | grep -A 5 "labels:"</strong></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Expected labels:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">labels:
+  app: test-inference-workbench
+  kueue.x-k8s.io/queue-name: team-inference       <i class="conum" data-value="1"></i><b>(1)</b>
+  kueue.x-k8s.io/priority-class: inference-priority  <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>queue-name: team-inference</strong>: Automatically routed to the inference LocalQueue</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><strong>priority-class: inference-priority</strong>: Automatically assigned priority 1000</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>These labels were <strong>not</strong> specified in the workbench creation form. The Hardware Profile automatically injected them based on the <code>scheduling.kueue</code> configuration. This is the "zero-touch" integration that hides Kueue complexity from data scientists.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_3_verify_queue_assignment"><a class="anchor" href="#_step_3_verify_queue_assignment"></a>Step 3: Verify Queue Assignment</h3>
+<div class="paragraph">
+<p>Check the Kueue Workload object to confirm queue assignment:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get workloads -n team-inference</strong>  <i class="conum" data-value="1"></i><b>(1)</b>
+NAME                              QUEUE             ADMITTED   AGE
+workload-test-inference-...       team-inference    True       2m</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>namespace: team-inference</strong>: Workload object is created in the LocalQueue&#8217;s namespace, not the project namespace.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The workload is <strong>Admitted</strong> (quota was available). Check the ClusterQueue status:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get clusterqueue inference-cq -o jsonpath='{.status.admittedWorkloads}'</strong>
+1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The inference ClusterQueue shows 1 admitted workload.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_4_verify_gpu_resource_request"><a class="anchor" href="#_step_4_verify_gpu_resource_request"></a>Step 4: Verify GPU Resource Request</h3>
+<div class="paragraph">
+<p>Confirm the pod requests 2 GPUs (as configured in the dashboard):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get pod -n test-inference-project -l app=test-inference-workbench -o jsonpath='{.spec.containers[0].resources.requests.nvidia\.com/gpu}'</strong>
+2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Hardware Profile correctly translated the dashboard GPU slider value to a Kubernetes resource request.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_5_test_low_priority_profile_optional"><a class="anchor" href="#_step_5_test_low_priority_profile_optional"></a>Step 5: Test Low-Priority Profile (Optional)</h3>
+<div class="paragraph">
+<p>Repeat steps 1-4 with the <code>lowpriority</code> Hardware Profile to verify it routes to <code>team-training</code> with priority 100.</p>
+</div>
+<div class="paragraph">
+<p>Expected results:
+* Label: <code>kueue.x-k8s.io/queue-name: team-training</code>
+* Label: <code>kueue.x-k8s.io/priority-class: training-priority</code>
+* Workload created in <code>team-training</code> namespace
+* Workload routed to <code>training-cq</code> ClusterQueue</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_verify_priority_based_routing"><a class="anchor" href="#_verify_priority_based_routing"></a>Verify Priority-Based Routing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To confirm priority-based routing is working correctly, check the WorkloadPriorityClass values:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get workloadpriorityclass inference-priority -o jsonpath='{.value}'</strong>
+1000
+
+$ <strong>oc get workloadpriorityclass training-priority -o jsonpath='{.value}'</strong>
+100</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The 10x priority difference (1000 vs. 100) ensures inference workloads can preempt training workloads when quota contention occurs.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_understanding_the_self_service_workflow"><a class="anchor" href="#_understanding_the_self_service_workflow"></a>Understanding the Self-Service Workflow</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The complete workflow from dashboard to GPU scheduling:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Data scientist selects "highPriority" in dashboard</strong> → Dashboard submits workbench creation request</p>
+</li>
+<li>
+<p><strong>OpenShift AI reads Hardware Profile</strong> → Retrieves <code>scheduling.kueue.localQueueName</code> and <code>scheduling.kueue.priorityClass</code></p>
+</li>
+<li>
+<p><strong>OpenShift AI injects Kueue labels</strong> → Adds <code>kueue.x-k8s.io/queue-name: team-inference</code> and <code>kueue.x-k8s.io/priority-class: inference-priority</code> to the workbench pod spec</p>
+</li>
+<li>
+<p><strong>Kueue detects labels</strong> → Creates a Workload object in the <code>team-inference</code> namespace</p>
+</li>
+<li>
+<p><strong>LocalQueue routes to ClusterQueue</strong> → Workload is routed to <code>inference-cq</code> ClusterQueue</p>
+</li>
+<li>
+<p><strong>Kueue checks quota</strong> → Verifies inference has quota available (3 guaranteed GPUs)</p>
+</li>
+<li>
+<p><strong>Kueue admits workload</strong> → Sets pod <code>spec.suspend: false</code></p>
+</li>
+<li>
+<p><strong>Kubernetes scheduler places pod</strong> → Uses ResourceFlavor node selectors to place pod on GPU node</p>
+</li>
+<li>
+<p><strong>Pod starts running</strong> → Data scientist sees "Running" status in dashboard</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>This entire workflow happens automatically. Data scientists never interact with Kueue resources directly.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>For production deployments, create Hardware Profiles that match your organizational structure. Examples:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>highpriority-inference</strong>: Customer-facing inference (priority 1000)</p>
+</li>
+<li>
+<p><strong>mediumpriority-batch</strong>: Batch inference (priority 500)</p>
+</li>
+<li>
+<p><strong>lowpriority-training</strong>: Long-running training (priority 100)</p>
+</li>
+<li>
+<p><strong>dev</strong>: Development workloads (priority 10)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This provides fine-grained priority control while maintaining self-service simplicity.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_whats_next"><a class="anchor" href="#_whats_next"></a>What&#8217;s Next</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>With the GPU-as-a-Service platform deployed and Hardware Profiles configured, the next section covers monitoring and observability using Grafana dashboards and Prometheus metrics. You&#8217;ll learn how to monitor GPU quota utilization, admission latency, and preemption activity to operate the platform effectively.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="s2-configure-quotas-lab.html">Lab: Configure GPU Quotas and Queues</a></span>
+  <span class="next"><a href="s4-monitoring-observability.html">Monitoring and Observability</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

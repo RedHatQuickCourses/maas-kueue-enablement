@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Lab: Day 2 Troubleshooting Scenarios :: MaaS Workload Scheduling with Kueue</title>
+    <link rel="prev" href="s4-monitoring-observability.html">
+    <link rel="next" href="../ch5-kueue/index.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">MaaS Workload Scheduling with Kueue</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="maas-kueue-enablement" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">MaaS Workload Scheduling with Kueue</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Home</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html">Lab Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-foundations/index.html">Understand and Deploy Kueue Foundations</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s1-gpu-efficiency.html">The GPU Efficiency Challenge</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s2-base-config-lab.html">Lab: Deploying the Base Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s3-operator-upgrades-lab.html">Lab: Troubleshooting Operator Upgrades (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch2-cohorts/index.html">Configure Cohorts and Quota Borrowing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s1-elastic-sharing.html">Elastic Resource Sharing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s2-multi-tenant-lab.html">Lab: Building the Multi-Tenant Architecture</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch3-preemption/index.html">Implement Priority and Preemption</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s1-deterministic-scheduling.html">Deterministic Scheduling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s2-configure-preemption-lab.html">Lab: Configuring Preemption</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s3-test-preemption-lab.html">Lab: Testing Preemption at Scale</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s4-suspended-workloads-lab.html">Lab: Troubleshooting Suspended Workloads (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Implement GPU-as-a-Service</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-gpu-service-overview.html">GPU-as-a-Service Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s2-configure-quotas-lab.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s3-hardware-profiles-lab.html">Lab: Configure Hardware Profiles for Self-Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s4-monitoring-observability.html">Monitoring and Observability</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s5-troubleshooting-lab.html">Lab: Day 2 Troubleshooting Scenarios</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch5-kueue/index.html">Chapter 5: Kueue</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-1.html">GPU Quota and Priority Management with Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-2.html">ResourceFlavor: Hardware Differentiation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-3.html">Enabling Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-4.html">Production Considerations</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-5.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s2-kueue-lab-setup.html">Lab: Kueue demo - setup and verify</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s3-kueue-a10-cluster.html">A10 cluster: Llamastack + 3-GPU lab</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">MaaS Workload Scheduling with Kueue</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">MaaS Workload Scheduling with Kueue</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">MaaS Workload Scheduling with Kueue</a></li>
+    <li><a href="index.html">Implement GPU-as-a-Service</a></li>
+    <li><a href="s5-troubleshooting-lab.html">Lab: Day 2 Troubleshooting Scenarios</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Lab: Day 2 Troubleshooting Scenarios</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>30 minutes</strong>.</em></p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Objective</dt>
+<dd>
+<p>Diagnose and resolve three common operational scenarios: quota exhaustion causing inference latency, misconfigured queue routing preventing training admission, and high eviction rates indicating preemption churn.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_before_you_begin"><a class="anchor" href="#_before_you_begin"></a>Before you begin</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This lab simulates real Day 2 operational scenarios you&#8217;ll encounter when operating a GPU-as-a-Service platform. You&#8217;ll use the Grafana dashboard (from Section 4) and <code>oc</code> commands to diagnose root causes and apply appropriate resolutions.</p>
+</div>
+<div class="paragraph">
+<p><strong>Prerequisites:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Sections 2-4 completed (quotas deployed, Hardware Profiles configured, monitoring dashboard accessible)</p>
+</li>
+<li>
+<p>Access to Grafana dashboard (Kueue — OpenShift AI Monitoring)</p>
+</li>
+<li>
+<p>Cluster admin permissions for <code>oc</code> commands</p>
+</li>
+<li>
+<p>At least one workload running in <code>team-inference</code> or <code>team-training</code> namespace</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Verify Grafana dashboard access:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get route grafana -n grafana -o jsonpath='{.spec.host}'</strong>
+grafana-grafana.apps.example.com</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Open the Grafana URL in your browser and navigate to <strong>Dashboards</strong> → <strong>Kueue — OpenShift AI Monitoring</strong>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_scenario_1_inference_workloads_waiting_too_long"><a class="anchor" href="#_scenario_1_inference_workloads_waiting_too_long"></a>Scenario 1: Inference Workloads Waiting Too Long</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_symptoms"><a class="anchor" href="#_symptoms"></a>Symptoms</h3>
+<div class="paragraph">
+<p>Your organization&#8217;s customer-facing inference API is experiencing latency spikes. The platform team receives a Slack alert:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Alert</strong>: <code>KueueAdmissionLatencyHigh</code> fired for <code>inference-cq</code></p>
+</li>
+<li>
+<p><strong>Message</strong>: "p95 admission latency &gt; 120 seconds for 10+ minutes"</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Data scientists report that new inference workloads submitted via the OpenShift AI dashboard are stuck in "Pending" state for 2+ minutes, causing customer-facing API responses to time out.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_diagnosis"><a class="anchor" href="#_diagnosis"></a>Diagnosis</h3>
+<div class="sect3">
+<h4 id="_step_1_check_grafana_dashboard"><a class="anchor" href="#_step_1_check_grafana_dashboard"></a>Step 1: Check Grafana Dashboard</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open Grafana → <strong>Kueue — OpenShift AI Monitoring</strong> dashboard</p>
+</li>
+<li>
+<p>Navigate to <strong>Section 1: Workload Overview</strong></p>
+</li>
+<li>
+<p>Observe the <strong>Pending Workloads</strong> panel</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Expected observation</strong>: <code>inference-cq</code> shows 10+ pending workloads.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Navigate to <strong>Section 3: Admission Latency</strong></p>
+</li>
+<li>
+<p>Observe the <strong>p95 Admission Latency by ClusterQueue</strong> panel</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Expected observation</strong>: <code>inference-cq</code> p95 latency is 180 seconds (3 minutes), well above the 60-second healthy baseline.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_step_2_check_inference_quota_usage"><a class="anchor" href="#_step_2_check_inference_quota_usage"></a>Step 2: Check Inference Quota Usage</h4>
+<div class="paragraph">
+<p>Use <code>oc</code> to inspect the inference ClusterQueue&#8217;s quota status:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get clusterqueue inference-cq -o yaml | grep -A 20 "status:"</strong></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Expected output:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">status:
+  admittedWorkloads: 4
+  flavorsUsage:
+  - name: gpu-flavor
+    resources:
+    - name: nvidia.com/gpu
+      total: "4"                                  <i class="conum" data-value="1"></i><b>(1)</b>
+  reservingWorkloads: 0</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>total: "4"</strong>: Inference is using all 4 GPUs (3 guaranteed + 1 borrowed). The ClusterQueue is at maximum capacity.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_step_3_check_training_gpu_usage"><a class="anchor" href="#_step_3_check_training_gpu_usage"></a>Step 3: Check Training GPU Usage</h4>
+<div class="paragraph">
+<p>Verify if training workloads are consuming GPUs that inference needs:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get pods -n team-training -o wide | grep Running</strong>
+training-job-abc123-worker-0   1/1     Running   0   team-training   worker-gpu-0
+training-job-def456-worker-0   1/1     Running   0   team-training   worker-gpu-1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Expected observation</strong>: 2 training pods are running, each using 1 GPU. Total training GPUs in use: 2.</p>
+</div>
+<div class="paragraph">
+<p><strong>Analysis</strong>: Training is using 2 GPUs (1 guaranteed + 1 borrowed). Inference is using 4 GPUs (3 guaranteed + 1 borrowed from training). Since training is borrowing 1 GPU from inference&#8217;s idle quota, inference should be able to reclaim it via preemption.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_step_4_verify_preemption_is_working"><a class="anchor" href="#_step_4_verify_preemption_is_working"></a>Step 4: Verify Preemption is Working</h4>
+<div class="paragraph">
+<p>Check if Kueue is preempting training workloads:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get events -n team-training --field-selector reason=WorkloadEvicted --sort-by='.lastTimestamp' | tail -5</strong></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Expected output:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">2m    Normal   WorkloadEvicted   workload/training-job-abc123   Preempted to reclaim quota for inference-cq</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Observation</strong>: Preemption is working. Training workload <code>training-job-abc123</code> was evicted 2 minutes ago.</p>
+</div>
+<div class="paragraph">
+<p><strong>Root cause identified</strong>: Inference workloads are waiting because preemption takes time (30-60 seconds for graceful termination). The 180-second p95 latency includes preemption time + pod startup time.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_resolution"><a class="anchor" href="#_resolution"></a>Resolution</h3>
+<div class="paragraph">
+<p>You have three resolution options:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Resolution</th>
+<th class="tableblock halign-left valign-top">Action</th>
+<th class="tableblock halign-left valign-top">Trade-off</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Option 1: Wait for preemption</strong> (recommended)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No action needed. Preemption is working correctly within 30-60 seconds.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Temporary latency during preemption (acceptable for training workloads).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Option 2: Increase inference nominal quota</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Change inference guaranteed quota from 3 to 4 GPUs (requires reducing training quota from 1 to 0).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Training loses guaranteed quota (not recommended unless training is purely opportunistic).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Option 3: Verify preemption policies</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Confirm <code>borrowWithinCohort.policy: LowerPriority</code> is set in <code>inference-cq</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No trade-off (this should already be configured).</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>Recommended action</strong>: <strong>Option 1</strong> (wait for preemption). The current configuration is working as designed:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Inference needs a 4th GPU</p>
+</li>
+<li>
+<p>Training is using 2 GPUs (1 guaranteed + 1 borrowed)</p>
+</li>
+<li>
+<p>Inference preempts training to reclaim its lent quota</p>
+</li>
+<li>
+<p>Training workload is suspended, freeing 1 GPU</p>
+</li>
+<li>
+<p>Inference workload is admitted within 30-60 seconds</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Document this as normal behavior</strong> and adjust the alert threshold to <code>p95 &gt; 180s</code> (allowing time for preemption + pod startup).</p>
+</div>
+<div class="sect3">
+<h4 id="_verification"><a class="anchor" href="#_verification"></a>Verification</h4>
+<div class="paragraph">
+<p>After waiting 60 seconds, verify inference workload is admitted:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get workloads -n team-inference -o jsonpath='{range .items[</strong>]}{.metadata.name}{"\t"}{.status.conditions[?(@.type=="Admitted")].status}{"\n"}{end}'*
+workload-inference-api-abc   True</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The inference workload is now <strong>Admitted</strong> (status: True). Check Grafana dashboard to confirm p95 latency returns to &lt; 60 seconds.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_scenario_2_training_workloads_never_admitted"><a class="anchor" href="#_scenario_2_training_workloads_never_admitted"></a>Scenario 2: Training Workloads Never Admitted</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_symptoms_2"><a class="anchor" href="#_symptoms_2"></a>Symptoms</h3>
+<div class="paragraph">
+<p>The training team reports that new training jobs submitted yesterday are still pending. The platform team checks and finds:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Grafana observation</strong>: <code>training-cq</code> shows 5 pending workloads for 12+ hours</p>
+</li>
+<li>
+<p><strong>Inference status</strong>: Inference is using only 2 GPUs (idle capacity available)</p>
+</li>
+<li>
+<p><strong>Alert</strong>: No quota exhaustion alert (quotas appear available)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Mystery</strong>: Why are training workloads not being admitted when there&#8217;s idle GPU capacity?</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_diagnosis_2"><a class="anchor" href="#_diagnosis_2"></a>Diagnosis</h3>
+<div class="sect3">
+<h4 id="_step_1_check_training_localqueue_configuration"><a class="anchor" href="#_step_1_check_training_localqueue_configuration"></a>Step 1: Check Training LocalQueue Configuration</h4>
+<div class="paragraph">
+<p>Verify the training LocalQueue exists and points to the correct ClusterQueue:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get localqueue team-training -n team-training -o yaml</strong></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Expected output:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: kueue.x-k8s.io/v1beta2
+kind: LocalQueue
+metadata:
+  name: team-training
+  namespace: team-training
+spec:
+  clusterQueue: training-cq                      <i class="conum" data-value="1"></i><b>(1)</b>
+status:
+  pendingWorkloads: 5                             <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>clusterQueue: training-cq</strong>: LocalQueue correctly references the training ClusterQueue.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><strong>pendingWorkloads: 5</strong>: Confirms 5 workloads are stuck in this LocalQueue.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_step_2_check_clusterqueue_namespace_selector"><a class="anchor" href="#_step_2_check_clusterqueue_namespace_selector"></a>Step 2: Check ClusterQueue Namespace Selector</h4>
+<div class="paragraph">
+<p>Verify the ClusterQueue&#8217;s namespace selector allows the <code>team-training</code> namespace:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get clusterqueue training-cq -o jsonpath='{.spec.namespaceSelector}'</strong>
+{"matchLabels":{"kubernetes.io/metadata.name":"team-training"}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The ClusterQueue expects namespaces to have the label <code>kubernetes.io/metadata.name=team-training</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_step_3_verify_namespace_label"><a class="anchor" href="#_step_3_verify_namespace_label"></a>Step 3: Verify Namespace Label</h4>
+<div class="paragraph">
+<p>Check if the <code>team-training</code> namespace has the required label:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get namespace team-training -o jsonpath='{.metadata.labels}'</strong>
+{"kubernetes.io/metadata.name":"team-training"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The namespace label is correct. So far, configuration looks good.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_step_4_check_workload_labels"><a class="anchor" href="#_step_4_check_workload_labels"></a>Step 4: Check Workload Labels</h4>
+<div class="paragraph">
+<p>Inspect one of the pending workloads to verify it has the correct queue label:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get workloads -n team-training -o yaml | grep -A 5 "metadata:"</strong></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Unexpected output:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">metadata:
+  labels:
+    kueue.x-k8s.io/queue-name: default            <i class="conum" data-value="1"></i><b>(1)</b>
+  name: workload-training-job-xyz
+  namespace: team-training</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>queue-name: default</strong>: <strong>Root cause found!</strong> The workload has the wrong queue label. It&#8217;s trying to use a LocalQueue named <code>default</code> instead of <code>team-training</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Analysis</strong>: The training jobs were submitted without using the <code>lowpriority</code> Hardware Profile. Instead, they were submitted manually (e.g., via <code>oc create job</code>) without the correct Kueue labels.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_resolution_2"><a class="anchor" href="#_resolution_2"></a>Resolution</h3>
+<div class="sect3">
+<h4 id="_option_1_fix_workload_labels_recommended"><a class="anchor" href="#_option_1_fix_workload_labels_recommended"></a>Option 1: Fix Workload Labels (Recommended)</h4>
+<div class="paragraph">
+<p>Delete the incorrectly labeled workloads and resubmit using the <code>lowpriority</code> Hardware Profile:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc delete job training-job-xyz -n team-training</strong>
+job.batch "training-job-xyz" deleted</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Resubmit the job via the OpenShift AI dashboard using the <strong>lowPriority</strong> Hardware Profile (covered in Section 3). The Hardware Profile automatically injects the correct label: <code>kueue.x-k8s.io/queue-name: team-training</code>.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_option_2_manually_patch_workload_labels_quick_fix"><a class="anchor" href="#_option_2_manually_patch_workload_labels_quick_fix"></a>Option 2: Manually Patch Workload Labels (Quick Fix)</h4>
+<div class="paragraph">
+<p>If resubmitting is not feasible, manually patch the workload label:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc patch workload workload-training-job-xyz -n team-training --type=merge -p '{"metadata":{"labels":{"kueue.x-k8s.io/queue-name":"team-training"}}}'</strong>
+workload.kueue.x-k8s.io/workload-training-job-xyz patched</code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>LocalQueue namespace must match ClusterQueue namespaceSelector</strong> or workloads will never be admitted. This is a common misconfiguration when teams manually create workloads instead of using Hardware Profiles.</p>
+</div>
+<div class="paragraph">
+<p><strong>Best practice</strong>: Always use Hardware Profiles for self-service submission. They eliminate label errors by automating Kueue integration.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_verification_2"><a class="anchor" href="#_verification_2"></a>Verification</h4>
+<div class="paragraph">
+<p>After fixing the labels, verify workloads are admitted:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get workloads -n team-training -o jsonpath='{range .items[</strong>]}{.metadata.name}{"\t"}{.status.conditions[?(@.type=="Admitted")].status}{"\n"}{end}'*
+workload-training-job-xyz   True</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The workload is now <strong>Admitted</strong>. Check Grafana dashboard to confirm <code>training-cq</code> pending workloads drop to 0.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_scenario_3_high_eviction_rate_alert"><a class="anchor" href="#_scenario_3_high_eviction_rate_alert"></a>Scenario 3: High Eviction Rate Alert</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_symptoms_3"><a class="anchor" href="#_symptoms_3"></a>Symptoms</h3>
+<div class="paragraph">
+<p>The platform team receives an alert:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Alert</strong>: <code>KueueHighEvictionRate</code> fired for <code>training-cq</code></p>
+</li>
+<li>
+<p><strong>Message</strong>: "Eviction rate &gt; 5 per hour for 10+ minutes"</p>
+</li>
+<li>
+<p><strong>Grafana observation</strong>: Training workloads are being evicted 8-10 times per hour, continuously throughout the day (including off-hours like 2 AM).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Expected behavior</strong>: Training workloads should be preempted during business hours (9 AM - 5 PM) when inference demand is high. <strong>Unexpected behavior</strong>: Evictions are occurring 24/7, even when inference is idle.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_diagnosis_3"><a class="anchor" href="#_diagnosis_3"></a>Diagnosis</h3>
+<div class="sect3">
+<h4 id="_step_1_check_grafana_dashboard_2"><a class="anchor" href="#_step_1_check_grafana_dashboard_2"></a>Step 1: Check Grafana Dashboard</h4>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Open Grafana → <strong>Kueue — OpenShift AI Monitoring</strong> dashboard</p>
+</li>
+<li>
+<p>Navigate to <strong>Section 5: Throughput &amp; Rates</strong></p>
+</li>
+<li>
+<p>Observe the <strong>Eviction Rate</strong> panel (per minute, by ClusterQueue)</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Expected observation</strong>: <code>training-cq</code> shows consistent eviction rate of 0.15/min (9/hour), including during off-hours (2 AM - 6 AM).</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_step_2_review_recent_preemptions"><a class="anchor" href="#_step_2_review_recent_preemptions"></a>Step 2: Review Recent Preemptions</h4>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get events -n team-training --field-selector reason=WorkloadEvicted --sort-by='.lastTimestamp' | tail -20</strong></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Expected output:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">10m   Normal   WorkloadEvicted   workload/training-job-1   Preempted to reclaim quota for inference-cq
+8m    Normal   WorkloadEvicted   workload/training-job-2   Preempted to reclaim quota for inference-cq
+6m    Normal   WorkloadEvicted   workload/training-job-3   Preempted to reclaim quota for inference-cq
+4m    Normal   WorkloadEvicted   workload/training-job-4   Preempted to reclaim quota for inference-cq</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Observation</strong>: All evictions cite <code>inference-cq</code> as the reason. This suggests inference is constantly preempting training.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_step_3_analyze_eviction_pattern"><a class="anchor" href="#_step_3_analyze_eviction_pattern"></a>Step 3: Analyze Eviction Pattern</h4>
+<div class="paragraph">
+<p>Check if evictions correlate with inference workload submissions:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get workloads -n team-inference --sort-by=.metadata.creationTimestamp | tail -10</strong></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Expected observation</strong>: Inference workloads are being submitted every 5-10 minutes, even during off-hours. This indicates an autoscaling inference deployment that constantly scales up and down based on traffic.</p>
+</div>
+<div class="paragraph">
+<p><strong>Root cause identified</strong>: Inference autoscaler is triggering frequent scale-up/scale-down cycles. Each scale-up preempts training to reclaim quota, even when overall GPU demand is low.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_resolution_3"><a class="anchor" href="#_resolution_3"></a>Resolution</h3>
+<div class="paragraph">
+<p>You have three resolution options:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Resolution</th>
+<th class="tableblock halign-left valign-top">Action</th>
+<th class="tableblock halign-left valign-top">Trade-off</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Option 1: Document as expected</strong> (if evictions are business-driven)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">If inference demand requires frequent scale-ups, evictions are working as designed. Adjust alert threshold to <code>&gt; 15/hour</code>.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Training workloads experience frequent interruptions (acceptable if training has checkpointing).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Option 2: Increase training nominal quota</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Change training guaranteed quota from 1 to 2 GPUs. Reduce inference guaranteed quota from 3 to 2.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inference loses 1 guaranteed GPU (may impact SLA if inference consistently needs 3+ GPUs).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Option 3: Create non-preemptible training queue</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Create a separate ClusterQueue (<code>training-critical-cq</code>) with 1 guaranteed GPU, <strong>no cohort membership</strong> (no borrowing, no preemption).</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reduces elastic utilization. Critical training jobs are protected but cannot opportunistically use idle GPUs.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>Recommended action</strong>: Depends on business requirements.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>If inference SLAs are critical and training can tolerate interruptions</strong>: <strong>Option 1</strong> (document as expected). Ensure training jobs have checkpointing enabled (covered in Chapter 3, Section 1: Workload Checkpointing).</p>
+</li>
+<li>
+<p><strong>If training velocity is suffering</strong>: <strong>Option 2</strong> (rebalance quotas). This is a capacity planning decision—add more GPUs to the cluster or reduce inference&#8217;s guaranteed quota.</p>
+</li>
+<li>
+<p><strong>If specific training jobs are critical</strong> (e.g., monthly model re-training): <strong>Option 3</strong> (create non-preemptible queue for critical jobs).</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_verification_implement_option_3_non_preemptible_queue"><a class="anchor" href="#_verification_implement_option_3_non_preemptible_queue"></a>Verification: Implement Option 3 (Non-Preemptible Queue)</h4>
+<div class="paragraph">
+<p>Create a new ClusterQueue for critical training workloads:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata:
+  name: training-critical-cq
+spec:
+  # NO cohortName: no borrowing, no preemption      <i class="conum" data-value="1"></i><b>(1)</b>
+  namespaceSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: team-training
+  queueingStrategy: BestEffortFIFO
+  resourceGroups:
+  - coveredResources:
+    - nvidia.com/gpu
+    flavors:
+    - name: gpu-flavor
+      resources:
+      - name: nvidia.com/gpu
+        nominalQuota: "1"                          <i class="conum" data-value="2"></i><b>(2)</b>
+        # NO borrowingLimit                        <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>No cohortName</strong>: This ClusterQueue is isolated. It cannot borrow from the cohort, and inference cannot preempt it.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><strong>nominalQuota: "1"</strong>: Dedicated 1 GPU for critical training jobs.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><strong>No borrowingLimit</strong>: Critical training uses only its guaranteed 1 GPU, no elastic scaling.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Create a corresponding LocalQueue:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: kueue.x-k8s.io/v1beta2
+kind: LocalQueue
+metadata:
+  name: training-critical
+  namespace: team-training
+spec:
+  clusterQueue: training-critical-cq</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a HardwareProfile for critical training:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: infrastructure.opendatahub.io/v1
+kind: HardwareProfile
+metadata:
+  name: criticalpriority
+  namespace: redhat-ods-applications
+  annotations:
+    opendatahub.io/display-name: criticalPriority
+spec:
+  identifiers:
+  - identifier: nvidia.com/gpu
+    maxCount: 1                                   <i class="conum" data-value="1"></i><b>(1)</b>
+    minCount: 1
+    resourceType: Accelerator
+  scheduling:
+    type: Queue
+    kueue:
+      localQueueName: training-critical
+      priorityClass: training-priority</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>maxCount: 1</strong>: Limited to 1 GPU (matches the ClusterQueue&#8217;s guaranteed quota).</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Apply all three resources:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc apply -f training-critical-cq.yaml</strong>
+clusterqueue.kueue.x-k8s.io/training-critical-cq created
+
+$ <strong>oc apply -f training-critical-localqueue.yaml</strong>
+localqueue.kueue.x-k8s.io/training-critical created
+
+$ <strong>oc apply -f criticalpriority-hardware-profile.yaml</strong>
+hardwareprofile.infrastructure.opendatahub.io/criticalpriority created</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Usage</strong>: Data scientists select <strong>criticalPriority</strong> in the OpenShift AI dashboard for monthly re-training jobs that cannot tolerate interruptions. These workloads are never preempted.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_trade_off_analysis"><a class="anchor" href="#_trade_off_analysis"></a>Trade-off Analysis</h4>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Queue</th>
+<th class="tableblock halign-left valign-top">Behavior</th>
+<th class="tableblock halign-left valign-top">Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>training-cq</code> (cohort member)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Can borrow up to 2 GPUs, subject to preemption by inference</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Regular training jobs with checkpointing</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>training-critical-cq</code> (isolated)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Guaranteed 1 GPU, never preempted, cannot borrow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Critical monthly re-training jobs</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>Result</strong>: Critical training jobs are protected from eviction, while regular training jobs continue to benefit from elastic quota sharing.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_whats_next"><a class="anchor" href="#_whats_next"></a>What&#8217;s Next</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You have completed the GPU-as-a-Service chapter. You can now:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>✅ Explain the business value of GPU-as-a-Service (improved utilization, SLA protection, self-service)</p>
+</li>
+<li>
+<p>✅ Design multi-tenant GPU quota architectures with asymmetric preemption</p>
+</li>
+<li>
+<p>✅ Deploy GPU-as-a-Service using Kustomize or ArgoCD</p>
+</li>
+<li>
+<p>✅ Integrate Hardware Profiles with OpenShift AI dashboard</p>
+</li>
+<li>
+<p>✅ Monitor GPU quota utilization, admission latency, and preemption using Grafana</p>
+</li>
+<li>
+<p>✅ Troubleshoot quota exhaustion, misconfigured queue routing, and eviction churn</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>This completes the MaaS Workload Scheduling with Kueue course.</strong> You have learned how to deploy Kueue foundations (Chapter 1), implement elastic quota sharing with cohorts (Chapter 2), configure priority-based preemption (Chapter 3), and integrate all concepts into a production-ready GPU-as-a-Service platform (Chapter 4).</p>
+</div>
+<div class="paragraph">
+<p><strong>Next steps for production deployment:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Customize quotas</strong> for your cluster size and team requirements (Section 1 sizing recommendations)</p>
+</li>
+<li>
+<p><strong>Deploy monitoring</strong> (Section 4 Grafana dashboard and alerts)</p>
+</li>
+<li>
+<p><strong>Establish operational runbooks</strong> (Section 5 troubleshooting scenarios)</p>
+</li>
+<li>
+<p><strong>Train platform team</strong> on Kueue architecture and Day 2 operations</p>
+</li>
+<li>
+<p><strong>Onboard data science teams</strong> to Hardware Profiles for self-service GPU allocation</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>For advanced Kueue topics (AdmissionChecks, ProvisioningRequests, MultiKueue), refer to the official Kueue documentation: <a href="https://kueue.sigs.k8s.io/" class="bare">https://kueue.sigs.k8s.io/</a></p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="s4-monitoring-observability.html">Monitoring and Observability</a></span>
+  <span class="next"><a href="../ch5-kueue/index.html">Chapter 5: Kueue</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

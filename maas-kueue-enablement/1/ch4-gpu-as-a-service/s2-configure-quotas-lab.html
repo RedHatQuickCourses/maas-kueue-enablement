@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Lab: Configure GPU Quotas and Queues :: MaaS Workload Scheduling with Kueue</title>
+    <link rel="prev" href="s1-gpu-service-overview.html">
+    <link rel="next" href="s3-hardware-profiles-lab.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">MaaS Workload Scheduling with Kueue</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="maas-kueue-enablement" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">MaaS Workload Scheduling with Kueue</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Home</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html">Lab Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-foundations/index.html">Understand and Deploy Kueue Foundations</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s1-gpu-efficiency.html">The GPU Efficiency Challenge</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s2-base-config-lab.html">Lab: Deploying the Base Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s3-operator-upgrades-lab.html">Lab: Troubleshooting Operator Upgrades (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch2-cohorts/index.html">Configure Cohorts and Quota Borrowing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s1-elastic-sharing.html">Elastic Resource Sharing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s2-multi-tenant-lab.html">Lab: Building the Multi-Tenant Architecture</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch3-preemption/index.html">Implement Priority and Preemption</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s1-deterministic-scheduling.html">Deterministic Scheduling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s2-configure-preemption-lab.html">Lab: Configuring Preemption</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s3-test-preemption-lab.html">Lab: Testing Preemption at Scale</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s4-suspended-workloads-lab.html">Lab: Troubleshooting Suspended Workloads (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Implement GPU-as-a-Service</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-gpu-service-overview.html">GPU-as-a-Service Architecture</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s2-configure-quotas-lab.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s3-hardware-profiles-lab.html">Lab: Configure Hardware Profiles for Self-Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s4-monitoring-observability.html">Monitoring and Observability</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s5-troubleshooting-lab.html">Lab: Day 2 Troubleshooting Scenarios</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch5-kueue/index.html">Chapter 5: Kueue</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-1.html">GPU Quota and Priority Management with Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-2.html">ResourceFlavor: Hardware Differentiation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-3.html">Enabling Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-4.html">Production Considerations</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-5.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s2-kueue-lab-setup.html">Lab: Kueue demo - setup and verify</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s3-kueue-a10-cluster.html">A10 cluster: Llamastack + 3-GPU lab</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">MaaS Workload Scheduling with Kueue</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">MaaS Workload Scheduling with Kueue</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">MaaS Workload Scheduling with Kueue</a></li>
+    <li><a href="index.html">Implement GPU-as-a-Service</a></li>
+    <li><a href="s2-configure-quotas-lab.html">Lab: Configure GPU Quotas and Queues</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Lab: Configure GPU Quotas and Queues</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>45 minutes</strong>.</em></p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Objective</dt>
+<dd>
+<p>Deploy the complete GPU-as-a-Service Kueue configuration including ResourceFlavors, ClusterQueues with asymmetric preemption, LocalQueues, WorkloadPriorityClasses, and the Cohort.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_before_you_begin"><a class="anchor" href="#_before_you_begin"></a>Before you begin</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This lab deploys the GPU-as-a-Service architecture introduced in Section 1. You&#8217;ll create all necessary Kueue resources to enable multi-tenant GPU quota management with asymmetric preemption.</p>
+</div>
+<div class="paragraph">
+<p><strong>Prerequisites:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Kueue enabled in DataScienceCluster (verify with command below)</p>
+</li>
+<li>
+<p>GPU Operator installed with GPU nodes labeled <code>nvidia.com/gpu.present=true</code></p>
+</li>
+<li>
+<p>GPU nodes tainted with <code>nvidia.com/gpu=Exists:NoSchedule</code></p>
+</li>
+<li>
+<p>Two namespaces created: <code>team-inference</code> and <code>team-training</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Verify Kueue is enabled:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get datasciencecluster -o jsonpath='{.items[0].spec.components.kueue.managementState}'</strong>
+Managed</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the output is not <code>Managed</code>, refer to Chapter 1, Section 2 (Base Configuration Lab) to enable Kueue.</p>
+</div>
+<div class="paragraph">
+<p><strong>Create namespaces:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc create namespace team-inference</strong>
+namespace/team-inference created
+
+$ <strong>oc create namespace team-training</strong>
+namespace/team-training created</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_option_1_deploy_with_kustomize"><a class="anchor" href="#_option_1_deploy_with_kustomize"></a>Option 1: Deploy with Kustomize</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This option uses Kustomize to deploy all GPU-as-a-Service resources in a single command. Kustomize is a Kubernetes-native configuration management tool that applies multiple YAML files declaratively.</p>
+</div>
+<div class="sect2">
+<h3 id="_step_1_review_the_kustomization_structure"><a class="anchor" href="#_step_1_review_the_kustomization_structure"></a>Step 1: Review the Kustomization Structure</h3>
+<div class="paragraph">
+<p>The GPU-as-a-Service configuration is organized in a <code>base/</code> directory with a <code>kustomization.yaml</code> file that references all resource manifests:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - cohort.yaml
+  - resourceflavors.yaml
+  - workloadpriorityclasses.yaml
+  - clusterqueues.yaml
+  - localqueues.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This structure allows you to deploy all resources with a single <code>oc apply -k base/</code> command.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_2_apply_the_configuration"><a class="anchor" href="#_step_2_apply_the_configuration"></a>Step 2: Apply the Configuration</h3>
+<div class="paragraph">
+<p>Deploy all GPU-as-a-Service resources:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc apply -k https://github.com/example-org/gpu-as-a-service/base</strong>  <i class="conum" data-value="1"></i><b>(1)</b>
+cohort.kueue.x-k8s.io/gpu-cohort created
+resourceflavor.kueue.x-k8s.io/gpu-flavor created
+resourceflavor.kueue.x-k8s.io/default-flavor created
+workloadpriorityclass.kueue.x-k8s.io/inference-priority created
+workloadpriorityclass.kueue.x-k8s.io/training-priority created
+clusterqueue.kueue.x-k8s.io/inference-cq created
+clusterqueue.kueue.x-k8s.io/training-cq created
+localqueue.kueue.x-k8s.io/team-inference created
+localqueue.kueue.x-k8s.io/team-training created</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Replace with your Git repository URL or use a local path: <code>oc apply -k ./base</code></td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The above URL is a placeholder. In production, you would fork the reference architecture repository and customize quotas for your cluster size and team requirements.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_3_verify_deployment"><a class="anchor" href="#_step_3_verify_deployment"></a>Step 3: Verify Deployment</h3>
+<div class="paragraph">
+<p>Confirm all resources were created successfully:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get cohort</strong>
+NAME         AGE
+gpu-cohort   30s
+
+$ <strong>oc get clusterqueue</strong>
+NAME            COHORT       PENDING WORKLOADS   ADMITTED WORKLOADS
+inference-cq    gpu-cohort   0                   0
+training-cq     gpu-cohort   0                   0
+
+$ <strong>oc get resourceflavor</strong>
+NAME              AGE
+default-flavor    30s
+gpu-flavor        30s
+
+$ <strong>oc get workloadpriorityclass</strong>
+NAME                  VALUE   AGE
+inference-priority    1000    30s
+training-priority     100     30s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You have successfully deployed the GPU-as-a-Service configuration using Kustomize. <strong>Proceed to the "Verify Configuration" section</strong> below to validate quota allocation and preemption policies.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_option_2_deploy_with_argocd_gitops"><a class="anchor" href="#_option_2_deploy_with_argocd_gitops"></a>Option 2: Deploy with ArgoCD (GitOps)</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This option uses ArgoCD for declarative, GitOps-driven deployment. ArgoCD provides automatic drift detection, rollback capabilities, and audit trails—essential for production environments.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>In production MaaS platforms, use ArgoCD for all Kueue configuration changes. This ensures quota changes are code-reviewed, version-controlled, and automatically reconciled if manual changes are made to the cluster.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_step_1_create_argocd_application"><a class="anchor" href="#_step_1_create_argocd_application"></a>Step 1: Create ArgoCD Application</h3>
+<div class="paragraph">
+<p>Create an ArgoCD Application resource that points to your GPU-as-a-Service configuration repository:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gpu-as-a-service
+  namespace: openshift-gitops                     <i class="conum" data-value="1"></i><b>(1)</b>
+spec:
+  destination:
+    server: https://kubernetes.default.svc        <i class="conum" data-value="2"></i><b>(2)</b>
+  source:
+    repoURL: https://github.com/example-org/gpu-as-a-service  <i class="conum" data-value="3"></i><b>(3)</b>
+    path: base                                    <i class="conum" data-value="4"></i><b>(4)</b>
+    targetRevision: main                          <i class="conum" data-value="5"></i><b>(5)</b>
+  project: default
+  syncPolicy:
+    automated:
+      prune: true                                 <i class="conum" data-value="6"></i><b>(6)</b>
+      selfHeal: true                              <i class="conum" data-value="7"></i><b>(7)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>namespace: openshift-gitops</strong>: ArgoCD operator namespace (default in OpenShift GitOps)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><strong>destination.server</strong>: Target cluster (in-cluster deployment)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><strong>repoURL</strong>: Git repository containing Kueue configuration</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><strong>path: base</strong>: Directory containing kustomization.yaml</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><strong>targetRevision: main</strong>: Git branch to track</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td><strong>prune: true</strong>: Automatically delete resources removed from Git</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td><strong>selfHeal: true</strong>: Automatically correct manual changes to match Git state</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Save this as <code>argocd-application.yaml</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_2_apply_argocd_application"><a class="anchor" href="#_step_2_apply_argocd_application"></a>Step 2: Apply ArgoCD Application</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc apply -f argocd-application.yaml</strong>
+application.argoproj.io/gpu-as-a-service created</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_3_verify_sync_status"><a class="anchor" href="#_step_3_verify_sync_status"></a>Step 3: Verify Sync Status</h3>
+<div class="paragraph">
+<p>Check that ArgoCD successfully synchronized the configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get application gpu-as-a-service -n openshift-gitops</strong>
+NAME                 SYNC STATUS   HEALTH STATUS
+gpu-as-a-service     Synced        Healthy</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Sync Status meanings:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Synced</strong>: Cluster state matches Git repository</p>
+</li>
+<li>
+<p><strong>OutOfSync</strong>: Manual changes detected (ArgoCD will self-heal if <code>selfHeal: true</code>)</p>
+</li>
+<li>
+<p><strong>Unknown</strong>: Initial sync in progress</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_4_verify_drift_detection"><a class="anchor" href="#_step_4_verify_drift_detection"></a>Step 4: Verify Drift Detection</h3>
+<div class="paragraph">
+<p>To demonstrate ArgoCD&#8217;s drift detection, manually modify a ClusterQueue:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc patch clusterqueue inference-cq --type=json -p='[{"op": "replace", "path": "/spec/resourceGroups/1/flavors/0/resources/0/nominalQuota", "value": "5"}]'</strong>
+clusterqueue.kueue.x-k8s.io/inference-cq patched</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This changes the inference GPU quota from 3 to 5. ArgoCD detects the drift within 3 minutes (default polling interval) and automatically reverts the change:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get clusterqueue inference-cq -o jsonpath='{.spec.resourceGroups[1].flavors[0].resources[0].nominalQuota}'</strong>
+3</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The quota is automatically restored to 3 (matching the Git repository). Check ArgoCD events:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc describe application gpu-as-a-service -n openshift-gitops | grep "Sync Status"</strong>
+  Sync Status:  Synced (auto-healed)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You have successfully deployed GPU-as-a-Service using ArgoCD with automatic drift correction.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_verify_configuration"><a class="anchor" href="#_verify_configuration"></a>Verify Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Regardless of deployment method (Kustomize or ArgoCD), perform these verification steps to validate the GPU-as-a-Service configuration.</p>
+</div>
+<div class="sect2">
+<h3 id="_step_1_verify_cohort_exists"><a class="anchor" href="#_step_1_verify_cohort_exists"></a>Step 1: Verify Cohort Exists</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get cohort gpu-cohort -o yaml</strong>
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: Cohort
+metadata:
+  name: gpu-cohort</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The cohort has no <code>spec</code> field—it&#8217;s just a named grouping that ClusterQueues reference.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_2_verify_clusterqueues_reference_cohort"><a class="anchor" href="#_step_2_verify_clusterqueues_reference_cohort"></a>Step 2: Verify ClusterQueues Reference Cohort</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get clusterqueue -o jsonpath='{range .items[</strong>]}{.metadata.name}{"\t"}{.spec.cohortName}{"\n"}{end}'*
+inference-cq    gpu-cohort
+training-cq     gpu-cohort</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Both ClusterQueues are in the <code>gpu-cohort</code>, enabling quota borrowing.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_3_check_inference_clusterqueue_quotas"><a class="anchor" href="#_step_3_check_inference_clusterqueue_quotas"></a>Step 3: Check Inference ClusterQueue Quotas</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get clusterqueue inference-cq -o yaml</strong></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Key fields to verify:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">spec:
+  cohortName: gpu-cohort
+  preemption:
+    reclaimWithinCohort: Any                     <i class="conum" data-value="1"></i><b>(1)</b>
+    borrowWithinCohort:
+      policy: LowerPriority                      <i class="conum" data-value="2"></i><b>(2)</b>
+      maxPriorityThreshold: 100                  <i class="conum" data-value="3"></i><b>(3)</b>
+    withinClusterQueue: LowerPriority
+  resourceGroups:
+  - coveredResources:
+    - nvidia.com/gpu
+    flavors:
+    - name: gpu-flavor
+      resources:
+      - name: nvidia.com/gpu
+        nominalQuota: "3"                        <i class="conum" data-value="4"></i><b>(4)</b>
+        borrowingLimit: "1"                      <i class="conum" data-value="5"></i><b>(5)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>reclaimWithinCohort: Any</strong>: Inference can reclaim from any workload (protects inference SLAs)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><strong>borrowWithinCohort.policy: LowerPriority</strong>: Inference can preempt lower-priority workloads to borrow</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><strong>maxPriorityThreshold: 100</strong>: Only preempts workloads with priority ≤ 100 (training has priority 100)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><strong>nominalQuota: "3"</strong>: Inference is guaranteed 3 GPUs</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><strong>borrowingLimit: "1"</strong>: Inference can borrow up to 1 additional GPU (max 4 total)</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The preemption policies are the <strong>critical configuration</strong> that enables asymmetric preemption. Inference can preempt training, but training (covered in Step 4) cannot preempt inference.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_4_check_training_clusterqueue_quotas"><a class="anchor" href="#_step_4_check_training_clusterqueue_quotas"></a>Step 4: Check Training ClusterQueue Quotas</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get clusterqueue training-cq -o yaml | grep -A 10 "preemption:"</strong></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Expected output:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">  preemption:
+    reclaimWithinCohort: LowerPriority           <i class="conum" data-value="1"></i><b>(1)</b>
+    withinClusterQueue: LowerPriority</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>reclaimWithinCohort: LowerPriority</strong>: Training can only reclaim from lower-priority workloads. Since inference has priority 1000 (higher than training&#8217;s 100), training <strong>cannot</strong> reclaim from inference.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Notice: <strong>No <code>borrowWithinCohort</code> policy</strong>. This means training <strong>cannot</strong> preempt to borrow—it can only use genuinely idle quota.</p>
+</div>
+<div class="paragraph">
+<p>Check training quotas:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get clusterqueue training-cq -o jsonpath='{.spec.resourceGroups[1].flavors[0].resources[0]}'</strong>
+{"borrowingLimit":"2","name":"nvidia.com/gpu","nominalQuota":"1"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Training has 1 guaranteed GPU and can borrow up to 2 (max 3 total).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_5_verify_resourceflavors"><a class="anchor" href="#_step_5_verify_resourceflavors"></a>Step 5: Verify ResourceFlavors</h3>
+<div class="paragraph">
+<p>The <code>gpu-flavor</code> ResourceFlavor must include node selectors and tolerations to ensure GPU workloads land on GPU nodes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get resourceflavor gpu-flavor -o yaml</strong>
+apiVersion: kueue.x-k8s.io/v1beta2
+kind: ResourceFlavor
+metadata:
+  name: gpu-flavor
+spec:
+  nodeLabels:
+    nvidia.com/gpu.present: "true"               <i class="conum" data-value="1"></i><b>(1)</b>
+  tolerations:
+  - key: nvidia.com/gpu                          <i class="conum" data-value="2"></i><b>(2)</b>
+    operator: Exists
+    effect: NoSchedule</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>nodeLabels</strong>: Ensures GPU workloads only schedule on nodes labeled by GPU Operator</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><strong>tolerations</strong>: Allows workloads to tolerate the GPU node taint (prevents non-GPU workloads from consuming GPU nodes)</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>default-flavor</code> has no node selectors or tolerations—it&#8217;s used for CPU/memory resources.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_6_verify_workloadpriorityclasses"><a class="anchor" href="#_step_6_verify_workloadpriorityclasses"></a>Step 6: Verify WorkloadPriorityClasses</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get workloadpriorityclass -o jsonpath='{range .items[</strong>]}{.metadata.name}{"\t"}{.value}{"\n"}{end}'*
+inference-priority    1000
+training-priority     100</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Inference has priority 1000 (high), training has priority 100 (low). This 10x difference ensures clear priority separation for preemption decisions.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_7_verify_localqueues_point_to_correct_clusterqueues"><a class="anchor" href="#_step_7_verify_localqueues_point_to_correct_clusterqueues"></a>Step 7: Verify LocalQueues Point to Correct ClusterQueues</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get localqueue team-inference -n team-inference -o jsonpath='{.spec.clusterQueue}'</strong>
+inference-cq
+
+$ <strong>oc get localqueue team-training -n team-training -o jsonpath='{.spec.clusterQueue}'</strong>
+training-cq</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>LocalQueues correctly route to their respective ClusterQueues.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_step_8_verify_namespace_labels_match_clusterqueue_selectors"><a class="anchor" href="#_step_8_verify_namespace_labels_match_clusterqueue_selectors"></a>Step 8: Verify Namespace Labels Match ClusterQueue Selectors</h3>
+<div class="paragraph">
+<p>ClusterQueues use <code>namespaceSelector</code> to restrict which namespaces can use them. Verify the namespaces have matching labels:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get namespace team-inference -o jsonpath='{.metadata.labels}'</strong>
+{"kubernetes.io/metadata.name":"team-inference"}
+
+$ <strong>oc get clusterqueue inference-cq -o jsonpath='{.spec.namespaceSelector}'</strong>
+{"matchLabels":{"kubernetes.io/metadata.name":"team-inference"}}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The namespace label matches the ClusterQueue selector. Repeat for <code>team-training</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get namespace team-training -o jsonpath='{.metadata.labels.kubernetes\.io/metadata\.name}'</strong>
+team-training</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All verification steps passed. The GPU-as-a-Service configuration is deployed and ready to manage multi-tenant GPU quotas with asymmetric preemption.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_whats_next"><a class="anchor" href="#_whats_next"></a>What&#8217;s Next</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now that the quota infrastructure is deployed, the next lab integrates Hardware Profiles with the OpenShift AI dashboard for self-service GPU allocation. You&#8217;ll configure <code>highpriority</code> and <code>lowpriority</code> profiles that automatically route workloads to the correct LocalQueue with appropriate priority.</p>
+</div>
+<div class="paragraph">
+<p>This self-service integration eliminates the need for data scientists to understand Kueue internals—they simply select a hardware profile from the dashboard.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="s1-gpu-service-overview.html">GPU-as-a-Service Architecture</a></span>
+  <span class="next"><a href="s3-hardware-profiles-lab.html">Lab: Configure Hardware Profiles for Self-Service</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

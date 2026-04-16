@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Monitoring and Observability :: MaaS Workload Scheduling with Kueue</title>
+    <link rel="prev" href="s3-hardware-profiles-lab.html">
+    <link rel="next" href="s5-troubleshooting-lab.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">MaaS Workload Scheduling with Kueue</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="maas-kueue-enablement" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">MaaS Workload Scheduling with Kueue</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Home</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html">Lab Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-foundations/index.html">Understand and Deploy Kueue Foundations</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s1-gpu-efficiency.html">The GPU Efficiency Challenge</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s2-base-config-lab.html">Lab: Deploying the Base Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s3-operator-upgrades-lab.html">Lab: Troubleshooting Operator Upgrades (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch2-cohorts/index.html">Configure Cohorts and Quota Borrowing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s1-elastic-sharing.html">Elastic Resource Sharing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s2-multi-tenant-lab.html">Lab: Building the Multi-Tenant Architecture</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch3-preemption/index.html">Implement Priority and Preemption</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s1-deterministic-scheduling.html">Deterministic Scheduling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s2-configure-preemption-lab.html">Lab: Configuring Preemption</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s3-test-preemption-lab.html">Lab: Testing Preemption at Scale</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s4-suspended-workloads-lab.html">Lab: Troubleshooting Suspended Workloads (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Implement GPU-as-a-Service</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-gpu-service-overview.html">GPU-as-a-Service Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s2-configure-quotas-lab.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s3-hardware-profiles-lab.html">Lab: Configure Hardware Profiles for Self-Service</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s4-monitoring-observability.html">Monitoring and Observability</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s5-troubleshooting-lab.html">Lab: Day 2 Troubleshooting Scenarios</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch5-kueue/index.html">Chapter 5: Kueue</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-1.html">GPU Quota and Priority Management with Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-2.html">ResourceFlavor: Hardware Differentiation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-3.html">Enabling Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-4.html">Production Considerations</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-5.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s2-kueue-lab-setup.html">Lab: Kueue demo - setup and verify</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s3-kueue-a10-cluster.html">A10 cluster: Llamastack + 3-GPU lab</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">MaaS Workload Scheduling with Kueue</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">MaaS Workload Scheduling with Kueue</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">MaaS Workload Scheduling with Kueue</a></li>
+    <li><a href="index.html">Implement GPU-as-a-Service</a></li>
+    <li><a href="s4-monitoring-observability.html">Monitoring and Observability</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Monitoring and Observability</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>20 minutes</strong>.</em></p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Objective</dt>
+<dd>
+<p>Understand how to monitor GPU quota utilization, admission latency, and preemption activity using Grafana dashboards and Prometheus alerts.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_need_for_gpu_as_a_service_monitoring"><a class="anchor" href="#_the_need_for_gpu_as_a_service_monitoring"></a>The Need for GPU-as-a-Service Monitoring</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Operating a multi-tenant GPU platform requires real-time visibility into quota consumption, queueing behavior, and preemption activity. Without monitoring, platform teams operate blind—they can&#8217;t answer critical questions like:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Is inference hitting quota limits?</strong> (causing customer-facing latency)</p>
+</li>
+<li>
+<p><strong>Are training workloads starving?</strong> (degrading model development velocity)</p>
+</li>
+<li>
+<p><strong>Is preemption working correctly?</strong> (or are workloads stuck pending?)</p>
+</li>
+<li>
+<p><strong>What&#8217;s causing admission latency spikes?</strong> (quota exhaustion? node unavailability?)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Grafana dashboard for Kueue provides comprehensive visibility across <strong>6 sections</strong>, enabling proactive capacity planning and rapid incident response.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_grafana_dashboard_structure"><a class="anchor" href="#_grafana_dashboard_structure"></a>Grafana Dashboard Structure</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <strong>Kueue — OpenShift AI Monitoring</strong> dashboard organizes metrics into 6 functional sections:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Section</th>
+<th class="tableblock halign-left valign-top">Key Metrics</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>1. Workload Overview</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Active Workloads, Pending Workloads, Total Admitted (24h), Evictions (24h)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cluster-wide snapshot of workload state and throughput</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>2. Workload Lifecycle</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workloads by ClusterQueue (Active, Pending, Evictions/min)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Per-queue breakdown to identify bottlenecks</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>3. Admission Latency</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">p50/p95/p99 admission wait time (overall and per-queue)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Measure how long workloads wait for quota</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>4. Resource Utilization &amp; Quota</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Usage/Quota ratio, Borrowing usage, Nominal quota config</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Track quota consumption and borrowing patterns</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>5. Throughput &amp; Rates</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Admission rate, Eviction rate (per minute)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Measure system velocity and preemption activity</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>6. Prometheus Scrape Health</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Scrape target status, duration, sample count</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Verify Prometheus is collecting Kueue metrics</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="_dashboard_panel_layout"><a class="anchor" href="#_dashboard_panel_layout"></a>Dashboard Panel Layout</h3>
+<div class="listingblock">
+<div class="content">
+<pre>┌─────────────────────────────────────────────────────┐
+│  1. WORKLOAD OVERVIEW                               │
+│  ┌───────────┬───────────┬───────────┬──────────┐  │
+│  │  Active   │  Pending  │ Admitted  │ Evictions│  │
+│  │   15      │    3      │   240     │   12     │  │
+│  └───────────┴───────────┴───────────┴──────────┘  │
+├─────────────────────────────────────────────────────┤
+│  2. WORKLOAD LIFECYCLE (by ClusterQueue)            │
+│  ┌─────────────────────────────────────────────┐   │
+│  │  Time series: Active, Pending, Evictions    │   │
+│  └─────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────┤
+│  3. ADMISSION LATENCY                               │
+│  ┌───────────────┬────────────────────────────┐    │
+│  │  p95 Overall  │  p95 by ClusterQueue       │    │
+│  └───────────────┴────────────────────────────┘    │
+├─────────────────────────────────────────────────────┤
+│  4. RESOURCE UTILIZATION &amp; QUOTA                    │
+│  ┌─────────────────────────────────────────────┐   │
+│  │  Usage/Quota ratio (time series + table)    │   │
+│  └─────────────────────────────────────────────┘   │
+├─────────────────────────────────────────────────────┤
+│  5. THROUGHPUT &amp; RATES                              │
+│  ┌───────────────────────────────────────────┐     │
+│  │  Admission &amp; Eviction rates (per minute)  │     │
+│  └───────────────────────────────────────────┘     │
+├─────────────────────────────────────────────────────┤
+│  6. PROMETHEUS SCRAPE HEALTH                        │
+│  ┌───────────────────────────────────────────┐     │
+│  │  Scrape target up/down, duration, samples │     │
+│  └───────────────────────────────────────────┘     │
+└─────────────────────────────────────────────────────┘</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_key_kueue_metrics"><a class="anchor" href="#_key_kueue_metrics"></a>Key Kueue Metrics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Kueue exposes Prometheus metrics via the Kueue controller-manager pod in the <code>redhat-ods-applications</code> namespace. The DCGM Exporter pattern from GPU monitoring applies here: ServiceMonitor configures Prometheus to scrape Kueue metrics automatically.</p>
+</div>
+<div class="sect2">
+<h3 id="_workload_state_metrics"><a class="anchor" href="#_workload_state_metrics"></a>Workload State Metrics</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 11.1111%;">
+<col style="width: 33.3333%;">
+<col style="width: 22.2223%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Metric</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+<th class="tableblock halign-left valign-top">Healthy Baseline</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kueue_pending_workloads</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gauge</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number of workloads waiting for quota (by ClusterQueue)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt; 5</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kueue_admitted_active_workloads</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gauge</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Number of running workloads (by ClusterQueue)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&gt; 0 (utilization)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kueue_admitted_workloads_total</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Counter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cumulative count of admitted workloads (use <code>rate()</code> for throughput)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Steady rate</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kueue_evicted_workloads_total</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Counter</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cumulative count of preempted workloads (by ClusterQueue)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&lt; 50/day</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_quota_metrics"><a class="anchor" href="#_quota_metrics"></a>Quota Metrics</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 37.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Metric</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kueue_cluster_queue_nominal_quota</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gauge</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Guaranteed quota allocation (e.g., inference: 3 GPUs, training: 1 GPU)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kueue_cluster_queue_resource_usage</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gauge</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Current resource usage (includes borrowed quota)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kueue_cluster_queue_borrowing_limit</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gauge</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maximum borrowable quota (e.g., inference can borrow 1, training can borrow 2)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kueue_cluster_queue_borrowing_usage</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Gauge</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Amount of currently borrowed quota</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>Key formula for quota analysis:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Borrowing ratio</strong>: <code>kueue_cluster_queue_resource_usage / kueue_cluster_queue_nominal_quota</code></p>
+</li>
+<li>
+<p>Ratio &gt; 1.0 = borrowing</p>
+</li>
+<li>
+<p>Ratio &lt; 0.5 = underutilized</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Example</strong>: Inference is using 4 GPUs (3 guaranteed + 1 borrowed). Borrowing ratio = 4 / 3 = 1.33.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_latency_metrics"><a class="anchor" href="#_latency_metrics"></a>Latency Metrics</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 37.5%;">
+<col style="width: 12.5%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Metric</th>
+<th class="tableblock halign-left valign-top">Type</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kueue_admission_wait_time_seconds_bucket</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Histogram</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Distribution of admission wait times (use <code>histogram_quantile()</code> for percentiles)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>PromQL query for p95 admission latency:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-promql hljs" data-lang="promql">histogram_quantile(0.95,
+  sum(rate(kueue_admission_wait_time_seconds_bucket[5m]))
+  by (le, cluster_queue)
+)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>SLA guidance:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>p95 &lt; 60s</strong>: Healthy (inference workloads admitted within 1 minute)</p>
+</li>
+<li>
+<p><strong>p95 &lt; 120s</strong>: Acceptable (tolerable for training workloads)</p>
+</li>
+<li>
+<p><strong>p95 &gt; 120s</strong>: Alert (investigate quota exhaustion or preemption failures)</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>Pending workloads &gt; 10 for 5+ minutes</strong> indicates quota exhaustion or resource availability issues. Check:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Are ClusterQueues at 100% of quota + borrowing limit?</p>
+</li>
+<li>
+<p>Are GPU nodes healthy and available?</p>
+</li>
+<li>
+<p>Are workloads requesting more GPUs than available in a single ResourceFlavor?</p>
+</li>
+</ol>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_section_deep_dive_resource_utilization_quota"><a class="anchor" href="#_section_deep_dive_resource_utilization_quota"></a>Section Deep Dive: Resource Utilization &amp; Quota</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <strong>Resource Utilization &amp; Quota</strong> section is the most critical for capacity planning and quota tuning.</p>
+</div>
+<div class="sect2">
+<h3 id="_panel_1_usage_nominal_quota_ratio"><a class="anchor" href="#_panel_1_usage_nominal_quota_ratio"></a>Panel 1: Usage / Nominal Quota Ratio</h3>
+<div class="paragraph">
+<p><strong>PromQL query:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-promql hljs" data-lang="promql">kueue_cluster_queue_resource_usage{resource="nvidia.com/gpu"}
+/
+kueue_cluster_queue_nominal_quota{resource="nvidia.com/gpu"}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Interpretation:</strong></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 16.6666%;">
+<col style="width: 33.3333%;">
+<col style="width: 50.0001%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Ratio</th>
+<th class="tableblock halign-left valign-top">Meaning</th>
+<th class="tableblock halign-left valign-top">Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>&lt; 0.5</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Underutilized (using less than 50% of guaranteed quota)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Consider reducing nominal quota if persistent (reallocate to other teams)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>0.5 - 1.0</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Healthy utilization (using guaranteed quota)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Normal operation</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>&gt; 1.0</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Borrowing (using more than guaranteed quota)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Monitor for preemption activity; acceptable if idle capacity exists</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>≥ (1 + borrowing_limit / nominal_quota)</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">At maximum quota (using guaranteed + full borrowing limit)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Alert: Team cannot admit more workloads until quota is released</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>Example</strong>: Training is using 3 GPUs. Nominal quota is 1, borrowing limit is 2.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Ratio = 3 / 1 = 3.0</p>
+</li>
+<li>
+<p>Max ratio = (1 + 2/1) = 3.0</p>
+</li>
+<li>
+<p><strong>Result</strong>: Training is at maximum capacity. New training workloads will stay pending until running jobs complete or are preempted.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_panel_2_borrowing_usage_borrowing_limit"><a class="anchor" href="#_panel_2_borrowing_usage_borrowing_limit"></a>Panel 2: Borrowing Usage / Borrowing Limit</h3>
+<div class="paragraph">
+<p><strong>PromQL query:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-promql hljs" data-lang="promql">kueue_cluster_queue_borrowing_usage{resource="nvidia.com/gpu"}
+/
+kueue_cluster_queue_borrowing_limit{resource="nvidia.com/gpu"}
+&gt; 0</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Interpretation:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>1.0</strong>: Hitting borrowing limit (cannot borrow more)</p>
+</li>
+<li>
+<p><strong>0.5</strong>: Using 50% of borrowing capacity</p>
+</li>
+<li>
+<p><strong>0.0</strong>: Not borrowing (using only guaranteed quota)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This metric helps identify when teams are constrained by borrowing limits vs. guaranteed quota.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>Establish baseline metrics over 2 weeks before configuring alerts.</strong> Observe normal operating patterns:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>What&#8217;s the typical pending workload count during business hours?</p>
+</li>
+<li>
+<p>What&#8217;s the normal eviction rate (expected preemption due to inference demand)?</p>
+</li>
+<li>
+<p>What&#8217;s the p95 admission latency for each ClusterQueue?</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Use these baselines to set alert thresholds that avoid alert fatigue while catching genuine issues.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_prometheus_alert_rules"><a class="anchor" href="#_prometheus_alert_rules"></a>Prometheus Alert Rules</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The monitoring stack includes 6 pre-configured alerts for GPU-as-a-Service operations:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 22.2222%;">
+<col style="width: 33.3333%;">
+<col style="width: 11.1111%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Alert Name</th>
+<th class="tableblock halign-left valign-top">Expression</th>
+<th class="tableblock halign-left valign-top">Threshold</th>
+<th class="tableblock halign-left valign-top">Action Item</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>KueueHighPendingWorkloads</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sum by (cluster_queue) (kueue_pending_workloads)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&gt; 10 for 5m</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Check quota exhaustion. Verify GPU nodes are healthy. Review workload resource requests.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>KueueQuotaExhausted</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>(kueue_cluster_queue_resource_usage / kueue_cluster_queue_nominal_quota)</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&gt; 0.95 for 10m</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Short-term: Wait for workloads to complete. Medium-term: Increase nominal quota. Long-term: Capacity planning.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>KueueAdmissionLatencyHigh</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>histogram_quantile(0.95, sum(rate(kueue_admission_wait_time_seconds_bucket[5m])) by (le))</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&gt; 120s for 10m</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Check if quotas are exhausted. Verify preemption is working. Review borrowing limits.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>KueueHighEvictionRate</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>sum by (cluster_queue) (rate(kueue_evicted_workloads_total[1h])) * 3600</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">&gt; 5/hour for 10m</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>If expected</strong> (inference preempting training): Document as normal. <strong>If unexpected</strong>: Increase nominal quota or reduce borrowing limits.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>KueueClusterQueueDown</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>kueue_cluster_queue_status{status="active"}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">== 0 for 2m</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Check ClusterQueue resource: <code>oc get clusterqueue &lt;name&gt; -o yaml</code>. Check Kueue controller logs.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>KueueTargetDown</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>up{job=~".<strong>kueue.</strong>"}</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">== 0 for 3m</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Verify Kueue controller is running. Check ServiceMonitor. Verify Prometheus configuration.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="sect2">
+<h3 id="_alert_runbook_example_kueuehighevictionrate"><a class="anchor" href="#_alert_runbook_example_kueuehighevictionrate"></a>Alert Runbook Example: KueueHighEvictionRate</h3>
+<div class="paragraph">
+<p><strong>Trigger</strong>: <code>training-cq</code> shows &gt; 5 evictions per hour for 10+ minutes.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 1: Check Grafana Dashboard</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Navigate to <strong>Throughput &amp; Rates</strong> section</p>
+</li>
+<li>
+<p>Observe eviction rate time series by ClusterQueue</p>
+</li>
+<li>
+<p>Identify pattern: Are evictions constant (unexpected) or spiked during business hours (expected)?</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Step 2: Review Recent Preemptions</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-console hljs" data-lang="console">$ <strong>oc get events -n team-training --field-selector reason=WorkloadEvicted --sort-by='.lastTimestamp' | tail -10</strong></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Step 3: Determine Root Cause</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Expected behavior</strong>: Inference demand is high during business hours (9 AM - 5 PM). Inference preempts training to meet SLAs. <strong>Action</strong>: Document as normal, adjust alert threshold to <code>&gt; 10/hour during business hours</code>.</p>
+</li>
+<li>
+<p><strong>Unexpected behavior</strong>: Evictions occur 24/7, including off-hours when inference is idle. <strong>Root cause</strong>: Possible misconfiguration in preemption policies or priority assignments. <strong>Action</strong>: Verify training has priority 100 and inference has priority 1000. Check that training has <strong>no</strong> <code>borrowWithinCohort</code> policy.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>Step 4: Resolution Options</strong></p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Condition</th>
+<th class="tableblock halign-left valign-top">Resolution</th>
+<th class="tableblock halign-left valign-top">Trade-off</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Evictions are expected (inference SLA protection)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Document as normal; tune alert threshold</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">None</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Training is being preempted excessively</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Increase training&#8217;s nominal quota from 1 to 2 GPUs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reduces inference&#8217;s guaranteed quota from 3 to 2</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Critical training jobs need non-preemptible guarantee</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Create separate ClusterQueue (<code>training-critical-cq</code>) with no cohort membership</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Reduces elastic utilization (no borrowing)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_monitoring_best_practices"><a class="anchor" href="#_monitoring_best_practices"></a>Monitoring Best Practices</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_1_metric_retention"><a class="anchor" href="#_1_metric_retention"></a>1. Metric Retention</h3>
+<div class="paragraph">
+<p><strong>Recommendation</strong>: 15+ days with 50GB+ PersistentVolumeClaim for Prometheus.</p>
+</div>
+<div class="paragraph">
+<p><strong>Configuration</strong> (in <code>user-workload-monitoring-config</code> ConfigMap):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">prometheus:
+  retention: 15d
+  volumeClaimTemplate:
+    spec:
+      resources:
+        requests:
+          storage: 50Gi</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Why 15 days?</strong> Enables week-over-week trend analysis and correlates quota exhaustion with business cycles (e.g., monthly model training sprints).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_2_dashboard_access_control"><a class="anchor" href="#_2_dashboard_access_control"></a>2. Dashboard Access Control</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 50%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Role</th>
+<th class="tableblock halign-left valign-top">Access Level</th>
+<th class="tableblock halign-left valign-top">Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Platform Team</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Admin (edit dashboards, configure alerts)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Modify alert thresholds, add new panels, troubleshoot</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Team Leads</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Read-only (view dashboards)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Monitor team quota usage, review eviction rates</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Data Scientists</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No direct access (use OpenShift AI dashboard for workload status)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Self-service via Hardware Profiles</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>Implementation</strong>: Use Grafana Operator&#8217;s RBAC features to grant read-only access to team leads via OpenShift groups.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_3_alert_routing"><a class="anchor" href="#_3_alert_routing"></a>3. Alert Routing</h3>
+<div class="paragraph">
+<p><strong>Recommendation</strong>: Route alerts by ClusterQueue to appropriate Slack channels.</p>
+</div>
+<div class="paragraph">
+<p><strong>Example Alertmanager configuration:</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">route:
+  routes:
+  - match:
+      cluster_queue: inference-cq
+    receiver: slack-inference-team
+  - match:
+      cluster_queue: training-cq
+    receiver: slack-training-team</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Why?</strong> Team-specific routing reduces alert fatigue—teams only see alerts relevant to their ClusterQueue.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_4_baseline_establishment"><a class="anchor" href="#_4_baseline_establishment"></a>4. Baseline Establishment</h3>
+<div class="paragraph">
+<p><strong>Process:</strong></p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Week 1-2</strong>: Observe metrics without alerts enabled</p>
+</li>
+<li>
+<p><strong>Record normal baselines</strong>:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Typical pending workload count: e.g., 2-5 during business hours</p>
+</li>
+<li>
+<p>Normal eviction rate: e.g., 3/hour for training during peak inference demand</p>
+</li>
+<li>
+<p>p95 admission latency: e.g., 30s for inference, 5 minutes for training</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Week 3</strong>: Enable alerts with thresholds set to 2x baseline values</p>
+</li>
+<li>
+<p><strong>Week 4+</strong>: Tune alert thresholds based on false-positive rate</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Goal</strong>: Alerts should fire for <strong>genuine incidents</strong> (quota exhaustion, stuck workloads) without alert fatigue from normal operational patterns.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_5_capacity_planning_queries"><a class="anchor" href="#_5_capacity_planning_queries"></a>5. Capacity Planning Queries</h3>
+<div class="paragraph">
+<p>Run these PromQL queries weekly to plan GPU capacity growth:</p>
+</div>
+<div class="paragraph">
+<p><strong>Query 1: Peak GPU usage by ClusterQueue (last 7 days)</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-promql hljs" data-lang="promql">max_over_time(
+  kueue_cluster_queue_resource_usage{resource="nvidia.com/gpu"}[7d]
+)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Query 2: Average pending workload count (last 7 days)</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-promql hljs" data-lang="promql">avg_over_time(kueue_pending_workloads[7d])</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Query 3: p95 admission latency trend (week-over-week)</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-promql hljs" data-lang="promql">histogram_quantile(0.95,
+  sum(rate(kueue_admission_wait_time_seconds_bucket[7d]))
+  by (le, cluster_queue)
+)</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Capacity planning decision</strong>: If peak usage consistently exceeds 90% of total GPU capacity and pending workloads average &gt; 5, plan for GPU cluster expansion (add 4-8 GPUs).</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>Export Grafana dashboard JSON to Git</strong> for version control and disaster recovery. Store dashboards in the same repository as Kueue configuration (GitOps pattern). This enables:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Dashboard-as-Code (review dashboard changes in pull requests)</p>
+</li>
+<li>
+<p>Rollback to previous dashboard versions</p>
+</li>
+<li>
+<p>Disaster recovery (restore dashboards from Git if Grafana instance is lost)</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_whats_next"><a class="anchor" href="#_whats_next"></a>What&#8217;s Next</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The final lab covers Day 2 troubleshooting scenarios: diagnosing quota exhaustion, misconfigured queue routing, and high eviction rates. You&#8217;ll use the Grafana dashboard and <code>oc</code> commands to diagnose and resolve common operational issues, reinforcing your understanding of GPU-as-a-Service monitoring.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="s3-hardware-profiles-lab.html">Lab: Configure Hardware Profiles for Self-Service</a></span>
+  <span class="next"><a href="s5-troubleshooting-lab.html">Lab: Day 2 Troubleshooting Scenarios</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>GPU-as-a-Service Architecture :: MaaS Workload Scheduling with Kueue</title>
+    <link rel="prev" href="index.html">
+    <link rel="next" href="s2-configure-quotas-lab.html">
+    <meta name="generator" content="Antora 3.1.3">
+    <link rel="stylesheet" href="../../../_/css/site.css">
+    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">MaaS Workload Scheduling with Kueue</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="maas-kueue-enablement" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">MaaS Workload Scheduling with Kueue</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html">Home</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html">Lab Environment</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-foundations/index.html">Understand and Deploy Kueue Foundations</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s1-gpu-efficiency.html">The GPU Efficiency Challenge</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s2-base-config-lab.html">Lab: Deploying the Base Configuration</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-foundations/s3-operator-upgrades-lab.html">Lab: Troubleshooting Operator Upgrades (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch2-cohorts/index.html">Configure Cohorts and Quota Borrowing</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s1-elastic-sharing.html">Elastic Resource Sharing</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cohorts/s2-multi-tenant-lab.html">Lab: Building the Multi-Tenant Architecture</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch3-preemption/index.html">Implement Priority and Preemption</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s1-deterministic-scheduling.html">Deterministic Scheduling</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s2-configure-preemption-lab.html">Lab: Configuring Preemption</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s3-test-preemption-lab.html">Lab: Testing Preemption at Scale</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-preemption/s4-suspended-workloads-lab.html">Lab: Troubleshooting Suspended Workloads (Day 2)</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html">Implement GPU-as-a-Service</a>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s1-gpu-service-overview.html">GPU-as-a-Service Architecture</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s2-configure-quotas-lab.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s3-hardware-profiles-lab.html">Lab: Configure Hardware Profiles for Self-Service</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s4-monitoring-observability.html">Monitoring and Observability</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s5-troubleshooting-lab.html">Lab: Day 2 Troubleshooting Scenarios</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch5-kueue/index.html">Chapter 5: Kueue</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-1.html">GPU Quota and Priority Management with Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-2.html">ResourceFlavor: Hardware Differentiation</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-3.html">Enabling Kueue</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-4.html">Production Considerations</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s1-kueue-overview-5.html">Lab: Configure GPU Quotas and Queues</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s2-kueue-lab-setup.html">Lab: Kueue demo - setup and verify</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-kueue/s3-kueue-a10-cluster.html">A10 cluster: Llamastack + 3-GPU lab</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">MaaS Workload Scheduling with Kueue</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">MaaS Workload Scheduling with Kueue</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">MaaS Workload Scheduling with Kueue</a></li>
+    <li><a href="index.html">Implement GPU-as-a-Service</a></li>
+    <li><a href="s1-gpu-service-overview.html">GPU-as-a-Service Architecture</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">GPU-as-a-Service Architecture</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>30 minutes</strong>.</em></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_multi_tenant_gpu_scarcity_problem"><a class="anchor" href="#_the_multi_tenant_gpu_scarcity_problem"></a>The Multi-Tenant GPU Scarcity Problem</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Organizations running AI/ML workloads on OpenShift face a shared GPU scarcity problem: multiple teams—such as inference serving and model training—compete for the same limited pool of GPUs. Without intelligent quota management, this creates operational chaos.</p>
+</div>
+<div class="paragraph">
+<p>Consider a typical scenario: Your organization has a 4-GPU cluster. The inference team deploys a customer-facing model serving API that needs guaranteed low latency to meet SLA commitments. The training team runs long-running model fine-tuning jobs. Both teams submit workloads to Kubernetes with ResourceQuota limits, but Kubernetes scheduling is rigid—it either admits a workload immediately or rejects it. There&#8217;s no queueing, no priority-based preemption, no way to say "inference workloads are more critical than training."</p>
+</div>
+<div class="paragraph">
+<p><strong>What happens in practice:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Monday 9 AM</strong>: Training team submits 4 large training jobs, consuming all 4 GPUs</p>
+</li>
+<li>
+<p><strong>Monday 10 AM</strong>: Inference team tries to scale their serving deployment to handle production traffic</p>
+</li>
+<li>
+<p><strong>Result</strong>: Inference workloads are rejected. Kubernetes scheduler returns "insufficient nvidia.com/gpu resources." Customer-facing API latency spikes. Platform team receives an urgent Slack ping.</p>
+</li>
+<li>
+<p><strong>Manual intervention</strong>: Platform engineer spends 2 hours manually identifying training jobs, contacting the training team, negotiating which jobs to kill, and restarting inference workloads.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This manual firefighting happens <strong>multiple times per week</strong>.</p>
+</div>
+<div class="sect2">
+<h3 id="_business_impact_without_gpu_as_a_service"><a class="anchor" href="#_business_impact_without_gpu_as_a_service"></a>Business Impact Without GPU-as-a-Service</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 40%;">
+<col style="width: 60%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Problem</th>
+<th class="tableblock halign-left valign-top">Business Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Resource starvation</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Critical inference workloads wait while training jobs consume all GPUs → Customer-facing APIs degrade, SLA violations, revenue impact</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Unpredictable scheduling</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No guarantees about when workloads will start → Teams over-request GPUs "just in case," leading to idle resources and planning paralysis</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Manual intervention</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Platform team manually adjusts priorities and terminates jobs → 20+ hours/week firefighting, high operational toil, team burnout</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Poor GPU utilization</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Rigid ResourceQuotas prevent elastic sharing → GPU utilization drops to 40%, wasting $150K/year on idle hardware (assuming 4x A100 GPUs at $3/hour each)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_solution_gpu_as_a_service_with_kueue"><a class="anchor" href="#_solution_gpu_as_a_service_with_kueue"></a>Solution: GPU-as-a-Service with Kueue</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This chapter implements a <strong>GPU-as-a-Service</strong> model that provides:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Guaranteed GPU quotas per team</strong> with elastic borrowing when capacity is idle</p>
+</li>
+<li>
+<p><strong>Priority-based preemption</strong> so high-priority inference workloads can automatically reclaim GPUs from training</p>
+</li>
+<li>
+<p><strong>Self-service integration</strong> via OpenShift AI dashboard Hardware Profiles</p>
+</li>
+<li>
+<p><strong>Real-time monitoring</strong> with Grafana dashboards tracking utilization, borrowing, and preemption</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p><strong>Result</strong>: GPU utilization increases from 40% to 85-90%, inference SLAs are protected with automatic preemption within 30 seconds, training throughput becomes predictable, and manual intervention drops to near zero.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_gpu_as_a_service_architecture"><a class="anchor" href="#_gpu_as_a_service_architecture"></a>GPU-as-a-Service Architecture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The GPU-as-a-Service reference architecture uses a single <strong>Cohort</strong> (introduced in Chapter 2) to manage a shared pool of 4 GPUs across two teams: inference and training. The cohort enables elastic quota sharing—teams can borrow idle quota from each other—while <strong>asymmetric preemption policies</strong> (introduced in Chapter 3) ensure inference workloads can always reclaim GPUs when needed.</p>
+</div>
+<div class="sect2">
+<h3 id="_architecture_diagram"><a class="anchor" href="#_architecture_diagram"></a>Architecture Diagram</h3>
+<div class="listingblock">
+<div class="content">
+<pre>                    ┌────────────────────┐
+                    │   gpu-cohort       │
+                    │   (Cohort)         │
+                    │   4 GPUs total     │
+                    └──────────┬─────────┘
+                               │
+           ┌───────────────────┼───────────────────┐
+           │                                       │
+  ┌────────┴──────────┐               ┌───────────┴────────┐
+  │  inference-cq      │               │  training-cq        │
+  │  (ClusterQueue)    │               │  (ClusterQueue)     │
+  │                    │               │                     │
+  │  Guaranteed: 3 GPU │               │  Guaranteed: 1 GPU  │
+  │  Borrow: up to 1   │               │  Borrow: up to 2    │
+  │  Max: 4 GPUs       │               │  Max: 3 GPUs        │
+  │  Priority: 1000    │               │  Priority: 100      │
+  └────────┬───────────┘               └───────────┬─────────┘
+           │                                       │
+  ┌────────┴──────────┐               ┌───────────┴─────────┐
+  │  team-inference    │               │  team-training       │
+  │  (LocalQueue)      │               │  (LocalQueue)        │
+  │  ns: team-inference│               │  ns: team-training   │
+  └────────┬───────────┘               └───────────┬─────────┘
+           │                                       │
+  ┌────────┴──────────┐               ┌───────────┴─────────┐
+  │  highpriority      │               │  lowpriority         │
+  │ (HardwareProfile)  │               │ (HardwareProfile)    │
+  │  GPU: 1-4          │               │  GPU: 1-3            │
+  └────────────────────┘               └─────────────────────┘</pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_component_inventory"><a class="anchor" href="#_component_inventory"></a>Component Inventory</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 28.5714%;">
+<col style="width: 14.2857%;">
+<col style="width: 42.8571%;">
+<col style="width: 14.2858%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Component</th>
+<th class="tableblock halign-left valign-top">Scope</th>
+<th class="tableblock halign-left valign-top">Purpose</th>
+<th class="tableblock halign-left valign-top">Count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Cohort</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cluster</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Groups ClusterQueues for elastic quota sharing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1 (<code>gpu-cohort</code>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>ClusterQueue</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cluster</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Defines nominal quota, borrowing limits, preemption policies</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2 (<code>inference-cq</code>, <code>training-cq</code>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>LocalQueue</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Namespace</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Namespace-scoped queue pointing to a ClusterQueue</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2 (<code>team-inference</code>, <code>team-training</code>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>ResourceFlavor</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cluster</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Defines node selectors and tolerations for GPU workload placement</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2 (<code>gpu-flavor</code>, <code>default-flavor</code>)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>WorkloadPriorityClass</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cluster</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Assigns numeric priority for preemption decisions</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2 (<code>inference-priority</code>: 1000, <code>training-priority</code>: 100)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>HardwareProfile</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Cluster</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">OpenShift AI dashboard integration for self-service</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2 (<code>highpriority</code>, <code>lowpriority</code>)</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>This architecture reuses concepts from prior chapters: <strong>ResourceFlavor</strong> and <strong>ClusterQueue</strong> (Chapter 1), <strong>Cohort</strong> and quota borrowing (Chapter 2), and <strong>WorkloadPriorityClass</strong> with preemption policies (Chapter 3). Chapter 4 integrates these into a production-ready solution.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_gpu_quota_allocation"><a class="anchor" href="#_gpu_quota_allocation"></a>GPU Quota Allocation</h3>
+<div class="paragraph">
+<p>The reference architecture manages a <strong>4-GPU cluster</strong> shared between two teams. The quota allocation reflects business priorities: inference workloads are customer-facing and require SLA guarantees, so they receive more guaranteed quota.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6666%;">
+<col style="width: 16.6669%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">ClusterQueue</th>
+<th class="tableblock halign-left valign-top">Guaranteed GPUs</th>
+<th class="tableblock halign-left valign-top">Borrowing Limit</th>
+<th class="tableblock halign-left valign-top">Max Usable GPUs</th>
+<th class="tableblock halign-left valign-top">Priority Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>inference-cq</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1000 (high)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>training-cq</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">100 (low)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Cohort Total</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>4</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">—</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">—</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">—</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p><strong>Key design decisions:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Inference gets 3 guaranteed GPUs</strong>: Even if training consumes the entire cluster, inference is guaranteed 3 GPUs. This protects customer-facing SLAs.</p>
+</li>
+<li>
+<p><strong>Inference can borrow 1 additional GPU</strong>: When training is idle, inference can use all 4 GPUs (3 guaranteed + 1 borrowed).</p>
+</li>
+<li>
+<p><strong>Training gets 1 guaranteed GPU</strong>: Training is guaranteed at least 1 GPU, preventing complete starvation.</p>
+</li>
+<li>
+<p><strong>Training can borrow 2 additional GPUs</strong>: When inference is idle, training can use up to 3 GPUs (1 guaranteed + 2 borrowed). Training is limited to 3 max to ensure at least 1 GPU is always available for inference to reclaim if needed.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_scheduling_scenarios"><a class="anchor" href="#_scheduling_scenarios"></a>Scheduling Scenarios</h3>
+<div class="paragraph">
+<p>The following table shows how the cohort allocates GPUs under different workload patterns:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 11.1111%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Scenario</th>
+<th class="tableblock halign-left valign-top">Inference GPUs in Use</th>
+<th class="tableblock halign-left valign-top">Training GPUs in Use</th>
+<th class="tableblock halign-left valign-top">Total GPUs Used</th>
+<th class="tableblock halign-left valign-top">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Only inference active</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4 (3 guaranteed + 1 borrowed)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inference borrows training&#8217;s idle quota</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Only training active</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3 (1 guaranteed + 2 borrowed)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Training can borrow up to 2, hitting its max of 3</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Both teams active, no contention</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3 (guaranteed)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1 (guaranteed)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Fair sharing under normal load</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Inference needs 4th GPU while training uses 1</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4 (preempts training)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">0 (suspended)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inference reclaims its lent quota via preemption</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The cohort total is 4 GPUs (sum of guaranteed quotas: 3 + 1 = 4). Teams can temporarily exceed their guaranteed quota by borrowing from the cohort, but total usage across the cohort never exceeds 4 GPUs.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_asymmetric_preemption_rules"><a class="anchor" href="#_asymmetric_preemption_rules"></a>Asymmetric Preemption Rules</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The architecture implements <strong>asymmetric preemption</strong> to protect high-priority inference workloads. This is the key innovation that transforms a simple quota system into a production-grade GPU-as-a-Service platform.</p>
+</div>
+<div class="paragraph">
+<p><strong>Asymmetric preemption</strong> means: <strong>Inference can preempt training, but training cannot preempt inference.</strong></p>
+</div>
+<div class="paragraph">
+<p>This is achieved through carefully configured preemption policies in the ClusterQueue resources (introduced in Chapter 3).</p>
+</div>
+<div class="sect2">
+<h3 id="_inference_clusterqueue_preemption_policies"><a class="anchor" href="#_inference_clusterqueue_preemption_policies"></a>Inference ClusterQueue Preemption Policies</h3>
+<div class="paragraph">
+<p>The <code>inference-cq</code> ClusterQueue has aggressive preemption policies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata:
+  name: inference-cq
+spec:
+  preemption:
+    reclaimWithinCohort: Any                    <i class="conum" data-value="1"></i><b>(1)</b>
+    borrowWithinCohort:
+      policy: LowerPriority                     <i class="conum" data-value="2"></i><b>(2)</b>
+      maxPriorityThreshold: 100                 <i class="conum" data-value="3"></i><b>(3)</b>
+    withinClusterQueue: LowerPriority           <i class="conum" data-value="4"></i><b>(4)</b>
+  cohortName: gpu-cohort
+  # ... resourceGroups omitted for clarity</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>reclaimWithinCohort: Any</strong>: Allows inference to reclaim its lent quota from <strong>any</strong> workload in the cohort, regardless of priority. If training borrowed inference&#8217;s idle GPUs and inference needs them back, inference preempts training immediately.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><strong>borrowWithinCohort.policy: LowerPriority</strong>: Allows inference to preempt <strong>lower-priority</strong> workloads in the cohort when borrowing beyond its guaranteed quota.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><strong>maxPriorityThreshold: 100</strong>: Only preempts workloads with priority ≤ 100. Since training has priority 100 and inference has priority 1000, inference can preempt training but not other high-priority inference workloads.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><strong>withinClusterQueue: LowerPriority</strong>: Within the inference queue itself, lower-priority workloads are preempted first.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Practical effects:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>✅ <strong>Inference can preempt training to borrow GPUs</strong>: If inference needs a 4th GPU and training is using GPUs, inference can preempt a training workload to borrow from the cohort.</p>
+</li>
+<li>
+<p>✅ <strong>Inference can always reclaim its lent quota</strong>: If training borrowed inference&#8217;s idle GPUs (e.g., inference was using 2 GPUs, training borrowed the idle 1 GPU), and inference now needs its full 3 guaranteed GPUs, inference preempts training regardless of priority.</p>
+</li>
+<li>
+<p>✅ <strong>Inference protects critical workloads</strong>: Within the inference queue, lower-priority jobs are preempted first, protecting high-priority serving workloads.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_training_clusterqueue_preemption_policies"><a class="anchor" href="#_training_clusterqueue_preemption_policies"></a>Training ClusterQueue Preemption Policies</h3>
+<div class="paragraph">
+<p>The <code>training-cq</code> ClusterQueue has <strong>limited</strong> preemption policies:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: kueue.x-k8s.io/v1beta2
+kind: ClusterQueue
+metadata:
+  name: training-cq
+spec:
+  preemption:
+    reclaimWithinCohort: LowerPriority          <i class="conum" data-value="1"></i><b>(1)</b>
+    # NO borrowWithinCohort policy              <i class="conum" data-value="2"></i><b>(2)</b>
+    withinClusterQueue: LowerPriority           <i class="conum" data-value="3"></i><b>(3)</b>
+  cohortName: gpu-cohort
+  # ... resourceGroups omitted for clarity</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>reclaimWithinCohort: LowerPriority</strong>: Training can only reclaim its lent quota by preempting workloads with priority &lt; 100. Since inference has priority 1000, training <strong>cannot</strong> reclaim from inference.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><strong>No borrowWithinCohort policy</strong>: Training has no <code>borrowWithinCohort</code> policy, meaning training <strong>cannot</strong> preempt other workloads to borrow. Training can only use GPUs that are genuinely idle in the cohort.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><strong>withinClusterQueue: LowerPriority</strong>: Lower-priority training jobs are preempted first within the training queue.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><strong>Practical effects:</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>❌ <strong>Training cannot preempt inference to borrow GPUs</strong>: Training can only borrow from the cohort if GPUs are idle. It cannot force inference workloads off GPUs.</p>
+</li>
+<li>
+<p>⚠️ <strong>Training reclaim is limited</strong>: Training can only reclaim its lent quota from workloads with priority &lt; 100. Since inference has priority 1000, training cannot reclaim from inference.</p>
+</li>
+<li>
+<p>✅ <strong>Training protects within its own queue</strong>: Lower-priority training jobs are preempted first.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_preemption_decision_matrix"><a class="anchor" href="#_preemption_decision_matrix"></a>Preemption Decision Matrix</h3>
+<div class="paragraph">
+<p>The following table shows how preemption works in common scenarios:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 42.8571%;">
+<col style="width: 28.5714%;">
+<col style="width: 28.5715%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Scenario</th>
+<th class="tableblock halign-left valign-top">Inference Action</th>
+<th class="tableblock halign-left valign-top">Training Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inference needs 4th GPU, training using 1 guaranteed GPU</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Preempts training</strong> (reclaim lent quota)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Training workload suspended</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inference idle with 3 GPUs, training wants to borrow</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No action</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Training borrows up to 2 (total 3), no preemption needed</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Training using 3 borrowed GPUs, inference needs 1</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Inference preempts training</strong> (reclaim lent quota)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Training drops to 0, workload suspended</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Both teams at guaranteed quotas (3+1), inference wants 4th</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Inference preempts training</strong> (borrow via priority)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Training suspended</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Both teams at guaranteed quotas (3+1), training wants 2nd</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No action</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Training <strong>cannot</strong> preempt inference, workload stays pending</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><strong>Never configure training with a <code>borrowWithinCohort</code> policy in production.</strong> This would allow training to preempt inference, breaking inference SLA guarantees. Asymmetric preemption is the critical design pattern that protects customer-facing workloads.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_hardware_profiles_for_self_service"><a class="anchor" href="#_hardware_profiles_for_self_service"></a>Hardware Profiles for Self-Service</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Hardware Profiles (introduced in OpenShift AI 3.3+) provide <strong>self-service</strong> GPU selection in the OpenShift AI dashboard. Data scientists select a profile when launching a workbench or serving runtime, and the platform automatically routes the workload to the correct LocalQueue with the appropriate priority.</p>
+</div>
+<div class="paragraph">
+<p>This eliminates the need for data scientists to understand Kueue internals—they simply choose "highPriority" or "lowPriority" from a dropdown.</p>
+</div>
+<div class="sect2">
+<h3 id="_hardware_profile_comparison"><a class="anchor" href="#_hardware_profile_comparison"></a>Hardware Profile Comparison</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Attribute</th>
+<th class="tableblock halign-left valign-top">highpriority (Inference)</th>
+<th class="tableblock halign-left valign-top">lowpriority (Training)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Display Name</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">highPriority</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">lowPriority</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>GPU Range</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1-4 GPUs (can request up to 4)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1-3 GPUs (limited to 3 max)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Routes to LocalQueue</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>team-inference</code> (in <code>team-inference</code> namespace)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>team-training</code> (in <code>team-training</code> namespace)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Assigns Priority</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>inference-priority</code> (value: 1000)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>training-priority</code> (value: 100)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Preemption Behavior</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Can preempt training workloads</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subject to preemption by inference</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Use Case</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Customer-facing inference APIs with SLA requirements</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Long-running model training and fine-tuning</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_user_experience_workflow"><a class="anchor" href="#_user_experience_workflow"></a>User Experience Workflow</h3>
+<div class="paragraph">
+<p>When a data scientist uses a Hardware Profile in the OpenShift AI dashboard, the following workflow executes automatically:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p><strong>Data scientist opens OpenShift AI dashboard</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Navigates to <strong>Data Science Projects</strong> → Select project → <strong>Workbenches</strong></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Clicks "Create Workbench"</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Provides workbench name, notebook image, and resource requests</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Selects hardware profile: "highPriority"</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Chooses from dropdown: <code>highPriority</code> or <code>lowPriority</code></p>
+</li>
+<li>
+<p>Adjusts GPU count slider: 1-4 GPUs for highPriority</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Clicks "Create"</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p>Workbench creation request submitted</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Platform automatically routes workload</strong> (behind the scenes):</p>
+<div class="ulist">
+<ul>
+<li>
+<p>OpenShift AI injects label: <code>kueue.x-k8s.io/queue-name: team-inference</code></p>
+</li>
+<li>
+<p>OpenShift AI injects label: <code>kueue.x-k8s.io/priority-class: inference-priority</code></p>
+</li>
+<li>
+<p>Kueue detects labels and routes workload to <code>team-inference</code> LocalQueue</p>
+</li>
+<li>
+<p>LocalQueue routes to <code>inference-cq</code> ClusterQueue</p>
+</li>
+<li>
+<p>Kueue admits workload based on quota and preemption policies</p>
+</li>
+<li>
+<p>Kubernetes scheduler places workload on GPU node (via ResourceFlavor node selectors)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><strong>Data scientist sees workload status in dashboard</strong></p>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Pending</strong>: Waiting for quota (queued in Kueue)</p>
+</li>
+<li>
+<p><strong>Running</strong>: Admitted and scheduled</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Hardware Profiles provide a <strong>zero-touch Kueue integration</strong> for data scientists. They don&#8217;t need to know about ClusterQueues, LocalQueues, or WorkloadPriorityClasses. The platform team configures these mappings once, and data scientists get automatic queue routing and priority assignment based on their hardware selection.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_hardware_profile_configuration_example"><a class="anchor" href="#_hardware_profile_configuration_example"></a>Hardware Profile Configuration Example</h3>
+<div class="paragraph">
+<p>The <code>highpriority</code> Hardware Profile YAML shows the key configuration fields:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-yaml hljs" data-lang="yaml">apiVersion: infrastructure.opendatahub.io/v1
+kind: HardwareProfile
+metadata:
+  name: highpriority
+  namespace: redhat-ods-applications              <i class="conum" data-value="1"></i><b>(1)</b>
+  annotations:
+    opendatahub.io/display-name: highPriority
+spec:
+  identifiers:
+  - identifier: nvidia.com/gpu                    <i class="conum" data-value="2"></i><b>(2)</b>
+    displayName: NVIDIA L4
+    resourceType: Accelerator
+    minCount: 1
+    maxCount: 4                                   <i class="conum" data-value="3"></i><b>(3)</b>
+    defaultCount: 1
+  scheduling:
+    type: Queue                                   <i class="conum" data-value="4"></i><b>(4)</b>
+    kueue:
+      localQueueName: team-inference              <i class="conum" data-value="5"></i><b>(5)</b>
+      priorityClass: inference-priority           <i class="conum" data-value="6"></i><b>(6)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><strong>namespace: redhat-ods-applications</strong>: Hardware Profiles must be created in the OpenShift AI operator namespace.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td><strong>identifier: nvidia.com/gpu</strong>: Specifies GPU resource type (matches Kubernetes resource name).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td><strong>maxCount: 4</strong>: Matches the inference ClusterQueue&#8217;s max usable GPUs (3 guaranteed + 1 borrowed).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td><strong>scheduling.type: Queue</strong>: Enables Kueue integration (alternative: <code>type: None</code> for direct scheduling).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td><strong>localQueueName: team-inference</strong>: Routes workloads to the <code>team-inference</code> LocalQueue in the <code>team-inference</code> namespace.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td><strong>priorityClass: inference-priority</strong>: Assigns priority 1000, enabling preemption of training workloads.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The <code>lowpriority</code> Hardware Profile has similar structure but routes to <code>team-training</code> LocalQueue with <code>training-priority</code> (value: 100) and <code>maxCount: 3</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_production_considerations"><a class="anchor" href="#_production_considerations"></a>Production Considerations</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_when_to_use_separate_cohorts_vs_single_cohort"><a class="anchor" href="#_when_to_use_separate_cohorts_vs_single_cohort"></a>When to Use Separate Cohorts vs. Single Cohort</h3>
+<div class="paragraph">
+<p>The reference architecture uses a <strong>single cohort</strong> for simplicity and maximum GPU utilization. However, some scenarios require <strong>separate cohorts</strong> for strict isolation.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 37.5%;">
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Use Case</th>
+<th class="tableblock halign-left valign-top">Recommendation</th>
+<th class="tableblock halign-left valign-top">Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inference and training teams, both using GPUs regularly</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Single cohort</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Maximize utilization via borrowing. Inference can reclaim when needed via preemption.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Separate business units with strict isolation requirements</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Separate cohorts</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No quota borrowing across BUs. Each BU has guaranteed capacity with no cross-BU preemption.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Mix of preemptible (training) and non-preemptible (inference) workloads</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Single cohort with preemption policies</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Protect inference via asymmetric preemption (this chapter&#8217;s pattern).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Development and production environments</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Separate cohorts</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Prevent dev workloads from affecting prod. Use separate ClusterQueues in different cohorts.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multi-region deployments with geo-specific quotas</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>Separate cohorts per region</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Each region&#8217;s cohort maps to that region&#8217;s GPU node pool. No cross-region borrowing.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>For revenue-generating MaaS platforms, <strong>start with a single cohort</strong> and asymmetric preemption. Only split into multiple cohorts if you have strict isolation requirements (compliance, multi-tenancy SLAs, geographic boundaries). Premature cohort splitting reduces GPU utilization by preventing elastic quota sharing.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_sizing_recommendations"><a class="anchor" href="#_sizing_recommendations"></a>Sizing Recommendations</h3>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 37.5%;">
+<col style="width: 37.5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Cluster Size</th>
+<th class="tableblock halign-left valign-top">Recommended Cohort Strategy</th>
+<th class="tableblock halign-left valign-top">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>&lt; 8 GPUs</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Single cohort, 2-3 ClusterQueues</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Simple, effective for small teams. Use asymmetric preemption to protect critical workloads.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>8-32 GPUs</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">2-3 cohorts (by workload type: inference, training, interactive)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Balance fairness and utilization. Example: inference-cohort (12 GPUs), training-cohort (16 GPUs), dev-cohort (4 GPUs).</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><strong>&gt; 32 GPUs</strong></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Multiple cohorts + hierarchical quotas</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Consider geographic or org-unit based cohorts. Use namespaceSelector to isolate tenants.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_monitoring_and_alerting_preview"><a class="anchor" href="#_monitoring_and_alerting_preview"></a>Monitoring and Alerting Preview</h3>
+<div class="paragraph">
+<p>Effective GPU-as-a-Service operations require real-time visibility. Section 4 (Monitoring and Observability) covers the Grafana dashboard in detail, but key metrics to watch include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Quota utilization</strong>: <code>kueue_cluster_queue_resource_usage / kueue_cluster_queue_nominal_quota &gt; 0.95</code> indicates quota exhaustion</p>
+</li>
+<li>
+<p><strong>Pending workloads</strong>: <code>kueue_pending_workloads &gt; 10</code> for 5+ minutes indicates backlog</p>
+</li>
+<li>
+<p><strong>Eviction rate</strong>: <code>rate(kueue_evicted_workloads_total[1h]) &gt; 5</code> indicates high preemption activity</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Section 4 provides alert rules, operational runbooks, and Grafana dashboard configuration.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_whats_next"><a class="anchor" href="#_whats_next"></a>What&#8217;s Next</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the next lab, you will deploy the GPU-as-a-Service configuration using Kustomize or ArgoCD. You&#8217;ll create the Cohort, ClusterQueues, LocalQueues, ResourceFlavors, and WorkloadPriorityClasses, then verify quota allocation and preemption policies.</p>
+</div>
+<div class="paragraph">
+<p>This hands-on deployment will reinforce your understanding of how the cohort architecture, asymmetric preemption, and multi-tenant quota management work together.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="index.html">Implement GPU-as-a-Service</a></span>
+  <span class="next"><a href="s2-configure-quotas-lab.html">Lab: Configure GPU Quotas and Queues</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
