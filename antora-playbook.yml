@@ -1,6 +1,6 @@
 site:
   title: MaaS Workload Scheduling with Kueue
-  start_page: REPLACEREPONAME::index.adoc
+  start_page: maas-kueue-enablement::index.adoc
 
 content:
   sources:

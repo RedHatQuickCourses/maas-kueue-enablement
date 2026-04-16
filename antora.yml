@@ -1,4 +1,4 @@
-name: REPLACEREPONAME
+name: maas-kueue-enablement
 title: MaaS Workload Scheduling with Kueue
 version: 1
 nav:
