@@ -4,8 +4,4 @@ version: 1
 nav:
 - modules/ROOT/nav.adoc
 - modules/LABENV/nav.adoc
-- modules/ch1-foundations/nav.adoc
-- modules/ch2-cohorts/nav.adoc
-- modules/ch3-preemption/nav.adoc
-- modules/ch4-gpu-as-a-service/nav.adoc
 - modules/ch5-kueue/nav.adoc
