@@ -22,11 +22,17 @@
     if (progress.indexOf(currentUrl) === -1) {
       progress.push(currentUrl)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
+      console.log('[Progress Tracker] Marked as visited:', currentUrl)
+    } else {
+      console.log('[Progress Tracker] Already visited:', currentUrl)
     }
   }
 
   function updateNavigationMarks() {
     var progress = getProgress()
+    console.log('[Progress Tracker] Stored progress:', progress)
+    console.log('[Progress Tracker] Current URL:', normalizeUrl(window.location.pathname))
+
     document.querySelectorAll('[data-progress-path]').forEach(function (link) {
       // Extract pathname from the actual href to match what we store
       var linkUrl
@@ -39,8 +45,17 @@
         linkUrl = normalizeUrl(link.getAttribute('data-progress-path'))
       }
       var mark = link.querySelector('.nav-progress-mark')
+
+      console.log('[Progress Tracker] Checking link:', {
+        href: link.href,
+        linkUrl: linkUrl,
+        hasMarkElement: !!mark,
+        isVisited: progress.indexOf(linkUrl) !== -1
+      })
+
       if (mark && progress.indexOf(linkUrl) !== -1) {
         mark.style.display = 'inline'
+        console.log('[Progress Tracker] ✓ Showing checkmark for:', linkUrl)
       }
     })
   }
@@ -54,6 +69,35 @@
   window.clearCourseProgress = function() {
     localStorage.removeItem(STORAGE_KEY)
     location.reload()
+  }
+
+  // Debug function to help troubleshoot
+  window.debugProgressTracker = function() {
+    var progress = getProgress()
+    var currentUrl = normalizeUrl(window.location.pathname)
+    var navLinks = document.querySelectorAll('[data-progress-path]')
+
+    console.log('=== Progress Tracker Debug Info ===')
+    console.log('Current URL:', currentUrl)
+    console.log('Stored Progress:', progress)
+    console.log('Total nav links:', navLinks.length)
+
+    navLinks.forEach(function(link, index) {
+      var absoluteUrl = new URL(link.href, window.location.origin)
+      var linkUrl = normalizeUrl(absoluteUrl.pathname)
+      var mark = link.querySelector('.nav-progress-mark')
+
+      console.log('Link #' + index + ':', {
+        text: link.textContent.trim(),
+        href: link.href,
+        pathname: absoluteUrl.pathname,
+        normalized: linkUrl,
+        hasCheckmark: !!mark,
+        isVisited: progress.indexOf(linkUrl) !== -1,
+        checkmarkVisible: mark ? mark.style.display : 'N/A'
+      })
+    })
+    console.log('===================================')
   }
 
   if (document.readyState === 'loading') {
