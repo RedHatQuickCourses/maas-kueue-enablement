@@ -196,6 +196,15 @@ For issues or questions:
 - Review browser console for errors
 - Verify all files were copied correctly during installation
 
-## Version
+## Version History
 
-v1.0 - Initial release
+**v1.1** (2026-05-12)
+- Fixed GitHub Pages URL matching issue
+- Checkmarks now appear correctly on GitHub Pages deployments
+- Improved URL normalization using link href instead of data attributes
+
+**v1.0** (2026-05-12)
+- Initial release
+- localStorage-based progress tracking
+- Reading time estimates
+- Tab and collapsible section support

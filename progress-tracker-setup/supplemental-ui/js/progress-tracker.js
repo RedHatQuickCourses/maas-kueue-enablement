@@ -28,7 +28,16 @@
   function updateNavigationMarks() {
     var progress = getProgress()
     document.querySelectorAll('[data-progress-path]').forEach(function (link) {
-      var linkUrl = normalizeUrl(link.getAttribute('data-progress-path'))
+      // Extract pathname from the actual href to match what we store
+      var linkUrl
+      try {
+        // Convert relative href to absolute URL, then extract pathname
+        var absoluteUrl = new URL(link.href, window.location.origin)
+        linkUrl = normalizeUrl(absoluteUrl.pathname)
+      } catch (e) {
+        // Fallback to data-progress-path if URL parsing fails
+        linkUrl = normalizeUrl(link.getAttribute('data-progress-path'))
+      }
       var mark = link.querySelector('.nav-progress-mark')
       if (mark && progress.indexOf(linkUrl) !== -1) {
         mark.style.display = 'inline'
