@@ -1,0 +1,167 @@
+:time_estimate: 10
+
+= The High-Speed Interconnect Loop
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Diagnose a 2-node escalation where continuous token-sharing saturates high-speed interconnects, proving that model sizing must match physical footprints.
+
+== The Scenario
+
+This is the most urgent case.
+You receive a page at 6 AM -- a customer escalation marked "relationship critical."
+
+An enterprise retail conglomerate hired an external strategy consultancy to accelerate their AI roadmap.
+The consultancy recommended deploying a state-of-the-art Mixture of Experts (MoE) model -- 141 billion parameters, 16 expert sub-networks -- to power a customer-facing product recommendation engine expected to generate $50M in incremental annual revenue.
+
+The customer's platform team, guided by the consultancy, deployed the model across a 2-node cluster with 8x H100 GPUs per node (16 GPUs total).
+On paper, the VRAM was sufficient: 141B parameters at FP16 requires ~282GB, and 16x H100s provide 1,280GB total.
+
+But the environment collapsed under load.
+Inference latency spiked from 200ms to 12 seconds.
+Token throughput dropped by 90%.
+The customer-facing application is returning timeouts.
+The CEO is threatening to cancel the entire AI program and fire the platform team.
+
+Your colleague's last note in the file reads: "This is not a software problem. This is physics."
+
+== Training vs. Inference Hardware
+
+The consultancy's "VRAM is sufficient" analysis was fatally incomplete.
+VRAM capacity tells you whether a model _fits_ in memory.
+It tells you nothing about whether the model can _perform_ at production speed.
+MoE models have a fundamentally different hardware profile than dense models during inference, and ignoring that difference is what brought this environment to its knees.
+
+Dense Models (e.g., Llama-3 70B)::
+Every token passes through every parameter.
+The model weights are loaded once and reused.
+The primary bottleneck is VRAM capacity and memory bandwidth.
+Multi-node serving is possible with tensor parallelism, but the communication overhead is predictable and bounded.
+When you split a dense model across two nodes, each node handles a fixed slice of every layer.
+The data that crosses the network is consistent in volume and timing -- you can measure it, predict it, and engineer for it.
+
+MoE Models (e.g., Mixtral, DBRX)::
+Only a subset of "expert" sub-networks activate per token (typically 2 of 16).
+This reduces compute per token -- but creates a massive coordination problem.
+The routing layer must decide which experts to activate for each token, and those experts may reside on different nodes.
+Unlike tensor parallelism, where each node always processes the same slice, MoE routing is _dynamic_.
+Different tokens activate different experts.
+The network traffic pattern changes with every single inference request.
+
+The following table summarizes the key differences:
+
+[cols="2,2,2",options="header"]
+|===
+| Characteristic | Dense Model | MoE Model
+
+| Parameters active per token
+| 100%
+| 12-25% (2 of 8-16 experts)
+
+| Compute per token
+| High
+| Lower
+
+| Memory footprint
+| Weight count x precision
+| Full weight count (all experts loaded)
+
+| Inter-node communication
+| Bounded (tensor splits)
+| Continuous (expert routing)
+
+| Network sensitivity
+| Moderate
+| Extreme
+|===
+
+The consultancy looked at the VRAM column and concluded the infrastructure was adequate.
+They never considered the inter-node communication row.
+That single oversight is the root cause of the catastrophic failure.
+
+=== The Interconnect Saturation Loop
+
+This is the core technical lesson of the module.
+The failure is not a single point of breakdown -- it is a _feedback loop_ that accelerates until the system becomes completely unresponsive.
+Here is how it unfolds, step by step:
+
+*Step 1: Token generation begins.*
+A user sends a request to the product recommendation engine.
+The model's routing layer examines the input and selects 2 of 16 experts for the current token.
+This routing decision happens at the speed of a single GPU operation -- microseconds.
+
+*Step 2: Expert activation.*
+The selected experts may reside on Node A, Node B, or split across both.
+With 16 experts distributed across 2 nodes, the probability of a cross-node activation is high -- roughly 50% for any given token.
+When the activation is split, the intermediate activations (the numerical outputs of one expert that feed into the combination layer) must transfer between nodes over the high-speed interconnect.
+
+*Step 3: The synchronization barrier.*
+Before the next token can be generated, ALL expert outputs must be collected and combined.
+The routing layer on the primary node _waits_ for the remote expert to respond.
+This is not optional -- the model architecture requires the combined output of both experts to produce a single token.
+The wait time is bounded by network latency plus transfer time, not by GPU compute speed.
+
+*Step 4: The saturation loop.*
+At production load (hundreds of concurrent requests), every token generation triggers cross-node communication.
+The high-speed interconnect (InfiniBand or RoCE) becomes the bottleneck -- not the GPUs.
+The GPUs are actually idle 60-80% of the time, waiting for network transfers to complete.
+Each waiting request holds GPU memory for its KV-cache, reducing the available capacity for new requests.
+The interconnect, no matter how fast, has a fixed bandwidth ceiling.
+When hundreds of requests each demand their own cross-node expert activations, the aggregate bandwidth demand exceeds what the network can deliver.
+
+*Step 5: Cascade failure.*
+As latency increases, request queues grow.
+More queued requests mean more concurrent expert routing.
+More routing means more network traffic.
+The system enters a death spiral where adding more requests makes _every_ request slower.
+This is not a graceful degradation -- it is an exponential collapse.
+The system went from 200ms to 12 seconds not because load doubled, but because the interconnect saturation loop compounded with every additional concurrent request.
+
+This failure mechanism is fundamentally different from a dense model's tensor parallelism, where the communication pattern is predictable and the data volume per transfer is fixed.
+In tensor parallelism, Node A always sends the same size tensor slice to Node B at the same point in each layer.
+You can calculate the exact bandwidth requirement before you ever deploy the model.
+MoE routing is dynamic -- different tokens activate different experts -- so the network traffic pattern is unpredictable and bursty.
+You cannot engineer for the average case because the worst case is what kills you at production scale.
+
+IMPORTANT: The consultancy's error was not incompetence -- it was applying dense-model infrastructure logic to an MoE architecture. The VRAM was sufficient. The compute was sufficient. The network was not. This is a "Decision Past" -- a decision made with incomplete information that now constrains all future options.
+
+== When Physics Overrules Architecture
+
+The CEO asked for the "biggest, best model" because the consultancy positioned model size as a proxy for capability.
+Bigger model, better recommendations, more revenue.
+That logic is not inherently wrong -- larger models do tend to produce higher-quality outputs.
+But capability is irrelevant if the infrastructure cannot deliver it at production speed.
+
+The model is technically running.
+It is producing correct recommendations.
+It is just running 60x slower than required.
+
+Frame this using the Revenue Growth pillar: the $50M revenue projection is based on sub-200ms response times.
+At 12-second latency, the customer-facing application is unusable.
+Users abandon the page.
+The recommendation engine never renders.
+The revenue projection is zero.
+
+The infrastructure investment is not generating revenue -- it is _blocking_ it.
+The customer spent millions on GPUs, networking, and platform engineering to deploy a model that is functionally offline.
+Every day the system stays in this state, the business case for AI erodes further.
+The CEO's threat to cancel the AI program is not irrational -- from their perspective, the evidence says AI does not work.
+
+The reality is more nuanced: AI works.
+This _specific deployment architecture_ does not work for _this specific model type_ on _this specific infrastructure footprint_.
+Your job is to make that distinction clear, without blame, and with actionable options.
+
+TIP: When a customer is in a "Decision Past" crisis, resist the urge to say "you should have asked us first." Instead, say: "Let us focus on your options from here." The goal is to be the person who solves the problem, not the person who was right all along.
+
+== What's Next
+
+Now that you can diagnose the interconnect saturation, the next section puts you in the post-decision seat. You will step into a failing environment and confidently advise the CIO whether they need to procure more hardware or select a different model.
+
+////
+**Topic Scenario 7: The High-Speed Interconnect Loop:**
+Diagnosing a 2-node escalation where continuous token-sharing saturates high-speed interconnects, proving that model sizing must match physical footprints.
+
+Format: Arcade Interaction
+////

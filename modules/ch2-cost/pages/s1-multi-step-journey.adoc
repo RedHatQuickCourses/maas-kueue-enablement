@@ -1,0 +1,125 @@
+:time_estimate: 10
+
+= Mapping the Multi-Step Journey
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Defeat the laptop illusion by breaking down the intermediate infrastructure steps between local testing and production to align hardware expectations.
+
+== The Scenario
+
+You open the second case file. A major logistics corporation invested $8M in a GPU-accelerated data center to power predictive routing, demand forecasting, and autonomous warehouse AI. The business case was compelling: replace three legacy optimization systems with a unified AI platform, cut delivery times by 20 percent, and reduce fuel costs through smarter route planning.
+
+Six months in, the CFO's office ran a routine infrastructure audit and discovered that the average GPU utilization across the entire cluster was *15 percent*. Not during off-hours — _on average_, including peak operational windows.
+
+The CFO immediately froze all future AI funding, calling the investment "the most expensive space heater in the building."
+
+Your colleague had been working on a technical architecture review but never presented the utilization problem as a solvable financial equation. The engagement stalled because the conversation stayed in the server room instead of moving to the boardroom. The customer's platform engineering team knows the hardware is underutilized — they just cannot explain to finance why _more spending_ (on scheduling software, not more GPUs) will fix the problem.
+
+This is the pattern you see repeatedly in enterprise AI: the gap between what engineering knows and what finance will fund. The engineers speak in utilization percentages and queue depths; the CFO speaks in depreciation schedules and return on invested capital. Neither side is wrong — they are looking at the same problem through different lenses. Your job is to bridge that gap — not with jargon, but with a financial model that makes the solution obvious.
+
+== The Laptop Illusion at Scale
+
+In Module 1, you encountered the "laptop illusion" — the false belief that a model running on a developer's workstation translates directly to a production deployment. The logistics corporation fell into exactly this trap, but at an $8M scale.
+
+Their data science team prototyped predictive routing models on high-end workstations equipped with consumer-grade GPUs. The models worked. Inference was fast. The team demonstrated results to leadership. The natural next request: "Give us the same thing, but bigger."
+
+What they actually needed was fundamentally different infrastructure — not a scaled-up laptop, but a shared compute platform with intelligent scheduling, workload isolation, and resource management. The difference matters because enterprise AI workloads are not one thing. They are at least three competing categories of work, all fighting for the same GPU resources:
+
+*Batch training jobs* run for hours or days, consuming entire GPUs at high utilization while they execute. They are throughput-sensitive and can tolerate queuing delays — a training run that starts at 2 AM instead of midnight still delivers the same model. But they need large, contiguous blocks of GPU time.
+
+*Interactive development notebooks* are the opposite pattern. Data scientists launch a Jupyter notebook, load a model, run a few experiments, review results, modify code, and repeat. The GPU is _actively_ used perhaps 20 percent of the time the notebook is open. The other 80 percent, the GPU sits idle — allocated but doing nothing — because the data scientist might need it at any moment.
+
+*Always-on inference endpoints* need guaranteed latency. A predictive routing API that takes 30 seconds to respond is worthless when a truck is waiting at a loading dock. These endpoints must have reserved capacity, but the reservation is often sized for peak traffic. At 3 AM, that reserved GPU is serving almost no requests.
+
+Without intelligent scheduling, these three workload types step on each other. Interactive notebooks "park" on GPUs that batch training desperately needs. Inference endpoints are over-provisioned "just in case" peak traffic materializes. The result is what the logistics corporation experienced: expensive hardware sitting mostly idle, with every team convinced they need _more_ GPUs because _theirs_ are always busy.
+
+== AI Unit Economics
+
+The utilization problem is not just a technical inconvenience — it is a financial multiplier that determines whether an AI investment pays off in three years or thirty. To make this case to a CFO, you need a financial framework that translates utilization percentages into dollar figures.
+
+=== GPU Depreciation Rate
+
+Enterprise GPUs depreciate on a 3-5 year cycle. An NVIDIA H100 GPU at approximately $30,000 depreciates at roughly *$25 per day* on a 3-year schedule, or about $16 per day on a 5-year schedule. This depreciation clock runs continuously — it does not pause when the GPU is idle, when a team is on vacation, or when a model is being debugged.
+
+At 15 percent utilization, the effective cost per useful compute-hour is *6.7 times higher* than at 100 percent utilization. The customer is paying full price for a resource they use less than one-sixth of the time. Think of it as leasing a fleet of delivery trucks but only driving them on Mondays — the lease payments do not shrink because the trucks are parked Tuesday through Friday.
+
+=== Stranded CapEx
+
+When a GPU sits idle, it generates what financial analysts call "stranded capital expenditure." The asset exists on the balance sheet at its depreciated book value, but it is not producing economic output proportional to its cost. For the logistics corporation's $8M investment, the math is brutal:
+
+* 40 GPUs at 15 percent utilization means 34 GPU-equivalents are idle at any given time
+* At $25/day depreciation per GPU, the idle fleet costs approximately *$7,400 per day* in stranded depreciation
+* Over a full year, that is approximately *$2.7M* in capital that is depreciating without producing proportional value
+
+This is the number that changes a CFO's mind. Not "utilization is low" — that is an engineering metric. "You are losing $2.7M per year in stranded depreciation" — that is a financial crisis.
+
+The following table summarizes the financial impact of moving from 15 percent to 80 percent utilization:
+
+[cols="1,1,1,1",options="header"]
+|===
+| Metric | At 15% Utilization | At 80% Utilization | Delta
+
+| Effective cost per GPU-hour
+| $167
+| $31
+| -81%
+
+| Annual stranded CapEx
+| $2.7M
+| $0.5M
+| -$2.2M saved
+
+| Workloads served per GPU
+| 1.2
+| 6.4
+| +433%
+
+| Break-even timeline
+| 18+ years
+| 3.4 years
+| Achievable
+|===
+
+The "break-even timeline" row is particularly powerful in CFO conversations. At 15 percent utilization, the $8M investment would need over 18 years to generate enough value to justify its cost — far beyond the hardware's useful life and well past the point where the GPUs are technologically obsolete. At 80 percent utilization, the break-even point falls within the standard depreciation cycle. The investment becomes rational. This is not an abstract improvement — it is the difference between an asset that appears on the balance sheet as a loss and one that justifies its next funding cycle.
+
+=== Data Center Physics
+
+The utilization problem does not exist in isolation. It compounds with physical infrastructure constraints that add hidden costs to every idle GPU.
+
+Legacy enterprise data centers are designed for traditional compute workloads: file servers, databases, web application clusters. These racks are provisioned for *10-15 kW per rack*. Modern AI training workloads — especially distributed training across multiple GPUs — demand *40-100+ kW per rack*. This power density gap means that even when a customer has available rack space, they may lack the electrical and cooling capacity to fill it.
+
+The logistics corporation ran into exactly this problem. They had rack space for 60 GPUs but could only power and cool 40 of them. When they over-provisioned those 40 GPUs to ensure availability for each team (allocating dedicated GPUs per group rather than sharing a pool), they created a *double waste*: idle compute burning electricity and unused power headroom that could serve additional workloads if the existing GPUs were properly shared.
+
+There is a concept worth introducing to your CFO conversations: *thermal CapEx*. The cooling infrastructure required for high-density AI racks — liquid cooling loops, upgraded CRAC units, hot-aisle containment — often costs *30-40 percent* of the GPU hardware itself. For the logistics corporation, that means roughly $2.5M of their investment went to cooling infrastructure. If that cooling is serving GPUs at 15 percent utilization, a significant portion of the thermal CapEx is pure waste — the cooling system is provisioned for a heat load that never materializes because the GPUs are mostly idle.
+
+This physical reality strengthens the business case for scheduling and orchestration: better utilization of existing GPUs means the customer can defer expensive power and cooling upgrades. Every GPU-hour recovered from the existing cluster is a GPU-hour that does not require new rack space, new power circuits, or new cooling capacity.
+
+== The Business Translation
+
+You now have the financial framework. The question is how to present it to a CFO who has already frozen AI funding.
+
+The instinct is to lead with the technical problem: "Your GPUs are underutilized because you lack workload scheduling." But the CFO already knows utilization is low — that is precisely _why_ they froze funding. Leading with the problem just confirms their decision. Instead, lead with the asset.
+
+The correct framing: "Your $8M investment is not a failed bet — it is an *unlocked asset*. The hardware you already own is capable of delivering 5x the current output. The missing piece is scheduling software that converts fixed hardware silos into a shared utility pool. The incremental cost is less than 2 percent of the existing investment."
+
+This framing accomplishes three things:
+
+. It validates the original purchase decision rather than undermining it. The CFO approved that $8M — telling them it was a mistake creates an adversary.
+. It positions the solution as a small incremental spend, not a new capital request. Two percent of $8M is $160K — an operational line item, not a board-level expenditure.
+. It introduces the *Cost Reduction pillar* of the value framework: every dollar spent on scheduling and orchestration _multiplies_ the return on existing CapEx. The customer does not need more GPUs — they need to use the ones they have.
+
+TIP: Never tell a CFO their investment was a mistake. Tell them their investment is an asset waiting to be activated. The first framing creates an adversary; the second creates a partner.
+
+== What's Next
+
+Now that you can map the infrastructure journey, the next section dives into the specific technical decisions that drive costs. You will evaluate how context length, dense vs. sparse architectures, and other choices act as financial knobs that directly impact GPU and memory budgets.
+
+////
+**Topic Scenario 3: Mapping the Multi-Step Journey:**
+Defeating the laptop illusion by breaking down the intermediate infrastructure steps between local testing and production.
+
+Format: Arcade Interaction
+////

@@ -1,0 +1,9 @@
+= The Translation Gap & Platform Strategy
+
+Goal::
+
+Frame the AI offering as a complete "AI Factory" lifecycle and demonstrate how platform-rooted strategy prevents catastrophic implementation failures.
+
+It is your first day covering for your colleague on parental leave. Their primary account — a large commercial enterprise — is threatening to walk. Your predecessor was hyper-focused on implementation details and never helped the customer justify the capital expenditure to their C-suite. You need to reframe the entire conversation.
+
+This module introduces the foundational positioning: Red Hat's value is rooted in being the platform maintainer, not a disconnected business consultancy. You will learn to calculate comprehensive value across the full AI lifecycle.

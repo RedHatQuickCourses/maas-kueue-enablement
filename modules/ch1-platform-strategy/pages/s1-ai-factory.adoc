@@ -1,0 +1,102 @@
+:time_estimate: 8
+
+= The AI Factory Lifecycle
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Frame the AI offering as a complete "AI Factory" — from data science to distributed inference — to calculate comprehensive value instead of localized pilots.
+
+== The Scenario
+
+It is your first day covering for your colleague. You open their case management portal and find their primary account flagged red. The customer — a large commercial enterprise with 200+ developers — has been running small AI experiments on developer laptops for months. Your colleague spent weeks helping them configure `vLLM` serving runtimes and tune inference parameters. But the customer's VP of Engineering just escalated: the CIO is asking why they should spend millions on GPU infrastructure when "the developers already have AI running on their MacBooks."
+
+You pull up the account file and start reading. Your colleague's detailed technical documentation is impeccable. Every `InferenceService` manifest is annotated. The `vLLM` runtime parameters are tuned to the hardware profile. There are even benchmarks comparing `PagedAttention` throughput across different GPU configurations. The architecture diagrams are publication-quality. The troubleshooting runbook covers every failure mode they encountered during the pilot.
+
+But nowhere in the account file — not in the meeting notes, not in the quarterly business reviews, not in a single slide deck — is there a document that translates those technical capabilities into business outcomes. There is no total cost of ownership calculation. There is no comparison of build-versus-buy scenarios. There is no risk analysis that quantifies what happens if the AI initiative fails. The account file is a masterclass in _how_ to build the platform, with no explanation of _why_ the business should fund it.
+
+The customer does not need more technical depth. They need someone who can walk into a boardroom and connect the platform to the financial metrics the C-suite cares about. That is the gap you need to close, and you have two weeks before the next executive review.
+
+== The AI Factory Framework
+
+Most customers see AI as a collection of isolated experiments — a Jupyter notebook here, a model endpoint there, a chatbot proof-of-concept that a developer built over the weekend. These scattered "science projects" create a dangerous illusion: that AI is cheap, simple, and already working. The reality is that moving from experiment to enterprise capability requires an integrated system with dependencies at every layer.
+
+The *AI Factory* is a framework for presenting that integrated system. It describes an end-to-end lifecycle that encompasses data preparation, model training, fine-tuning, evaluation, serving, and monitoring. Each stage depends on the one before it, and each stage introduces distinct infrastructure requirements, operational costs, and business risks.
+
+The AI Factory framework matters because it forces a holistic conversation. When a customer only sees one stage — say, model serving — they evaluate it in isolation. They compare the cost of a single GPU node to the "free" laptop demo and conclude that AI infrastructure is overpriced. But when you present the full factory, every component has dependencies, and every dependency has a cost. The customer begins to see that the laptop demo skipped five stages of the lifecycle, and each skipped stage represents unmanaged risk.
+
+The following table breaks down each stage of the AI Factory, the technical components involved, and the business value each stage delivers:
+
+[cols="1,2,2",options="header"]
+|===
+| Stage | Technical Component | Business Value
+
+| Data Preparation
+| Data pipelines, vector databases
+| Reduces time-to-insight, protects IP
+
+| Training & Fine-Tuning
+| Distributed training, GPU clusters
+| Customizes models for competitive advantage
+
+| Evaluation
+| `EvalHub`, red-teaming, benchmarks
+| Proves accuracy, reduces liability
+
+| Serving & Inference
+| `vLLM`, `llm-d`, MaaS Gateway
+| Delivers user-facing AI at production SLA
+
+| Monitoring & Governance
+| `MLflow`, Model Registry, RBAC
+| Ensures compliance, enables auditability
+|===
+
+When you present only one stage — for example, inference — the CIO sees a cost center. They see GPU hardware, power consumption, and cooling expenses stacked against a developer laptop that "already works." But when you present the full factory, the CIO sees a *capability multiplier*. Data preparation protects the company's intellectual property. Training and fine-tuning create models that competitors cannot replicate. Evaluation proves those models are accurate and defensible. Serving delivers the capability to users at the speed they expect. Monitoring ensures the entire system remains compliant as regulations evolve.
+
+The AI Factory framework transforms the conversation from "how much does this cost?" to "what capabilities does this unlock, and what is the cost of _not_ having them?" This reframing is essential because CIOs do not approve budgets for technology — they approve budgets for outcomes. A $3M GPU cluster is an expense. An AI Factory that reduces customer churn by 15% and accelerates product development by 6 months is an investment.
+
+=== The "So-What" Ladder
+
+The "so-what ladder" is a technique for translating any technical feature into a business metric. The method is simple: for every technical statement, ask "so what?" and answer at the next level of abstraction. Keep climbing until you arrive at a number that a CFO would put on a spreadsheet.
+
+Here is an example chain:
+
+* "We use `vLLM` for optimized inference." → _So what?_
+* "It reduces GPU memory usage by 40% through PagedAttention." → _So what?_
+* "You can serve 3x more concurrent users on the same hardware." → _So what?_
+* "Your cost-per-inference drops from $0.12 to $0.04, saving $2.4M annually at scale."
+
+Notice that the ladder always terminates at one of three destinations:
+
+* *Cost Reduction* — the same outcome for less money (fewer GPUs, lower cloud spend, reduced headcount for manual processes)
+* *Risk Reduction* — lower probability of a costly failure (compliance violations, model hallucinations in production, security breaches)
+* *Revenue Growth* — new capabilities that generate top-line income (faster time-to-market, new AI-powered products, improved customer retention)
+
+Every technical feature in the `OpenShift AI` portfolio maps to at least one of these three destinations. If you cannot climb the ladder from a feature to one of these destinations, the feature is not ready for a business conversation — park it and revisit when you can articulate the business impact.
+
+Practice the ladder with your own product knowledge. Take any feature from `OpenShift AI` — hardware profiles, model registry, `Kueue` batch scheduling, distributed training operators — and climb until you reach cost, risk, or revenue. If you get stuck, it usually means you skipped a rung. Back up one level and ask a more specific "so what?" The ladder is a discipline, not an inspiration exercise.
+
+This three-destination framework is the foundation for every customer engagement in this course. In the modules that follow, you will apply the "so-what ladder" repeatedly — to GPU sizing, to model evaluation, to inference optimization — until the translation from technical capability to business outcome becomes automatic.
+
+== The Business Translation
+
+There is a critical distinction between Red Hat's position and that of a pure business consultancy. A firm like McKinsey or BCG can walk into a boardroom and recommend "adopt AI to reduce operational costs by 30%." That recommendation fits neatly into a strategy slide. But when the customer asks _how_ — which model architecture to deploy, which GPU configuration to provision, how to handle failover when an inference node goes down at 3 AM — the consultancy hands over a statement of work and brings in a systems integrator.
+
+Red Hat's field teams occupy a fundamentally different position. You are rooted in the platform. Every business recommendation you make is backed by specific, actionable architecture that runs on `OpenShift AI`. When you tell a customer that `vLLM` with `PagedAttention` will reduce their inference costs by 60%, you can prove it — because you maintain the platform those models run on. When you recommend a multi-node serving topology for high availability, you can point to the exact `LLMInferenceService` configuration that implements it.
+
+This is the *platform-rooted strategy* advantage. You are not selling a vision. You are selling a system that you build, support, and stand behind with a service-level agreement. The strategy and the implementation are inseparable.
+
+TIP: When a customer says "we already have a consulting firm advising us on AI strategy," your response is: "That is great — we work alongside strategy partners by grounding their recommendations in the infrastructure that has to actually deliver."
+
+== What's Next
+
+Now that you can frame the holistic AI Factory, the next section grounds that positioning in Red Hat's unique advantage. You will demonstrate how root-level platform maintainer status prevents the catastrophic implementation failures that disconnected business strategy creates.
+
+////
+**Topic Scenario 1: The AI Factory Lifecycle:**
+Framing the offering as a complete "AI Factory" (from data science to distributed inference) to calculate comprehensive value instead of localized pilots.
+
+Format: Presentation (Video Hook)
+////

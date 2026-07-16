@@ -1,0 +1,80 @@
+:time_estimate: 5
+
+= Mapping the Journey
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Map the 10 conversational scenarios to specific customer maturity stages and apply the downloadable field guides in real engagements.
+
+== The Full Picture
+
+Three weeks ago, you stepped into a cover assignment with no warning and three red-flagged accounts. When you opened the first case file, the enterprise customer was threatening to walk because nobody had translated `vLLM` configurations into boardroom language. The logistics corp's CFO had frozen $8M in GPU investment after discovering utilization was stuck at 15%. The financial services firm was paralyzed by a standoff between its CISO and its development team over proprietary data flowing to external APIs. And a retail conglomerate's 141B Mixture-of-Experts deployment had collapsed under interconnect saturation, with latency ballooning from 200ms to 12 seconds.
+
+Each crisis looked different on the surface. One was a communication failure. Another was a stranded capital problem. A third was a governance deadlock. The fourth was a raw architectural limit. But underneath, every one of them stemmed from the same root cause: _the gap between what the technology does and what the business needs to hear_.
+
+The *AI Factory lifecycle*, the "so-what ladder," the *Cost-Risk-Revenue* framework — these are not academic models. They are the connective tissue that turns a technical platform into a business outcome. You used the "so-what ladder" to climb from `Kueue` scheduling semantics to a CFO's operating margin. You used the Cost-Risk-Revenue pillars to reframe a CISO's security freeze as a governance opportunity. You used the Quantization VRAM Precision Matrix to give a CIO an honest, vendor-neutral decision framework when an external strategy partner was in the room.
+
+Every scenario in this course practiced the same discipline: start with the technical truth, then translate it until the business can act on it.
+
+== Customer Maturity Stage Map
+
+The table below maps each of the 10 scenarios you practiced to a customer maturity stage. This is your field reference — a diagnostic tool for identifying where a customer sits and which conversation to reach for first.
+
+[cols="1,2,2,2",options="header"]
+|===
+| Stage | Customer Signal | Recommended Scenario | Key Deliverable
+
+| Exploration
+| "We have developers experimenting with AI on laptops"
+| 1: AI Factory Lifecycle, 2: Platform-Rooted Strategy
+| "So-what ladder" + infrastructure journey table
+
+| Investment
+| "We bought GPU hardware but utilization is low"
+| 3: Multi-Step Journey, 4: Infrastructure Knobs
+| Unit economics model + `Kueue`/`InstaSlice` architecture
+
+| Governance
+| "Our security team is blocking AI deployment"
+| 5: MaaS Coin, 6: Data Governance
+| MaaS Gateway routing architecture + audit trail
+
+| Scale
+| "Our model deployment is failing under production load"
+| 7: Interconnect Loop, 8: "Decision Past"
+| Quantization VRAM Precision Matrix + phased remediation
+
+| Adoption
+| "Business sponsors won't remove human oversight"
+| 9: Financial Collaboration, 10: Bottom-Up Adoption
+| RACI Matrix + `EvalHub`/`MLflow` trust framework
+|===
+
+Customers do not always progress linearly through these stages. A customer at the "Scale" stage may circle back to "Governance" when they realize their MoE deployment exposed data handling gaps they had not addressed. A customer at "Adoption" may discover that their human-in-the-loop costs are rooted in an "Investment" problem — they never built the unit economics model that would justify the automation spend. The five stages are not a ladder. They are a diagnostic map. Your job is to listen for the customer signal, identify the stage, and select the right conversation. Sometimes that means running scenarios from two stages in the same meeting. Sometimes it means telling a customer they need to solve a problem they have not yet recognized.
+
+The scenarios are tools in a toolkit. The maturity stages tell you which tool to pick up first.
+
+== Carrying It Forward
+
+When your colleague returns next week, you hand them three accounts that are no longer flagged red. The enterprise customer has a funded AI Factory roadmap built on the "so-what ladder" you walked through with their VP of Engineering. The logistics corp's CFO has approved a `Kueue` proof-of-concept after seeing the unit economics model that turned $2.7M in stranded CapEx into a $2.2M annual saving. The financial firm's CISO and dev lead are collaborating — not fighting — on a MaaS Gateway deployment with enforceable data classification routing. The retail conglomerate has a phased quantization plan that restores production service while they evaluate a longer-term hardware expansion.
+
+More importantly, you have documented the playbook. Each scenario is a repeatable conversation framework — not a script, but a structure. The "so-what ladder" works in any account where a technical team cannot get executive buy-in. The Cost-Risk-Revenue pillars apply to any technology where the business case is unclear. The Quantization VRAM Precision Matrix helps any customer choosing between model compression and hardware expansion. The RACI Matrix and `EvalHub` trust framework apply wherever human-in-the-loop costs are blocking the transition from science project to enterprise utility.
+
+The technology will evolve. The models will get bigger. The GPUs will get faster. But the gap between infrastructure and business value will remain — and closing that gap is what turns a vendor into a trusted advisor.
+
+NOTE: This course focused on the business translation layer. The technical implementation details — `Kueue` configuration, `InstaSlice` MIG profiles, MaaS Gateway routing rules — are covered in the companion hands-on labs.
+
+== What's Next
+
+Congratulations on completing the Business Value of AI course. You are now equipped to translate deep technical expertise into the strategic language of Cost, Risk, and Revenue. Use the "ROI Alignment Matrix" and "Troubleshooting Multi-Node Performance" field guides in your next customer conversation.
+
+////
+**Mapping the Journey:**
+A summary of how to map these 10 conversational scenarios to the specific maturity stage of the customer.
+
+**Downloadable Assets:** The "ROI Alignment Matrix" and "Troubleshooting Multi-Node Performance" field guides for immediate field use.
+
+Format: Presentation / PDF
+////

@@ -1,0 +1,166 @@
+:time_estimate: 8
+
+= Financial Team Collaboration
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Align with a customer's corporate finance professionals, presenting clear cost, risk, and revenue metrics to secure funding to grow the project.
+
+== The Scenario
+
+You have been covering these accounts for two weeks now.
+The enterprise customer's AI infrastructure is stable -- the `OpenShift AI` cluster is healthy, the model serving endpoints are responding within SLA, and the GPU nodes are scheduling workloads without contention.
+The logistics corp's GPU utilization is climbing steadily as more teams onboard their forecasting models.
+The financial services firm's Models-as-a-Service (MaaS) Gateway is routing correctly, distributing inference requests across model versions without errors.
+But across all three accounts, the same pattern emerges: business sponsors are blocking the final step.
+
+The enterprise customer's Chief Risk Officer requires a human reviewer for every AI-generated recommendation before it reaches a client.
+The logistics corp's VP of Operations insists that every demand forecast be manually validated by an analyst before it feeds into the supply chain system.
+The financial firm's Head of Compliance demands human sign-off on every compliance document summary before it is filed with regulators.
+
+Each human-in-the-loop (HITL) requirement adds 4-8 hours of latency to workflows designed to operate in seconds.
+The ROI models -- which assumed full automation -- are failing because the "auto" in "automation" has been removed.
+What was projected as a real-time pipeline is functioning as a batch process gated by human availability.
+
+The business sponsors are not irrational.
+They have been burned by AI demos that looked great in a PowerPoint but hallucinated in production.
+They watched a competitor's chatbot generate regulatory filings with fabricated citations.
+They read about models that drifted silently after deployment and produced increasingly unreliable outputs for weeks before anyone noticed.
+They do not trust the outputs because no one has given them a reason to.
+
+== From Science Project to Enterprise Utility
+
+Most AI deployments stall at what you might call the "science project plateau" -- the model works in a demo, the engineering team is excited, but the business refuses to remove human oversight because there is no mathematical proof that the model will perform reliably in production.
+This is the trust gap.
+And it is the single most common reason that AI projects deliver a fraction of their projected value.
+
+The pattern is predictable.
+A data science team spends six months building a model.
+They achieve impressive benchmark results on a test dataset.
+They present to the business sponsor with a polished slide deck.
+The sponsor asks: "What happens when the model is wrong?"
+The data scientist says: "It is rarely wrong."
+The sponsor says: "Define 'rarely.'"
+Silence.
+
+The transition from science project to enterprise utility requires three things:
+
+Empirical Accuracy Benchmarks::
+Replace subjective "it looks good" evaluation with quantitative metrics: precision, recall, F1 score, hallucination rate, and latency percentiles.
+The business needs a number they can put in a risk report, not a demo they can watch.
++
+When the enterprise customer's Chief Risk Officer asks "how accurate is this model?", the answer cannot be "pretty accurate" or "we tested it on some examples."
+The answer must be: "96.2% precision on the compliance dataset, measured across 12,000 test cases, with a hallucination rate of 0.3% and a p95 latency of 1.2 seconds."
+That is a number that goes into a risk committee slide deck.
+
+Automated Regression Detection::
+Every model update, fine-tuning run, or prompt change must be automatically tested against a golden dataset.
+If accuracy drops below a threshold, the change is blocked before it reaches production.
++
+Without automated regression detection, every model update is a roll of the dice.
+The data science team pushes a new fine-tuned version that improves performance on one benchmark -- and silently degrades performance on the compliance dataset that the business sponsor cares about most.
+By the time anyone notices, the sponsor's confidence is destroyed and the HITL requirement is permanent.
+This is not hypothetical -- the logistics corp experienced exactly this scenario three months ago when a prompt template change improved response fluency but introduced a 12% increase in numerical errors in demand forecasts.
+
+Operational Boundaries::
+The AI platform needs clear ownership boundaries.
+Who owns the model?
+Who owns the data?
+Who owns the serving infrastructure?
+Who is responsible when it breaks?
++
+Without a clear RACI (Responsible, Accountable, Consulted, Informed) framework, every incident becomes a blame game that reinforces the sponsor's decision to keep humans in the loop.
+The data scientist says "the infrastructure was unreliable."
+The platform engineer says "the model was poorly optimized."
+The business sponsor says "I told you we needed human review" -- and tightens the requirement further.
+
+=== The Five-Persona Agentic Platform RACI Matrix
+
+The following RACI matrix defines who does what in a mature AI platform operation.
+This is not a theoretical exercise -- it is a key deliverable for every customer engagement where operational confusion is blocking adoption.
+
+[cols="2,1,1,1,1,1",options="header"]
+|===
+| Activity | Data Scientist | ML Engineer | Platform Engineer | Security/Compliance | Business Sponsor
+
+| Model selection & training
+| R, A
+| C
+| I
+| C
+| I
+
+| Model evaluation & benchmarking
+| R
+| R, A
+| I
+| C
+| I
+
+| Serving infrastructure
+| I
+| C
+| R, A
+| C
+| I
+
+| Data pipeline governance
+| C
+| I
+| C
+| R, A
+| I
+
+| Production accuracy SLA
+| C
+| C
+| I
+| C
+| R, A
+|===
+
+The RACI matrix solves a specific organizational failure: when data scientists are also responsible for infrastructure, they optimize for model performance and neglect operational reliability.
+When platform engineers are responsible for model accuracy, they over-provision hardware as a hedge rather than tuning the model serving configuration.
+Clear boundaries let each persona focus on what they are best at.
+
+Notice the last row.
+The *Business Sponsor* is Responsible and Accountable for the production accuracy SLA.
+This is deliberate.
+The business defines what "good enough" means -- not the data science team and not the platform team.
+When the sponsor owns the SLA, they have a direct incentive to set a realistic threshold and to trust the automated evaluation pipeline that measures against it.
+If they set the bar unrealistically high (99.9% precision on a subjective task), they will see the evaluation pipeline block every deployment and understand that the threshold needs adjustment.
+If they set it too low, they bear the risk.
+Ownership creates accountability, and accountability creates trust.
+
+== The Business Translation
+
+Frame the trust problem in financial terms.
+Consider a single customer workflow where a human reviewer processes AI outputs.
+
+If that reviewer handles 20 AI outputs per hour at a fully loaded cost of $85/hour, and the system generates 500 outputs per day, the HITL labor cost is *$2,125 per day* -- or approximately *$550,000 per year*.
+The original ROI model assumed that cost was zero because the workflow was supposed to be automated.
+
+The HITL requirement has turned a projected $3M annual savings into a $2.45M savings -- at best.
+In practice, the situation is often worse: human reviewers become the bottleneck, throughput drops, and the platform cannot scale to new use cases because every new workflow requires additional reviewer headcount.
+The enterprise customer has already experienced this: they wanted to expand the AI recommendation engine to three additional product lines, but the Chief Risk Officer pointed out that tripling the output volume would require tripling the review staff.
+The expansion was shelved.
+
+The goal is not to eliminate human oversight entirely.
+That is neither realistic nor desirable for high-stakes decisions.
+The goal is to reduce HITL from 100% review to *statistical sampling* -- reviewing 5% of outputs instead of 100% -- based on empirical proof that the model meets accuracy SLAs.
+That single change recovers over $500,000 in annual labor cost and removes the throughput bottleneck that prevents the platform from scaling.
+
+TIP: Never tell a business sponsor they are wrong to require human oversight. Instead, ask: "What evidence would convince you to reduce the review rate from 100% to 10%?" Then build that evidence.
+
+== What's Next
+
+Now that you can partner with finance to secure funding, the next section addresses the adoption challenge. You will learn to leverage self-service registries and pre-built operational workflows to drive organic developer adoption and prevent shelfware.
+
+////
+**Topic Scenario 9: Financial Team Collaboration:**
+How to align with a customer's corporate finance professionals, presenting clear cost, risk, and revenue metrics to secure funding to grow the project.
+
+Format: Arcade Interaction
+////

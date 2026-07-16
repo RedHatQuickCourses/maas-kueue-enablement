@@ -1,0 +1,92 @@
+:time_estimate: 7
+
+= The Platform-Rooted Strategy
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Demonstrate how root-level platform maintainer status prevents catastrophic implementation failures, proving that disconnected business strategy leads to massive technical debt.
+
+== Setting the Stage
+
+Your first real test arrives: a discovery call with the customer's *IT General Manager (ITGM)*. The ITGM is skeptical — they have seen three vendors this month, each promising "AI transformation." The first vendor offered a fully managed SaaS model that locks all data into a proprietary cloud. The second pitched a consulting engagement that would take six months just to produce a roadmap. The third — a GPU hardware vendor — showed up with a pricing sheet and no architecture.
+
+The ITGM wants to know specifically what Red Hat brings that the others do not. They are tired of strategy decks that dissolve on contact with reality. You have 30 minutes to shift the conversation from "how much does GPU infrastructure cost?" to "what does it cost us _not_ to build this correctly?"
+
+This is where the platform-rooted strategy becomes your primary differentiator. You are not here to sell a vision — you are here to demonstrate that strategy without platform expertise is just a slide deck with a budget attached to it.
+
+== Dismantling the Laptop Illusion
+
+The customer believes that going from a developer laptop to production is a two-step process: laptop, then data center. Their developers have been running AI models on MacBooks for months, and the results look impressive in demos. The implicit assumption is that production simply means "the same thing, but on a bigger computer."
+
+In reality, the path from laptop experiment to production AI is a multi-step journey with distinct infrastructure requirements at each stage. Each step introduces new hardware dependencies, new networking requirements, new storage tiers, and new operational complexity. The following table illustrates the journey:
+
+[cols="1,2,2,1",options="header"]
+|===
+| Stage | Hardware Profile | Model Capability | Relative Cost
+
+| Developer Laptop
+| 16GB RAM, no GPU
+| 7B quantized (INT4), 2K context
+| $0
+
+| Workstation
+| 1x NVIDIA A6000 (48GB)
+| 13B quantized (INT8), 4K context
+| $7K
+
+| Single Server
+| 4x A100 (320GB total)
+| 70B full-precision (FP16), 8K context
+| $150K
+
+| Multi-Node Cluster
+| 8x H100 (640GB total)
+| 405B full-precision, 128K context
+| $1.2M+
+
+| Production Fleet
+| Multi-cluster, HA, observability
+| Multiple models, SLA-backed, multi-tenant
+| $3M+
+|===
+
+Each step is not just "more GPUs." Moving from a single GPU workstation to a four-GPU server requires NVLink interconnects for high-bandwidth GPU-to-GPU communication. Moving from a single server to a multi-node cluster demands InfiniBand networking to keep inter-node latency below the thresholds that distributed inference requires. Storage evolves from local SSDs to NVMe-oF fabrics that can feed model weights to GPUs without creating I/O bottlenecks. Cooling shifts from standard air cooling to direct liquid cooling at the H100 tier and beyond.
+
+Each transition also introduces new operational complexity. A developer laptop requires zero operations overhead — the developer is the operator. A workstation needs basic monitoring and scheduled updates. A single server introduces the need for GPU health checks, driver management, and thermal monitoring. A multi-node cluster demands orchestration, network topology management, and distributed systems expertise. A production fleet requires 24/7 monitoring, automated failover, capacity planning, security hardening, multi-tenancy isolation, and a team trained to manage all of it.
+
+The customer cannot skip steps without creating technical debt that compounds — and that technical debt manifests as production outages, degraded model accuracy, and missed SLAs. Every skipped step is a gap in validation that eventually surfaces as a production incident.
+
+=== The Quantization Reality Check
+
+The laptop demo is misleading because it conceals a critical trade-off. The developers are running INT4-quantized 7B parameter models with 2K context windows. Quantization compresses a model's numerical precision — reducing 16-bit floating-point weights to 4-bit integers — which dramatically shrinks the memory footprint. A 7B model at INT4 fits comfortably in 4GB of system RAM. It runs on a MacBook. It generates plausible-looking text. And it gives everyone in the room the impression that "AI works."
+
+But production requirements are fundamentally different. Enterprise use cases — legal document analysis, financial risk assessment, customer-facing assistants — demand full-precision FP16 or BF16 models with 32K+ context windows to meet accuracy SLAs. The memory footprint difference is staggering: 10x to 50x larger than the quantized demo.
+
+Consider a concrete example. A 70B parameter model at INT4 quantization requires approximately 35GB of VRAM — achievable on a single high-end GPU like the A100 80GB. But that same 70B model at FP16 full precision requires approximately 140GB of VRAM, exceeding the capacity of any single consumer or workstation GPU. Serving it requires multi-GPU configurations — at minimum two A100 80GB cards with NVLink — and realistically four GPUs to leave headroom for the KV cache that grows with context length. The laptop demo and the production deployment are not the same workload made bigger. They are fundamentally different systems.
+
+== Proving It to the ITGM
+
+When you present this to the ITGM, resist the instinct to lead with the cost table. Every vendor they have met this month led with pricing. Instead, lead with the risk.
+
+Ask the ITGM directly: "What happens to your revenue projection if this model goes to production and delivers 40% worse accuracy than the demo?" Let them sit with that question. The quantized laptop demo is optimized for speed and memory efficiency, not for accuracy. When their customer-facing assistant starts hallucinating in front of real users — or when their legal document analyzer misses a critical clause — the cost is not measured in GPU hours. It is measured in lost customers, regulatory penalties, and a failed AI initiative that poisons the well for every future project.
+
+Then introduce the infrastructure journey not as a cost escalation, but as *risk mitigation*. Each step in the table is an insurance policy against a failed production launch. The workstation validates that the model performs acceptably on real hardware. The single server proves multi-GPU serving works at realistic throughput. The multi-node cluster tests distributed inference under load. The production fleet adds the operational hardening — high availability, observability, multi-tenancy — that separates a demo from a system you can stake the business on.
+
+End with the platform-rooted advantage. Say it plainly: "We are not asking you to trust a strategy document. We maintain the platform your models will run on. If the architecture we recommend fails, we are the ones your team calls at 3 AM. That is why our recommendation is different from a consultant's — we have to live with the consequences."
+
+This framing works because it aligns Red Hat's incentives with the customer's outcomes. A consulting firm gets paid whether the recommendation succeeds or fails. A hardware vendor gets paid when the equipment ships. But Red Hat's relationship is ongoing — support contracts, platform updates, architecture reviews. If the platform fails, the customer's renewal is at risk. That shared accountability is not a weakness; it is your strongest selling point.
+
+TIP: The ITGM does not care about GPU specifications. They care about two things: "Will this work in production?" and "What happens to my career if it doesn't?" Frame every technical choice as the answer to those two questions.
+
+== What's Next
+
+With the platform strategy foundation established, the next module tackles the toughest financial conversation: sticker shock. You will break down the intermediate infrastructure steps between a laptop demo and production to align hardware expectations with reality.
+
+////
+**Topic Scenario 2: The Platform-Rooted Strategy:**
+Demonstrating how root-level platform maintainer status prevents catastrophic implementation failures later, proving that disconnected business strategy leads to massive technical debt.
+
+Format: Presentation (Video Hook)
+////

@@ -1,6 +1,6 @@
 site:
-  title: MaaS Workload Scheduling with Kueue
-  start_page: maas-kueue-enablement::index.adoc
+  title: Business Value of AI
+  start_page: ai-value::index.adoc
 
 content:
   sources:

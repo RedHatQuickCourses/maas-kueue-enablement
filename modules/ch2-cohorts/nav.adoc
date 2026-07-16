@@ -1,3 +1,0 @@
-* xref:index.adoc[]
-** xref:s1-elastic-sharing.adoc[]
-** xref:s2-multi-tenant-lab.adoc[]

@@ -1,8 +1,0 @@
-* xref:index.adoc[]
-** xref:s1-kueue-overview-1.adoc[GPU Quota and Priority Management with Kueue]
-** xref:s1-kueue-overview-2.adoc[]
-** xref:s1-kueue-overview-3.adoc[]
-** xref:s1-kueue-overview-4.adoc[]
-** xref:s1-kueue-overview-5.adoc[]
-** xref:s2-kueue-lab-setup.adoc[Lab: Kueue demo - setup and verify]
-** xref:s3-kueue-a10-cluster.adoc[A10 cluster: Llamastack + 3-GPU lab]

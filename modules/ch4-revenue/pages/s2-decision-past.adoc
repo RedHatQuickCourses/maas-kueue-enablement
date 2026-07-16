@@ -1,0 +1,184 @@
+:time_estimate: 10
+
+= Rescuing the "Decision Past"
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Step into a post-decision environment and confidently advise the CIO whether they need to procure more hardware or select a different model to save the project.
+
+== Setting the Stage
+
+You walk into the most tense meeting of your cover assignment.
+The customer's CIO, VP of Engineering, and Head of Platform are on one side of the table.
+Their external strategy partner is on the other.
+The CEO has demanded a resolution within 48 hours or the AI program is cancelled.
+
+The room is silent when you enter.
+The CIO turns to you: "Our strategy partner says we just need to 'optimize the model configuration.'
+Our platform team says we need to buy more hardware.
+You are the infrastructure vendor -- what is the truth?"
+
+This is the moment where platform-rooted credibility either saves or loses the account.
+Everyone in the room has an opinion.
+The strategy partner needs the current architecture to work because they recommended it.
+The platform team wants new hardware because it validates their objection that the original spec was undersized.
+You are the only person in the room with no agenda other than the physics.
+
+== The Objective Architectural Truth
+
+Deliver the truth clearly and without hedging.
+The environment is not misconfigured -- it is physically undersized for the chosen model architecture.
+
+The MoE model's 141B parameters require all 16 experts to be loaded in memory across both nodes.
+Even though only 2 experts activate per token, the routing layer must have low-latency access to all 16 to make the routing decision.
+The routing decision itself is fast -- but executing on that decision requires moving data between nodes at a rate the interconnect cannot sustain under production load.
+
+The cross-node network (even at 400Gb/s InfiniBand) cannot sustain the continuous, bursty communication pattern of expert routing at production concurrency.
+This is not a configuration problem.
+This is not a software problem.
+There is no kernel parameter, no `vLLM` flag, no batch-size optimization that resolves a physical bandwidth ceiling.
+
+There is no software patch, configuration change, or "optimization" that can fix this.
+The options are binary:
+
+Option A -- Expand the hardware::
+Add enough nodes to host all 16 experts with local memory access (no cross-node routing).
+This requires a minimum of 4 nodes with 8x H100 GPUs each, or a move to a single DGX SuperPOD-class system.
+With 4 nodes, you can distribute experts such that each node hosts 4 experts locally.
+The routing layer still makes cross-node calls, but the probability of a local hit increases dramatically, and the reduced cross-node traffic falls within the interconnect's sustainable bandwidth.
+Estimated cost: $2-5M additional CapEx.
+
+Option B -- Compress the model::
+Apply INT8 or INT4 quantization to reduce the memory footprint and fit the model on fewer nodes (ideally a single node).
+This eliminates cross-node communication entirely but reduces model accuracy by 3-8% depending on the quantization method.
+The model's weights are mathematically compressed from 16-bit floating point to 8-bit or 4-bit integers.
+The model still runs the same architecture -- same experts, same routing -- but the numbers representing the weights are less precise.
+
+=== The Quantization VRAM Precision Matrix
+
+This is the key deliverable of the module -- the framework that transforms an emotional argument into a data-driven decision.
+Present the numbers, and let the numbers speak.
+
+[cols="1,1,1,1,1",options="header"]
+|===
+| Precision | Bits/Param | VRAM for 141B | Min GPUs (H100 80GB) | Accuracy Impact
+
+| FP32
+| 32
+| 564 GB
+| 8 (1 node)
+| Baseline (100%)
+
+| FP16/BF16
+| 16
+| 282 GB
+| 4 (1 node possible)
+| ~99.5% of FP32
+
+| INT8
+| 8
+| 141 GB
+| 2 (1 node)
+| ~97% of FP32
+
+| INT4 (GPTQ)
+| 4
+| 70.5 GB
+| 1
+| ~92-95% of FP32
+|===
+
+NOTE: These numbers represent model weights only. Inference also requires KV-cache memory, which scales with context length and batch size. A practical deployment needs 1.5-2x the weight-only VRAM estimate.
+
+Walk through the trade-off with the customer.
+
+At FP16, the current deployment requires 282GB across two nodes -- which is why cross-node communication is unavoidable.
+At INT8, the model requires only 141GB.
+That fits on a single node's 640GB (8x H100 80GB) with 499GB remaining for KV-cache, batch buffers, and operating overhead.
+Cross-node communication drops to zero.
+Latency returns to sub-200ms.
+
+The accuracy drop of ~3% at INT8 means the recommendation engine produces slightly less precise product suggestions.
+For a retail recommendation engine, this may be entirely acceptable -- the difference between recommending the "perfect" product and the "very good" product is negligible in terms of conversion rate.
+But this is a business decision, not a technical one.
+
+The customer must decide: is 97% accuracy at 200ms worth more than 100% accuracy at 12 seconds?
+Framed that way, the answer is obvious.
+But it is not your answer to give -- it is theirs.
+
+At INT4, the model fits on a single GPU.
+The accuracy drop increases to 5-8%, which may affect recommendation quality noticeably.
+This is the "emergency fix" option -- deploy in hours, not weeks -- but it carries the highest accuracy risk and should be validated against the customer's quality benchmarks before going to production.
+
+== Framing the Decision for the CIO
+
+Present both options without advocacy.
+Your role is to provide clarity, not to sell.
+Let the customer decide based on their priorities.
+
+[cols="1,2,2",options="header"]
+|===
+| Factor | Option A: Expand Hardware | Option B: Compress Model
+
+| Cost
+| $2-5M additional CapEx
+| $0 (software-only)
+
+| Timeline
+| 8-12 weeks (procurement)
+| 1-2 weeks (re-deployment)
+
+| Accuracy
+| Full precision maintained
+| 3-8% reduction
+
+| Risk
+| Procurement delay, facilities upgrade
+| Accuracy may not meet SLA
+
+| Long-term
+| Supports future model growth
+| May need re-evaluation for larger models
+|===
+
+Neither option is inherently superior.
+Option A preserves accuracy but requires capital and time the CEO has not granted.
+Option B restores service immediately but accepts a precision trade-off.
+The right answer depends on whether the customer values time-to-revenue or model fidelity.
+
+Recommend a phased approach: deploy the INT8 quantized model immediately to restore production service (Option B as the tactical fix), while simultaneously beginning the hardware procurement process for full-precision deployment (Option A as the strategic path).
+
+This gives the CEO the 48-hour resolution they demanded.
+The recommendation engine goes back online within days.
+Revenue starts flowing again.
+Meanwhile, the procurement process runs in parallel, so the full-precision model can be deployed once the hardware arrives in 8-12 weeks.
+
+The phased approach also de-risks both options.
+If INT8 accuracy proves sufficient (which it often does for recommendation workloads), the customer may decide that Option A is unnecessary -- saving millions in CapEx.
+If INT8 accuracy falls below the SLA threshold, the customer has already started the procurement clock and can switch to full precision when the hardware lands.
+
+End with the critical insight: the external strategy partner was not wrong to recommend an MoE model.
+MoE architectures are genuinely more efficient per compute-dollar for inference -- they activate fewer parameters per token, which means lower energy cost and higher throughput _when the infrastructure supports them_.
+Their error was ignoring the infrastructure physics.
+They applied a model selection framework that assumed single-node deployment and never validated the multi-node communication requirements.
+
+This is exactly why platform-rooted advisory matters.
+Red Hat engineers working with `OpenShift AI` would have identified the interconnect bottleneck before procurement, not after.
+They would have run the VRAM calculation _and_ the bandwidth calculation.
+They would have flagged the MoE routing overhead during the architecture review.
+The "Decision Past" would never have happened.
+
+TIP: In a "Decision Past" meeting, your most powerful tool is the truth. Do not hedge, do not blame, and do not sell. Present the physics, present the options, and let the customer's leadership make the call. They will remember that you were the one who gave them clarity when everyone else was guessing.
+
+== What's Next
+
+Having rescued the failing environment, the next module shifts to securing the funding and adoption that sustains the platform long-term. You will learn to partner with customer finance teams and drive bottom-up developer adoption.
+
+////
+**Topic Scenario 8: Rescuing the "Decision Past":**
+Stepping into a post-decision environment and confidently advising the CIO whether they need to procure more hardware or select a different model.
+
+Format: Arcade Interaction
+////

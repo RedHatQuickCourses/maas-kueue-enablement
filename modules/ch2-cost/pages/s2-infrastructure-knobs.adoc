@@ -1,0 +1,125 @@
+:time_estimate: 10
+
+= Sizing the Infrastructure Knobs
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Evaluate how specific technical choices — context length, dense vs. sparse architectures — act as financial knobs that impact GPU and memory budgets.
+
+== Setting the Stage
+
+You arrange a joint workshop with the logistics corporation's platform engineering team and their corporate finance analysts. This is deliberate — solving the utilization problem requires both technical architecture changes _and_ a new financial model. The CFO has given you 90 minutes to prove that additional software investment (not more hardware) can unlock the stranded GPUs.
+
+The platform engineers arrive with cluster metrics: per-GPU utilization graphs, job queue lengths, and team allocation maps. Finance brings the depreciation schedules, the original business case projections, and the current budget freeze memo. Your job is to connect these two worlds — to show that the metrics the engineers track map directly to the dollars that finance controls.
+
+You start by drawing a single line on the whiteboard: "Fixed silos versus shared pools." Everything that follows builds on that distinction. Before diving into architecture, you set a ground rule: every technical component you introduce must have a corresponding line item on a spreadsheet. If it cannot be expressed as a dollar figure, it does not belong in this room today.
+
+== The Dynamic Utility Pool Architecture
+
+The core technical solution is straightforward in concept but transformative in practice: convert fixed, team-allocated GPU silos into a centrally managed, dynamic utility pool. Two components from the `OpenShift AI` platform make this possible — `Kueue` for workload queuing and `InstaSlice` for GPU partitioning.
+
+=== Kueue (Workload Queuing)
+
+`Kueue` replaces Kubernetes' default scheduler for AI and ML workloads. The default Kubernetes scheduler treats GPUs as simple resources: a pod requests a GPU, the scheduler finds a node with one available, and it binds them together. This works for web applications. It fails for AI workloads because it has no concept of queuing, priority, borrowing, or preemption across teams.
+
+`Kueue` introduces three abstractions that change the scheduling model entirely:
+
+*ClusterQueues* define GPU pools at the cluster level. Instead of assigning GPUs to specific teams via namespace resource quotas, a ClusterQueue represents a pool of GPU resources with defined capacity limits. The logistics corporation's 40 H100 GPUs become a single managed pool rather than five isolated clusters of eight.
+
+*LocalQueues* provide team-level access to the shared pool. Each team (routing optimization, demand forecasting, warehouse AI, data science, operations) gets a LocalQueue that connects to the ClusterQueue. LocalQueues define nominal allocations — how many GPUs a team can use under normal conditions — and borrowing limits — how many _additional_ GPUs they can use when other teams have idle capacity.
+
+*ResourceFlavors* distinguish GPU types. If the cluster has a mix of H100 and A100 GPUs, ResourceFlavors let `Kueue` match workloads to appropriate hardware. A training job that needs H100-specific features gets routed to H100s; an inference workload that runs fine on A100s does not consume premium hardware unnecessarily.
+
+The result is that batch training jobs queue up and execute when GPUs become available — they do not fail or force engineers to manually monitor the cluster. Interactive notebooks get preempted when a higher-priority training job needs the GPU. And critically, when one team's GPUs are idle, other teams can _borrow_ that capacity automatically.
+
+=== InstaSlice (GPU Partitioning)
+
+`InstaSlice` addresses the second half of the utilization problem: workloads that need _some_ GPU but not an _entire_ GPU. It enables GPU time-slicing and MIG (Multi-Instance GPU) partitioning on supported hardware.
+
+A single H100 has 80 GB of VRAM. An interactive development notebook running a 7B-parameter model for experimentation might need 10 GB. Without `InstaSlice`, that notebook claims the entire 80 GB GPU — and the remaining 70 GB sits unused. With `InstaSlice`, the H100 is partitioned into multiple isolated instances. The notebook gets a slice with 10 GB of VRAM and proportional compute, and the remaining capacity serves other workloads.
+
+This is especially powerful for the interactive notebook problem identified earlier. Data scientists no longer need to choose between "full GPU, mostly idle" and "no GPU at all." They get right-sized GPU slices that match their actual workload requirements, and the freed capacity flows back to the shared pool for batch training and other workloads.
+
+The combination of `Kueue` and `InstaSlice` attacks utilization from two directions simultaneously. `Kueue` ensures that no GPU sits idle when there is queued work — it eliminates _temporal_ waste. `InstaSlice` ensures that no GPU is over-allocated for a workload that does not need its full capacity — it eliminates _capacity_ waste. Together, they convert the logistics corporation's fixed hardware silos into a dynamic utility that behaves more like a cloud provider's GPU pool but runs entirely on premises.
+
+=== The Scheduling Architecture
+
+With `Kueue` and `InstaSlice` in place, the logistics corporation's workloads organize into three tiers of priority:
+
+[cols="1,1,2,1",options="header"]
+|===
+| Priority | Workload Type | Behavior | Preemptible?
+
+| Critical
+| Production inference
+| Always running, guaranteed resources
+| No
+
+| High
+| Batch training jobs
+| Queued, runs when capacity available
+| Only by Critical
+
+| Standard
+| Dev notebooks, experiments
+| Best-effort, preempted freely
+| Yes
+|===
+
+The *Critical* tier covers the production inference endpoints — the predictive routing API that truck dispatchers rely on. These workloads get guaranteed GPU allocations that cannot be preempted. They are the non-negotiable floor.
+
+The *High* tier is where batch training lives. Model retraining jobs for demand forecasting submit to the queue and run when GPU capacity is available. If the Critical tier is consuming its allocation and some Standard workloads are running, `Kueue` preempts the Standard workloads to make room for High-priority training. The training jobs get capacity without manual intervention.
+
+The *Standard* tier serves interactive development. Data scientists launch notebooks, run experiments, and iterate on models. They get GPU resources on a best-effort basis. If a training job or inference spike needs the capacity, the notebook is preempted — the data scientist sees a brief interruption and can reconnect when capacity frees up.
+
+`Kueue` *Cohorts* add a final layer of flexibility. A Cohort groups multiple ClusterQueues together and enables borrowing between them. If the "Training" ClusterQueue has idle capacity, the "Inference" queue can temporarily borrow those GPUs, and vice versa. This eliminates the scenario where Team A's GPUs sit idle while Team B waits in a queue — the capacity flows automatically to where demand exists.
+
+=== The Utilization Math
+
+Now translate the architecture into numbers the finance team can verify.
+
+*Before (Fixed Silos):* 40 H100 GPUs divided across 5 teams, 8 GPUs per team. Each team averages 15 percent utilization. That means each team produces 1.2 useful GPU-equivalents of work per day (8 GPUs x 0.15). Across the cluster: *30 useful GPU-hours per day* out of 200 possible (40 GPUs x 5 hours of an 8-hour work window). The other 170 GPU-hours are idle — allocated, depreciating, and generating heat.
+
+*After (Dynamic Pool):* The same 40 GPUs are placed in a shared pool managed by `Kueue`. `InstaSlice` partitions GPUs for interactive workloads. Batch training jobs backfill idle capacity automatically. Dev notebooks receive GPU slices instead of whole GPUs. The same 5 teams now achieve *80 percent average utilization* — *160 useful GPU-hours per day* from the same hardware.
+
+The ROI calculation:
+
+* Annual depreciation of 40 H100 GPUs: ~$438K/year (at $30K each, 5-year depreciation cycle)
+* At 15% utilization: effective cost = *$29.20 per useful GPU-hour*
+* At 80% utilization: effective cost = *$5.48 per useful GPU-hour*
+* `Kueue` + `InstaSlice` licensing and support cost: ~$50K/year
+* Net annual savings in recovered utilization value: *$388K*
+* Payback period on scheduling software: *less than 2 months*
+
+The numbers speak clearly. A $50K annual investment in scheduling software unlocks $388K in annual value from hardware the customer already owns. The hardware does not change. The teams do not change. The workloads do not change. Only the _scheduling_ changes — and the financial impact is immediate.
+
+NOTE: These figures are illustrative and based on list-price GPU costs and standard depreciation schedules. Your customer's actual numbers will vary based on their procurement pricing, depreciation policy, and workload mix. The methodology, however, is consistent: calculate idle depreciation, project utilization improvement, and compare the delta against the scheduling software cost.
+
+== Proving It to Finance
+
+You are in the last 15 minutes of the workshop. The platform engineers are nodding — the architecture makes sense to them. Now you need the finance analysts to approve the funding request. Here is how you close.
+
+Lead with the depreciation clock. Put the daily cost on the whiteboard: "Every day your GPUs sit at 15 percent utilization, you lose $7,400 in stranded depreciation. That is $51,800 per week. It has been 26 weeks since the CFO froze funding — during which time the stranded depreciation has cost $1.35M. The freeze _itself_ is expensive."
+
+Then present the solution as an operational expense that unlocks existing capital. "For less than 2 percent of your hardware investment — $50K annually — scheduling software converts your fixed silos into a shared pool. Utilization moves from 15 to 80 percent. Your effective cost per GPU-hour drops by 81 percent, from $29 to $5.48. The payback period is under 60 days."
+
+End with the funding strategy. Do not ask for new budget — redirect existing savings. If the logistics corporation is migrating any workloads from VMware to `OpenShift`, suggest redirecting a portion of those license savings to fund the AI scheduling layer. This creates a *budget-neutral path*: no new CapEx request, no board approval required, no CFO veto. The scheduling software pays for itself from savings the company is already capturing.
+
+This is the pattern for the Cost Reduction pillar: you are not adding cost. You are redirecting existing spend to multiply the value of existing assets. The CFO's $8M investment was not a mistake — it was *step one*. Step two costs 0.6 percent of what step one did, and it makes step one work.
+
+The workshop ends with the finance analysts requesting a formal proposal. That is the signal you want — the conversation has moved from "should we do this?" to "how do we get this approved?" The engineering team will deploy `Kueue` and `InstaSlice` in a proof-of-concept on a subset of the cluster, measure the utilization improvement over 30 days, and use the real numbers to secure full funding. The CFO's freeze is not lifted — it is bypassed, because the solution pays for itself from existing budget lines.
+
+TIP: Finance teams respond to three things: a number, a timeline, and a comparison. Give them all three: "$2.2M saved, within 90 days, versus the cost of doing nothing."
+
+== What's Next
+
+Having mastered the cost conversation, the next module shifts to risk and data governance. You will learn to configure the MaaS layer to balance public cloud agility with on-premise data sovereignty — the "two sides of the MaaS coin."
+
+////
+**Topic Scenario 4: Sizing the Infrastructure Knobs:**
+Evaluating how specific technical choices (context length, dense vs. sparse architectures) act as financial knobs that impact GPU and memory budgets.
+
+Format: Arcade Interaction
+////

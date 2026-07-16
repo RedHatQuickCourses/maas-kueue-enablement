@@ -1,0 +1,149 @@
+:time_estimate: 8
+
+= Balancing the MaaS Coin
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Configure the MaaS layer to safely route to external cloud providers for rapid agility while retaining the flexibility to pull workloads back on-premise for IP protection.
+
+== The Scenario
+
+You open the third case file and find a tense standoff.
+A major financial services firm -- 50,000 employees, heavily regulated by the SEC and FINRA -- has developer teams that have been using public AI APIs (Claude, GPT, Gemini) for months.
+They are building trading analysis assistants, compliance document summarizers, and customer communication drafters.
+The developers love the speed: spin up an API key, start coding, ship features in days.
+
+But three weeks ago, the CISO's office ran an audit and discovered that developers were sending proprietary earnings analysis, merger documents, and client portfolio data through external API endpoints.
+The CISO issued an immediate production freeze.
+
+The developers are furious -- their roadmap is stalled.
+The CISO is immovable -- the regulatory exposure is existential.
+Your colleague's notes say: "Both sides are right. Need to find middle ground."
+But there is no proposed solution in the file.
+
+You have inherited a conflict with no plan.
+The developer team lead has already emailed you twice asking when the freeze will be lifted.
+The CISO's office has copied Legal on every thread.
+If you do not propose a credible architecture within the week, the firm will begin evaluating alternative vendors -- ones who promise "fully air-gapped AI" solutions that will take eighteen months to deploy and cost ten times what the current approach costs.
+
+== The Subsidized Token Trap
+
+To understand why the developers moved so fast toward public AI APIs -- and why the CISO is right to be alarmed -- you need to understand the economics behind the current AI token market.
+
+Public cloud AI providers are heavily subsidizing token costs to drive adoption and capture market share.
+Current market rates for frontier models range from approximately $3 to $15 per million input tokens.
+These prices are often _below_ the actual cost of inference.
+The providers are burning venture capital and cloud margin to make AI APIs irresistibly cheap.
+This is not generosity -- it is a deliberate acquisition strategy.
+
+The subsidized token trap unfolds in three predictable phases:
+
+*Phase 1: Adoption.*
+Subsidized prices, easy-to-use APIs, and zero infrastructure to manage.
+Developers build features fast.
+Product managers see demos in days instead of quarters.
+The business sees immediate value.
+Nobody asks hard questions because the costs are negligible and the velocity is extraordinary.
+Teams build proof-of-concept applications that quietly become production services.
+Management celebrates the innovation velocity without examining the foundation it rests on.
+
+*Phase 2: Dependency.*
+Workflows become hardcoded to specific model APIs.
+Prompt engineering is tuned to the behavior of a particular model version.
+Evaluation pipelines, output parsers, and downstream integrations all assume a specific provider.
+Switching costs grow silently.
+When the provider raises prices by 30-50% -- and they will, because the subsidies are not sustainable -- the cost of re-engineering exceeds the cost of simply paying more.
+The organization is locked in, not by a contract, but by accumulated technical debt.
+Internal teams have no institutional knowledge of how to run models themselves because they never needed to.
+The skills gap compounds the financial dependency.
+
+*Phase 3: Monetization.*
+The provider now has leverage.
+They have processed millions of tokens of your proprietary data.
+Their terms of service may permit using interaction data to improve their models.
+Even if they do not explicitly train on your data, they accumulate metadata: what you query, how often, what patterns emerge, which topics generate the most tokens.
+For a financial services firm, this metadata alone is a competitive intelligence goldmine.
+A provider who knows that a firm is suddenly generating high volumes of queries about a specific company or sector can infer material non-public activity -- even without reading the query content.
+
+This three-phase pattern is not theoretical.
+It follows the same playbook that cloud storage, SaaS CRM, and enterprise database providers have used for decades.
+The difference with AI tokens is that the data exposure risk in Phase 3 is orders of magnitude higher because the data itself -- not just the application -- passes through third-party infrastructure.
+
+IMPORTANT: Do not claim that public AI providers are "stealing" customer data.
+That is an unbacked exfiltration claim that damages your credibility.
+Instead, focus on the _conceptual exposure risk_: the customer's proprietary data traverses infrastructure they do not own, cannot audit, and cannot guarantee will not be used for purposes beyond their control.
+
+=== Conceptual Data Exposure
+
+In customer conversations, you will find that security teams, legal teams, and developer teams often conflate three very different levels of data risk.
+Separating these clearly is essential to having a productive conversation instead of a fear-driven one.
+
+[cols="1,2,2",options="header"]
+|===
+| Risk Level | What Happens | Regulatory Impact
+
+| Direct Training
+| Provider uses customer data to train or fine-tune their models
+| GDPR/SEC violation, intellectual property loss, potential insider trading exposure
+
+| Metadata Leakage
+| Query patterns, volumes, and timing reveal business intent even without reading content
+| Competitive intelligence exposure, potential front-running risk
+
+| Third-Party Subprocessing
+| Provider routes requests through sub-providers, CDNs, or logging pipelines
+| Loss of data chain-of-custody, inability to certify data handling to regulators
+|===
+
+Even providers who contractually guarantee "we do not train on your data" may route requests through sub-processors, content delivery networks, or logging pipelines that the customer cannot independently audit.
+For a FINRA-regulated firm, the inability to prove chain-of-custody for data handling is _itself_ a compliance violation -- regardless of whether any actual data misuse occurs.
+The regulatory standard is not "prove that something bad happened."
+The regulatory standard is "prove that you maintained control at all times."
+When data leaves your infrastructure, that proof becomes extremely difficult to provide.
+
+== The Business Translation
+
+The CISO speaks in risk.
+The CFO speaks in dollars.
+The developer lead speaks in velocity.
+To resolve this standoff, you need to frame the problem in a language that all three understand: _financial exposure_.
+
+Consider the numbers.
+If the firm sends 10 million tokens per day of proprietary financial data through external APIs, and a data breach or regulatory finding results from that practice, the potential downside dwarfs any savings on infrastructure.
+SEC fines for data handling violations average $5-50 million.
+GDPR fines can reach 4% of global annual revenue.
+A single compliance finding that the firm failed to maintain chain-of-custody for client data could trigger client lawsuits, regulatory investigations, and reputational damage that takes years to repair.
+
+The "cheap tokens" are not cheap when the tail risk is existential.
+
+But -- and this is critical -- do not position this as "never use public APIs."
+That makes you an obstacle, not an advisor.
+The CISO already tried the "block everything" approach and it created the standoff you are now trying to resolve.
+Blanket prohibitions do not work because developers will find workarounds -- personal API keys, shadow IT, browser-based AI tools that bypass network controls entirely.
+
+Instead, position it as: "Use public APIs strategically, for the right workloads, with the right guardrails."
+Some workloads carry zero data sensitivity -- code generation from open-source context, public research summarization, boilerplate drafting.
+Those should absolutely leverage external APIs for speed and cost efficiency.
+Other workloads carry significant sensitivity -- anything involving client data, proprietary models, merger activity, or trading strategies.
+Those must remain on infrastructure the organization owns and controls.
+
+The key is building an architecture that enforces the distinction automatically, without relying on individual developer judgment.
+Developers should not have to decide which API endpoint to call based on the sensitivity of their data.
+The infrastructure should make that decision for them.
+
+This is the balanced hybrid methodology that sets up the solution in the next section.
+
+TIP: The developer team and the CISO are not actually in conflict. They both want the same thing: AI capabilities that do not destroy the business. Your job is to give them a shared vocabulary and a shared architecture.
+
+== What's Next
+
+Now that you can configure the MaaS routing strategy, the next section addresses the data governance narrative. You will learn to educate commercial customers on exposure risk and shared training data pools using objective, defensible claims.
+
+////
+**Topic Scenario 5: Balancing the MaaS Coin:**
+Configuring the MaaS layer to safely route to external cloud providers for rapid agility while retaining the flexibility to pull workloads back on-premise.
+
+Format: Arcade Interaction
+////

@@ -1,0 +1,12 @@
+= Risk, Data Governance, & Hybrid Agility
+
+Goal::
+
+Configure the MaaS layer to balance public cloud agility with on-premise data sovereignty, and educate customers on data exposure risk without relying on unbacked claims.
+
+Your third account is a highly regulated financial services firm.
+Developer teams have been moving fast by sending proprietary market analysis data to cheap, subsidized public cloud token providers.
+The CISO has just stepped in to block all production AI deployment due to massive compliance and data exposure fears.
+You need to build a bridge between the conflicting developer and security teams.
+
+This module equips you to defend against vendor lock-in by proving to CISO and Legal that the architecture dynamically balances cloud agility with internal data sovereignty.

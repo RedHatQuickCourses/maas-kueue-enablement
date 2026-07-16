@@ -1,0 +1,12 @@
+= Revenue & Rescuing "Decision Past"
+
+Goal::
+
+Diagnose interconnect saturation in a failing multi-node environment and advise customers on the objective truth about their hardware and model choices.
+
+You are paged into a critical, high-stakes customer escalation that your colleague was managing before their leave.
+An external strategy partner convinced the customer's leadership they could rapidly accelerate revenue by launching a massive Mixture of Experts model on a limited 2-node cluster.
+The environment has suffered a catastrophic performance failure, and the relationship is on the line.
+You must deliver the objective truth.
+
+This is the core scenario module of the course. You will navigate the CEO's demand for the "biggest, best model" by reconciling what they want with what their environment provides.

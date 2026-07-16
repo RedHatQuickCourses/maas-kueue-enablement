@@ -1,0 +1,110 @@
+:time_estimate: 7
+
+= Securing Bottom-Up Adoption
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Utilize self-service registries and pre-built operational workflows to ensure developers and line-of-business users organically adopt the platform.
+
+== Setting the Stage
+
+You schedule a final presentation with all three accounts' stakeholders -- a combined "proof of trust" session.
+The pitch: you will demonstrate that the AI platform can provide mathematical proof of accuracy, automated quality gates, and a governance architecture that survives Day 2 software upgrades.
+
+If the sponsors see empirical evidence that the platform self-monitors and self-corrects, they will agree to reduce HITL from 100% to statistical sampling.
+This is not a sales exercise.
+This is an engineering demonstration with financial consequences.
+The outcome determines whether these three accounts renew their platform investment or scale back to manual workflows.
+
+You prepare three deliverables for the session: a live `EvalHub` dashboard showing 30 days of accuracy metrics, an `MLflow` trace walkthrough of a real edge case that the platform caught and corrected automatically, and a `Model Context Protocol (MCP)` architecture diagram that shows how the platform survives tool upgrades without model reconfiguration.
+Each deliverable maps to a specific sponsor objection: "How do I know it is accurate?", "What happens when it fails?", and "Will this break when we upgrade our systems?"
+
+== The Agentic Platform Stack
+
+The governance and adoption framework rests on a stack of integrated components.
+Each one addresses a specific trust objection that business sponsors raise.
+
+`EvalHub` (Automated Evaluation)::
+`EvalHub` runs standardized evaluation benchmarks against every model version before it reaches production.
+It measures accuracy, hallucination rate, toxicity, and latency against the golden dataset.
+If a model update drops accuracy below the business-defined SLA (for example, 95% precision), the deployment is automatically blocked and the responsible ML Engineer is notified.
++
+The business sponsor does not need to manually review outputs -- the CI/CD pipeline proves the model meets their standards before any output reaches a user.
+This is the difference between "trust me" and "trust the math."
+The sponsor can verify the dashboard at any time and see exactly how the model is performing against the SLA they defined.
+For the enterprise customer, this means the Chief Risk Officer has a live, read-only view of model performance -- not a quarterly report, but a real-time metric that updates with every evaluation run.
+
+`MLflow` Agentic Tracing::
+`MLflow` provides end-to-end tracing of agentic workflows.
+When an AI agent chains multiple model calls, tool invocations, and data retrievals, `MLflow` records every step.
+If an output is wrong, the business can trace exactly which step failed, which data was used, and which model version produced the error.
++
+This transforms debugging from "the AI was wrong" (unhelpful) to "step 3 of the chain used stale data from the Q2 cache" (actionable).
+For the financial services firm, this level of traceability is not optional -- it is a regulatory requirement.
+For the enterprise customer and logistics corp, it is the evidence trail that convinces the business sponsor that problems are detectable and correctable without reverting to 100% human review.
+
+=== The MCP Gateway for Tool Decoupling
+
+The current AI architectures at all three accounts share a fragile pattern: models are hardcoded to specific internal tools -- databases, APIs, document stores -- via custom integrations.
+When any tool upgrades its API, the model integration breaks.
+This is the "Day 2 problem": the platform works on Day 1, but every subsequent upgrade is a risk.
+
+The `MCP Gateway` solves this by decoupling models from tools.
+Instead of hardcoding database connection strings and API schemas into model configurations, the `MCP Gateway` provides a standardized protocol layer.
+Models request capabilities ("I need to query customer accounts") and the Gateway routes to the current tool implementation.
+When the customer database upgrades from v3 to v4, only the Gateway adapter changes -- the model configuration is untouched.
+
+For the financial services firm, this eliminates the most common cause of post-deployment failures: a downstream system upgrade that silently breaks the model's data access layer.
+For the logistics corp, it means the demand forecasting models will continue to function when the warehouse management system migrates to its next major version.
+
+Present this as infrastructure insurance to the sponsors: "Your platform is not built to work today.
+It is built to survive every upgrade, migration, and tool swap for the next five years."
+The logistics corp's VP of Operations understands this immediately -- they have lived through ERP migrations and know the cost of tightly coupled integrations.
+The `MCP Gateway` turns what was previously a six-week re-integration project into a single adapter swap.
+
+== Proving It to the Sponsors
+
+Lead the sponsor presentation with numbers, not narratives.
+Open the `EvalHub` dashboard and show that the model has maintained *96.2% precision* across the last 30 days, with *zero hallucinations* on the compliance dataset.
+Show the trend line: accuracy has remained stable through two model updates and one prompt template change.
+The automated regression gates caught and blocked a third update that would have dropped precision to 91%.
+
+Then show the `MLflow` trace of a recent edge case.
+Walk the sponsors through the chain: the model received an ambiguous input, queried the wrong data source, and produced an output that was technically correct but contextually misleading.
+The automated monitoring flagged the output based on a confidence score below the threshold.
+The output was blocked, logged, and routed to a human reviewer -- all without manual intervention.
+The entire detection-to-escalation cycle took 340 milliseconds.
+This is what "human in the loop by exception" looks like: the platform handles the 95% of cases that are straightforward, and routes the 5% of edge cases to human judgment.
+The human reviewers are no longer a bottleneck -- they are a quality assurance function that focuses only on the cases that require expert judgment.
+
+Present the proposal: reduce HITL from 100% review to 5% statistical sampling.
+The `EvalHub` CI/CD gate ensures no model update degrades accuracy.
+The `MLflow` tracing ensures every output is auditable.
+The `MCP Gateway` ensures the platform survives tool upgrades.
+The business sponsor retains ultimate authority to restore 100% review if accuracy drops below the SLA -- but the platform now provides the empirical evidence that makes sampling safe.
+
+End with the long-term funding pitch: "This platform is not a project -- it is a utility.
+Like electricity, it needs ongoing investment to maintain and grow.
+The RACI matrix defines who operates it.
+The evaluation pipeline proves it works.
+And the `MCP Gateway` ensures it evolves.
+The question is no longer 'should we invest in AI?' -- it is 'how much revenue are we leaving on the table if we do not scale it?'"
+
+The room is quiet for a moment.
+Then the enterprise customer's Chief Risk Officer asks: "Can I get that dashboard on my phone?"
+That is the sound of trust.
+
+TIP: Business sponsors do not resist AI because they are conservative. They resist because no one has given them proof. Give them a dashboard, a number, and an SLA -- and they will become your biggest advocates.
+
+== What's Next
+
+With all five modules complete, the final chapter ties everything together. You will learn to map these 10 conversational scenarios to specific customer maturity stages and receive downloadable field guides for immediate use.
+
+////
+**Topic Scenario 10: Securing Bottom-Up Adoption:**
+Utilizing self-service registries and pre-built operational workflows to ensure developers and line-of-business users organically adopt the platform, preventing shelfware.
+
+Format: Arcade Interaction
+////

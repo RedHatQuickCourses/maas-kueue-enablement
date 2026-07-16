@@ -1,0 +1,9 @@
+= The Customer Journey
+
+Goal::
+
+Map the 10 conversational scenarios to specific customer maturity stages and equip learners with practical field guides for immediate use.
+
+Your colleague returns from parental leave next week. You need to hand back three accounts in better shape than you found them — and document what you learned so the next person who covers does not start from zero.
+
+This chapter summarizes the full Cost, Risk, and Revenue framework and provides downloadable assets for translating system metrics into executive value.

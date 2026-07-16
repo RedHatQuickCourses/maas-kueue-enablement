@@ -1,7 +1,12 @@
-name: maas-kueue-enablement
-title: MaaS Workload Scheduling with Kueue
+name: ai-value
+title: Business Value of AI
 version: 1
 nav:
 - modules/ROOT/nav.adoc
 - modules/LABENV/nav.adoc
-- modules/ch5-kueue/nav.adoc
+- modules/ch1-platform-strategy/nav.adoc
+- modules/ch2-cost/nav.adoc
+- modules/ch3-risk/nav.adoc
+- modules/ch4-revenue/nav.adoc
+- modules/ch5-funding/nav.adoc
+- modules/ch6-wrapup/nav.adoc

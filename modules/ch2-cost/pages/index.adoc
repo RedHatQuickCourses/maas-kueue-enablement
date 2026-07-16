@@ -1,0 +1,9 @@
+= Cost & Infrastructure Economics
+
+Goal::
+
+Defeat the laptop illusion by mapping the intermediate infrastructure steps to production and evaluating how technical choices act as financial knobs on GPU and memory budgets.
+
+Your second emergency case file reveals a major logistics corporation that spent millions on top-tier data center hardware. The project has stalled because the CFO froze all future funding — their GPU cluster utilization is stuck at a dismal 15 percent. You need to unlock the stranded investment.
+
+This module addresses the false equivalence between cheap laptop-based quantized models and enterprise production requirements, equipping you to overcome the CFO's "Sticker Shock."

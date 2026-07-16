@@ -1,0 +1,135 @@
+:time_estimate: 7
+
+= Conceptual Data Governance
+
+_Estimated reading time: *{time_estimate} minutes*._
+
+Objective::
+
+Educate commercial customers on exposure risk and shared training data pools without relying on unbacked exfiltration claims.
+
+== Setting the Stage
+
+You bring the developer team lead and the CISO into the same room -- virtually, since neither is willing to visit the other's floor right now.
+The tension is palpable.
+
+The dev lead opens with: "Every day this freeze continues, we lose competitive advantage.
+Our competitors are shipping AI features weekly.
+We are falling behind."
+
+The CISO responds: "Every day we send data to external providers, we accumulate regulatory risk.
+One audit finding and we are looking at eight-figure fines."
+
+They are both right.
+And they both know the other is right, which is exactly what makes this so difficult.
+What they lack is not agreement on the problem -- they lack an architecture that lets them _both_ be right simultaneously.
+
+You have seen this dynamic before.
+Security teams that win by blocking everything end up creating shadow IT.
+Developer teams that win by ignoring security end up creating incidents.
+Neither outcome is acceptable for a firm that answers to the SEC.
+
+You have one chance to propose a solution that satisfies both sides.
+You open your laptop and share the Models-as-a-Service (MaaS) Gateway architecture.
+
+== The Intelligent Routing Architecture
+
+The `OpenShift AI` MaaS Gateway is an intelligent routing layer that sits between application code and model endpoints.
+It provides a single, unified API surface -- developers write to one endpoint -- but behind the scenes, it routes requests based on configurable policy.
+
+This is the architecture that resolves the standoff.
+
+*Data Classification Routing.*
+Requests containing sensitive data -- detected via policy tags, content classification rules, or namespace-level annotations -- are routed to internal, on-premise models running on `vLLM` or `llm-d`.
+These internal models run on GPU nodes within the firm's own `OpenShift` cluster, behind their own firewall, subject to their own security controls.
+Non-sensitive requests -- public knowledge queries, code generation from open-source context, boilerplate drafting -- are routed to external cloud APIs for speed and cost efficiency.
+The routing decision is made at the infrastructure layer, not by the developer.
+A developer who accidentally sends a sensitive prompt to the Gateway endpoint does not cause a data exposure event -- the Gateway catches it and routes internally.
+
+*Rate Limits and Token Quotas.*
+The Gateway enforces per-team, per-model token budgets.
+The finance analytics team gets 500K tokens/day on the internal model and 200K tokens/day on the external API.
+The compliance team gets a higher internal allocation and no external access at all.
+This prevents both overspending on cloud tokens and overloading internal infrastructure.
+It also gives the CFO exactly what they need: predictable, controllable AI costs with clear attribution to business units.
+No more surprise invoices from external API providers at the end of the quarter.
+
+*Model Abstraction.*
+Developers do not hardcode to "GPT-4" or "Llama-3."
+They call the Gateway API, which routes to the best available model based on the request policy.
+When the organization wants to switch providers, upgrade to a new model version, or bring a new internally-hosted model online, zero application code changes are required.
+The application code calls the same endpoint today, next quarter, and next year -- only the routing policy evolves.
+This eliminates the Phase 2 dependency trap described in the previous section.
+If the firm decides to stop using a particular external provider entirely, the migration is a policy change -- not a development project.
+
+=== Routing Policy Example
+
+A concrete routing rule set makes the architecture tangible for both the developer and the CISO.
+The following table illustrates how the Gateway would handle common request types at the financial services firm:
+
+[cols="2,1,1,1",options="header"]
+|===
+| Request Type | Data Sensitivity | Route | Model
+
+| Trading analysis
+| High
+| Internal
+| `Llama-3-70B` on `vLLM`
+
+| Code generation
+| Low
+| External
+| Cloud API (best-price)
+
+| Client communications
+| High
+| Internal
+| Fine-tuned `Granite`
+
+| Public research summarization
+| Low
+| External
+| Cloud API (fastest)
+|===
+
+The routing is not manual.
+It is policy-driven and enforced at the infrastructure level.
+Developers cannot accidentally send high-sensitivity data to an external provider even if they try.
+The classification is determined by a combination of namespace labels, request headers, and content inspection rules -- not by developer intent.
+
+This is a critical distinction for the CISO: the architecture does not _ask_ developers to comply.
+It _ensures_ compliance by design.
+When the CISO asks "how do I know developers will not send sensitive data externally?", the answer is not a policy document -- it is an architecture diagram.
+
+== Satisfying the CISO
+
+When you present this architecture to the CISO, frame it around the three things their office needs to lift the production freeze:
+
+1. *Auditability.* Every request that passes through the MaaS Gateway is logged with its classification, routing decision, token count, and timestamp. The compliance team can produce a complete audit trail showing exactly where every piece of data was processed. When the SEC or FINRA examiner asks "where was this client data handled?", the answer is provable and immediate -- not a promise from a third-party provider's terms of service, but an entry in a log the firm owns and controls. The logs are stored on-premise and can be integrated with the firm's existing SIEM and compliance reporting infrastructure.
+
+2. *Enforceable policy.* Data sensitivity classification is enforced at the infrastructure level, not by developer discipline. The CISO does not have to trust that developers will "do the right thing." The architecture makes the wrong thing impossible. A developer who sends a prompt containing client portfolio data through the Gateway will have that request automatically routed to the internal model -- regardless of what endpoint they intended to call. This is defense in depth, not defense by hope.
+
+3. *Gradual migration path.* The organization does not have to go "all internal" overnight. They start with the highest-sensitivity workloads on internal models and gradually migrate as internal capacity grows. External APIs remain available for low-risk, high-speed use cases. This is critical because an overnight migration would require massive infrastructure investment, months of delay, and would validate the developer team's fear that security always means "slower and more expensive." The gradual path demonstrates that governance and velocity are not enemies. It also gives the infrastructure team time to build operational expertise with internal model serving before taking on the full workload.
+
+From the developer perspective, the outcome is equally compelling.
+They keep their fast iteration cycle for non-sensitive work.
+They get access to powerful internal models for sensitive work -- models that are often fine-tuned for their specific domain and can outperform general-purpose cloud models on the firm's actual tasks.
+They can experiment freely, knowing that the infrastructure will enforce the boundaries they cannot see.
+And they never have to change their application code when the routing policy evolves.
+New models, new providers, new compliance rules -- all handled at the Gateway layer, invisible to the application.
+
+The result of this meeting should be a shared understanding: the production freeze can be lifted immediately for workloads that route through the MaaS Gateway with approved policies.
+The developer team gets their velocity back -- on a foundation the CISO can defend to regulators.
+
+TIP: The best governance architecture is invisible to developers. If they have to think about compliance, they will find ways around it. Build compliance into the infrastructure so it is the path of least resistance.
+
+== What's Next
+
+With risk and governance arguments secured, the next module tackles revenue. You will diagnose a real-world failure scenario where a 2-node setup is choking on a Mixture of Experts model due to interconnect saturation, and must advise the customer on their options.
+
+////
+**Topic Scenario 6: Conceptual Data Governance:**
+Educating commercial customers on exposure risk and shared training data pools without relying on unbacked exfiltration claims.
+
+Format: Arcade Interaction
+////
