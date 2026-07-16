@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Sizing the Infrastructure Knobs :: Business Value of AI</title>
+    <link rel="prev" href="s1-multi-step-journey.html">
+    <link rel="next" href="../ch3-risk/index.html">
+    <meta name="generator" content="Antora 3.1.3">
+<link rel="stylesheet" href="../../../_/css/site.css">
+<link rel="stylesheet" href="../../../_/css/vendor/tabs.css">
+<link rel="stylesheet" href="../../../_/css/vendor/collapsible.css">
+<link rel="stylesheet" href="../../../_/css/vendor/reading-time.css">
+<link rel="stylesheet" href="../../../_/css/progress-tracker.css">    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">Business Value of AI</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="ai-value" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Business Value of AI</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html" data-progress-path="/ai-value/1/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Home
+    </a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html" data-progress-path="/ai-value/1/LABENV/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Lab Environment
+    </a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-platform-strategy/index.html" data-progress-path="/ai-value/1/ch1-platform-strategy/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The Translation Gap &amp; Platform Strategy
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-platform-strategy/s1-ai-factory.html" data-progress-path="/ai-value/1/ch1-platform-strategy/s1-ai-factory.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The AI Factory Lifecycle
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-platform-strategy/s2-platform-rooted.html" data-progress-path="/ai-value/1/ch1-platform-strategy/s2-platform-rooted.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The Platform-Rooted Strategy
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html" data-progress-path="/ai-value/1/ch2-cost/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Cost &amp; Infrastructure Economics
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s1-multi-step-journey.html" data-progress-path="/ai-value/1/ch2-cost/s1-multi-step-journey.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Mapping the Multi-Step Journey
+    </a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s2-infrastructure-knobs.html" data-progress-path="/ai-value/1/ch2-cost/s2-infrastructure-knobs.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Sizing the Infrastructure Knobs
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch3-risk/index.html" data-progress-path="/ai-value/1/ch3-risk/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Risk, Data Governance, &amp; Hybrid Agility
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-risk/s1-maas-coin.html" data-progress-path="/ai-value/1/ch3-risk/s1-maas-coin.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Balancing the MaaS Coin
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-risk/s2-data-governance.html" data-progress-path="/ai-value/1/ch3-risk/s2-data-governance.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Conceptual Data Governance
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch4-revenue/index.html" data-progress-path="/ai-value/1/ch4-revenue/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Revenue &amp; Rescuing "Decision Past"
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-revenue/s1-interconnect-loop.html" data-progress-path="/ai-value/1/ch4-revenue/s1-interconnect-loop.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The High-Speed Interconnect Loop
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-revenue/s2-decision-past.html" data-progress-path="/ai-value/1/ch4-revenue/s2-decision-past.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Rescuing the "Decision Past"
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch5-funding/index.html" data-progress-path="/ai-value/1/ch5-funding/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Securing Funding &amp; Adoption
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-funding/s1-financial-collaboration.html" data-progress-path="/ai-value/1/ch5-funding/s1-financial-collaboration.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Financial Team Collaboration
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-funding/s2-bottom-up-adoption.html" data-progress-path="/ai-value/1/ch5-funding/s2-bottom-up-adoption.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Securing Bottom-Up Adoption
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch6-wrapup/index.html" data-progress-path="/ai-value/1/ch6-wrapup/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The Customer Journey
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch6-wrapup/s1-customer-journey.html" data-progress-path="/ai-value/1/ch6-wrapup/s1-customer-journey.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Mapping the Journey
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Business Value of AI</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">Business Value of AI</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Business Value of AI</a></li>
+    <li><a href="index.html">Cost &amp; Infrastructure Economics</a></li>
+    <li><a href="s2-infrastructure-knobs.html">Sizing the Infrastructure Knobs</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Sizing the Infrastructure Knobs</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>10 minutes</strong>.</em></p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Objective</dt>
+<dd>
+<p>Evaluate how specific technical choices — context length, dense vs. sparse architectures — act as financial knobs that impact GPU and memory budgets.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_setting_the_stage"><a class="anchor" href="#_setting_the_stage"></a>Setting the Stage</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You arrange a joint workshop with the logistics corporation&#8217;s platform engineering team and their corporate finance analysts. This is deliberate — solving the utilization problem requires both technical architecture changes <em>and</em> a new financial model. The CFO has given you 90 minutes to prove that additional software investment (not more hardware) can unlock the stranded GPUs.</p>
+</div>
+<div class="paragraph">
+<p>The platform engineers arrive with cluster metrics: per-GPU utilization graphs, job queue lengths, and team allocation maps. Finance brings the depreciation schedules, the original business case projections, and the current budget freeze memo. Your job is to connect these two worlds — to show that the metrics the engineers track map directly to the dollars that finance controls.</p>
+</div>
+<div class="paragraph">
+<p>You start by drawing a single line on the whiteboard: "Fixed silos versus shared pools." Everything that follows builds on that distinction. Before diving into architecture, you set a ground rule: every technical component you introduce must have a corresponding line item on a spreadsheet. If it cannot be expressed as a dollar figure, it does not belong in this room today.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_dynamic_utility_pool_architecture"><a class="anchor" href="#_the_dynamic_utility_pool_architecture"></a>The Dynamic Utility Pool Architecture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The core technical solution is straightforward in concept but transformative in practice: convert fixed, team-allocated GPU silos into a centrally managed, dynamic utility pool. Two components from the <code>OpenShift AI</code> platform make this possible — <code>Kueue</code> for workload queuing and <code>InstaSlice</code> for GPU partitioning.</p>
+</div>
+<div class="sect2">
+<h3 id="_kueue_workload_queuing"><a class="anchor" href="#_kueue_workload_queuing"></a>Kueue (Workload Queuing)</h3>
+<div class="paragraph">
+<p><code>Kueue</code> replaces Kubernetes' default scheduler for AI and ML workloads. The default Kubernetes scheduler treats GPUs as simple resources: a pod requests a GPU, the scheduler finds a node with one available, and it binds them together. This works for web applications. It fails for AI workloads because it has no concept of queuing, priority, borrowing, or preemption across teams.</p>
+</div>
+<div class="paragraph">
+<p><code>Kueue</code> introduces three abstractions that change the scheduling model entirely:</p>
+</div>
+<div class="paragraph">
+<p><strong>ClusterQueues</strong> define GPU pools at the cluster level. Instead of assigning GPUs to specific teams via namespace resource quotas, a ClusterQueue represents a pool of GPU resources with defined capacity limits. The logistics corporation&#8217;s 40 H100 GPUs become a single managed pool rather than five isolated clusters of eight.</p>
+</div>
+<div class="paragraph">
+<p><strong>LocalQueues</strong> provide team-level access to the shared pool. Each team (routing optimization, demand forecasting, warehouse AI, data science, operations) gets a LocalQueue that connects to the ClusterQueue. LocalQueues define nominal allocations — how many GPUs a team can use under normal conditions — and borrowing limits — how many <em>additional</em> GPUs they can use when other teams have idle capacity.</p>
+</div>
+<div class="paragraph">
+<p><strong>ResourceFlavors</strong> distinguish GPU types. If the cluster has a mix of H100 and A100 GPUs, ResourceFlavors let <code>Kueue</code> match workloads to appropriate hardware. A training job that needs H100-specific features gets routed to H100s; an inference workload that runs fine on A100s does not consume premium hardware unnecessarily.</p>
+</div>
+<div class="paragraph">
+<p>The result is that batch training jobs queue up and execute when GPUs become available — they do not fail or force engineers to manually monitor the cluster. Interactive notebooks get preempted when a higher-priority training job needs the GPU. And critically, when one team&#8217;s GPUs are idle, other teams can <em>borrow</em> that capacity automatically.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_instaslice_gpu_partitioning"><a class="anchor" href="#_instaslice_gpu_partitioning"></a>InstaSlice (GPU Partitioning)</h3>
+<div class="paragraph">
+<p><code>InstaSlice</code> addresses the second half of the utilization problem: workloads that need <em>some</em> GPU but not an <em>entire</em> GPU. It enables GPU time-slicing and MIG (Multi-Instance GPU) partitioning on supported hardware.</p>
+</div>
+<div class="paragraph">
+<p>A single H100 has 80 GB of VRAM. An interactive development notebook running a 7B-parameter model for experimentation might need 10 GB. Without <code>InstaSlice</code>, that notebook claims the entire 80 GB GPU — and the remaining 70 GB sits unused. With <code>InstaSlice</code>, the H100 is partitioned into multiple isolated instances. The notebook gets a slice with 10 GB of VRAM and proportional compute, and the remaining capacity serves other workloads.</p>
+</div>
+<div class="paragraph">
+<p>This is especially powerful for the interactive notebook problem identified earlier. Data scientists no longer need to choose between "full GPU, mostly idle" and "no GPU at all." They get right-sized GPU slices that match their actual workload requirements, and the freed capacity flows back to the shared pool for batch training and other workloads.</p>
+</div>
+<div class="paragraph">
+<p>The combination of <code>Kueue</code> and <code>InstaSlice</code> attacks utilization from two directions simultaneously. <code>Kueue</code> ensures that no GPU sits idle when there is queued work — it eliminates <em>temporal</em> waste. <code>InstaSlice</code> ensures that no GPU is over-allocated for a workload that does not need its full capacity — it eliminates <em>capacity</em> waste. Together, they convert the logistics corporation&#8217;s fixed hardware silos into a dynamic utility that behaves more like a cloud provider&#8217;s GPU pool but runs entirely on premises.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_scheduling_architecture"><a class="anchor" href="#_the_scheduling_architecture"></a>The Scheduling Architecture</h3>
+<div class="paragraph">
+<p>With <code>Kueue</code> and <code>InstaSlice</code> in place, the logistics corporation&#8217;s workloads organize into three tiers of priority:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 40%;">
+<col style="width: 20%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Priority</th>
+<th class="tableblock halign-left valign-top">Workload Type</th>
+<th class="tableblock halign-left valign-top">Behavior</th>
+<th class="tableblock halign-left valign-top">Preemptible?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Critical</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Production inference</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Always running, guaranteed resources</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">High</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Batch training jobs</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Queued, runs when capacity available</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Only by Critical</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Standard</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Dev notebooks, experiments</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Best-effort, preempted freely</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The <strong>Critical</strong> tier covers the production inference endpoints — the predictive routing API that truck dispatchers rely on. These workloads get guaranteed GPU allocations that cannot be preempted. They are the non-negotiable floor.</p>
+</div>
+<div class="paragraph">
+<p>The <strong>High</strong> tier is where batch training lives. Model retraining jobs for demand forecasting submit to the queue and run when GPU capacity is available. If the Critical tier is consuming its allocation and some Standard workloads are running, <code>Kueue</code> preempts the Standard workloads to make room for High-priority training. The training jobs get capacity without manual intervention.</p>
+</div>
+<div class="paragraph">
+<p>The <strong>Standard</strong> tier serves interactive development. Data scientists launch notebooks, run experiments, and iterate on models. They get GPU resources on a best-effort basis. If a training job or inference spike needs the capacity, the notebook is preempted — the data scientist sees a brief interruption and can reconnect when capacity frees up.</p>
+</div>
+<div class="paragraph">
+<p><code>Kueue</code> <strong>Cohorts</strong> add a final layer of flexibility. A Cohort groups multiple ClusterQueues together and enables borrowing between them. If the "Training" ClusterQueue has idle capacity, the "Inference" queue can temporarily borrow those GPUs, and vice versa. This eliminates the scenario where Team A&#8217;s GPUs sit idle while Team B waits in a queue — the capacity flows automatically to where demand exists.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_the_utilization_math"><a class="anchor" href="#_the_utilization_math"></a>The Utilization Math</h3>
+<div class="paragraph">
+<p>Now translate the architecture into numbers the finance team can verify.</p>
+</div>
+<div class="paragraph">
+<p><strong>Before (Fixed Silos):</strong> 40 H100 GPUs divided across 5 teams, 8 GPUs per team. Each team averages 15 percent utilization. That means each team produces 1.2 useful GPU-equivalents of work per day (8 GPUs x 0.15). Across the cluster: <strong>30 useful GPU-hours per day</strong> out of 200 possible (40 GPUs x 5 hours of an 8-hour work window). The other 170 GPU-hours are idle — allocated, depreciating, and generating heat.</p>
+</div>
+<div class="paragraph">
+<p><strong>After (Dynamic Pool):</strong> The same 40 GPUs are placed in a shared pool managed by <code>Kueue</code>. <code>InstaSlice</code> partitions GPUs for interactive workloads. Batch training jobs backfill idle capacity automatically. Dev notebooks receive GPU slices instead of whole GPUs. The same 5 teams now achieve <strong>80 percent average utilization</strong> — <strong>160 useful GPU-hours per day</strong> from the same hardware.</p>
+</div>
+<div class="paragraph">
+<p>The ROI calculation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Annual depreciation of 40 H100 GPUs: ~$438K/year (at $30K each, 5-year depreciation cycle)</p>
+</li>
+<li>
+<p>At 15% utilization: effective cost = <strong>$29.20 per useful GPU-hour</strong></p>
+</li>
+<li>
+<p>At 80% utilization: effective cost = <strong>$5.48 per useful GPU-hour</strong></p>
+</li>
+<li>
+<p><code>Kueue</code> + <code>InstaSlice</code> licensing and support cost: ~$50K/year</p>
+</li>
+<li>
+<p>Net annual savings in recovered utilization value: <strong>$388K</strong></p>
+</li>
+<li>
+<p>Payback period on scheduling software: <strong>less than 2 months</strong></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The numbers speak clearly. A $50K annual investment in scheduling software unlocks $388K in annual value from hardware the customer already owns. The hardware does not change. The teams do not change. The workloads do not change. Only the <em>scheduling</em> changes — and the financial impact is immediate.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+These figures are illustrative and based on list-price GPU costs and standard depreciation schedules. Your customer&#8217;s actual numbers will vary based on their procurement pricing, depreciation policy, and workload mix. The methodology, however, is consistent: calculate idle depreciation, project utilization improvement, and compare the delta against the scheduling software cost.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_proving_it_to_finance"><a class="anchor" href="#_proving_it_to_finance"></a>Proving It to Finance</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You are in the last 15 minutes of the workshop. The platform engineers are nodding — the architecture makes sense to them. Now you need the finance analysts to approve the funding request. Here is how you close.</p>
+</div>
+<div class="paragraph">
+<p>Lead with the depreciation clock. Put the daily cost on the whiteboard: "Every day your GPUs sit at 15 percent utilization, you lose $7,400 in stranded depreciation. That is $51,800 per week. It has been 26 weeks since the CFO froze funding — during which time the stranded depreciation has cost $1.35M. The freeze <em>itself</em> is expensive."</p>
+</div>
+<div class="paragraph">
+<p>Then present the solution as an operational expense that unlocks existing capital. "For less than 2 percent of your hardware investment — $50K annually — scheduling software converts your fixed silos into a shared pool. Utilization moves from 15 to 80 percent. Your effective cost per GPU-hour drops by 81 percent, from $29 to $5.48. The payback period is under 60 days."</p>
+</div>
+<div class="paragraph">
+<p>End with the funding strategy. Do not ask for new budget — redirect existing savings. If the logistics corporation is migrating any workloads from VMware to <code>OpenShift</code>, suggest redirecting a portion of those license savings to fund the AI scheduling layer. This creates a <strong>budget-neutral path</strong>: no new CapEx request, no board approval required, no CFO veto. The scheduling software pays for itself from savings the company is already capturing.</p>
+</div>
+<div class="paragraph">
+<p>This is the pattern for the Cost Reduction pillar: you are not adding cost. You are redirecting existing spend to multiply the value of existing assets. The CFO&#8217;s $8M investment was not a mistake — it was <strong>step one</strong>. Step two costs 0.6 percent of what step one did, and it makes step one work.</p>
+</div>
+<div class="paragraph">
+<p>The workshop ends with the finance analysts requesting a formal proposal. That is the signal you want — the conversation has moved from "should we do this?" to "how do we get this approved?" The engineering team will deploy <code>Kueue</code> and <code>InstaSlice</code> in a proof-of-concept on a subset of the cluster, measure the utilization improvement over 30 days, and use the real numbers to secure full funding. The CFO&#8217;s freeze is not lifted — it is bypassed, because the solution pays for itself from existing budget lines.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Finance teams respond to three things: a number, a timeline, and a comparison. Give them all three: "$2.2M saved, within 90 days, versus the cost of doing nothing."
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_whats_next"><a class="anchor" href="#_whats_next"></a>What&#8217;s Next</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Having mastered the cost conversation, the next module shifts to risk and data governance. You will learn to configure the MaaS layer to balance public cloud agility with on-premise data sovereignty — the "two sides of the MaaS coin."</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="s1-multi-step-journey.html">Mapping the Multi-Step Journey</a></span>
+  <span class="next"><a href="../ch3-risk/index.html">Risk, Data Governance, &amp; Hybrid Agility</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+<script defer src="../../../_/js/vendor/tabs.js"></script>
+<script defer src="../../../_/js/vendor/reading-time.js"></script>
+<script src="../../../_/js/progress-tracker.js"></script>  </body>
+</html>

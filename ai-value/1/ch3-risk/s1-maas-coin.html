@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Balancing the MaaS Coin :: Business Value of AI</title>
+    <link rel="prev" href="index.html">
+    <link rel="next" href="s2-data-governance.html">
+    <meta name="generator" content="Antora 3.1.3">
+<link rel="stylesheet" href="../../../_/css/site.css">
+<link rel="stylesheet" href="../../../_/css/vendor/tabs.css">
+<link rel="stylesheet" href="../../../_/css/vendor/collapsible.css">
+<link rel="stylesheet" href="../../../_/css/vendor/reading-time.css">
+<link rel="stylesheet" href="../../../_/css/progress-tracker.css">    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">Business Value of AI</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="ai-value" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Business Value of AI</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html" data-progress-path="/ai-value/1/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Home
+    </a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html" data-progress-path="/ai-value/1/LABENV/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Lab Environment
+    </a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-platform-strategy/index.html" data-progress-path="/ai-value/1/ch1-platform-strategy/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The Translation Gap &amp; Platform Strategy
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-platform-strategy/s1-ai-factory.html" data-progress-path="/ai-value/1/ch1-platform-strategy/s1-ai-factory.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The AI Factory Lifecycle
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-platform-strategy/s2-platform-rooted.html" data-progress-path="/ai-value/1/ch1-platform-strategy/s2-platform-rooted.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The Platform-Rooted Strategy
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch2-cost/index.html" data-progress-path="/ai-value/1/ch2-cost/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Cost &amp; Infrastructure Economics
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cost/s1-multi-step-journey.html" data-progress-path="/ai-value/1/ch2-cost/s1-multi-step-journey.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Mapping the Multi-Step Journey
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cost/s2-infrastructure-knobs.html" data-progress-path="/ai-value/1/ch2-cost/s2-infrastructure-knobs.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Sizing the Infrastructure Knobs
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html" data-progress-path="/ai-value/1/ch3-risk/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Risk, Data Governance, &amp; Hybrid Agility
+    </a>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s1-maas-coin.html" data-progress-path="/ai-value/1/ch3-risk/s1-maas-coin.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Balancing the MaaS Coin
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s2-data-governance.html" data-progress-path="/ai-value/1/ch3-risk/s2-data-governance.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Conceptual Data Governance
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch4-revenue/index.html" data-progress-path="/ai-value/1/ch4-revenue/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Revenue &amp; Rescuing "Decision Past"
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-revenue/s1-interconnect-loop.html" data-progress-path="/ai-value/1/ch4-revenue/s1-interconnect-loop.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The High-Speed Interconnect Loop
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-revenue/s2-decision-past.html" data-progress-path="/ai-value/1/ch4-revenue/s2-decision-past.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Rescuing the "Decision Past"
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch5-funding/index.html" data-progress-path="/ai-value/1/ch5-funding/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Securing Funding &amp; Adoption
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-funding/s1-financial-collaboration.html" data-progress-path="/ai-value/1/ch5-funding/s1-financial-collaboration.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Financial Team Collaboration
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-funding/s2-bottom-up-adoption.html" data-progress-path="/ai-value/1/ch5-funding/s2-bottom-up-adoption.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Securing Bottom-Up Adoption
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch6-wrapup/index.html" data-progress-path="/ai-value/1/ch6-wrapup/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The Customer Journey
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch6-wrapup/s1-customer-journey.html" data-progress-path="/ai-value/1/ch6-wrapup/s1-customer-journey.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Mapping the Journey
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Business Value of AI</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">Business Value of AI</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Business Value of AI</a></li>
+    <li><a href="index.html">Risk, Data Governance, &amp; Hybrid Agility</a></li>
+    <li><a href="s1-maas-coin.html">Balancing the MaaS Coin</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Balancing the MaaS Coin</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>8 minutes</strong>.</em></p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Objective</dt>
+<dd>
+<p>Configure the MaaS layer to safely route to external cloud providers for rapid agility while retaining the flexibility to pull workloads back on-premise for IP protection.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_scenario"><a class="anchor" href="#_the_scenario"></a>The Scenario</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You open the third case file and find a tense standoff.
+A major financial services firm&#8201;&#8212;&#8201;50,000 employees, heavily regulated by the SEC and FINRA&#8201;&#8212;&#8201;has developer teams that have been using public AI APIs (Claude, GPT, Gemini) for months.
+They are building trading analysis assistants, compliance document summarizers, and customer communication drafters.
+The developers love the speed: spin up an API key, start coding, ship features in days.</p>
+</div>
+<div class="paragraph">
+<p>But three weeks ago, the CISO&#8217;s office ran an audit and discovered that developers were sending proprietary earnings analysis, merger documents, and client portfolio data through external API endpoints.
+The CISO issued an immediate production freeze.</p>
+</div>
+<div class="paragraph">
+<p>The developers are furious&#8201;&#8212;&#8201;their roadmap is stalled.
+The CISO is immovable&#8201;&#8212;&#8201;the regulatory exposure is existential.
+Your colleague&#8217;s notes say: "Both sides are right. Need to find middle ground."
+But there is no proposed solution in the file.</p>
+</div>
+<div class="paragraph">
+<p>You have inherited a conflict with no plan.
+The developer team lead has already emailed you twice asking when the freeze will be lifted.
+The CISO&#8217;s office has copied Legal on every thread.
+If you do not propose a credible architecture within the week, the firm will begin evaluating alternative vendors&#8201;&#8212;&#8201;ones who promise "fully air-gapped AI" solutions that will take eighteen months to deploy and cost ten times what the current approach costs.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_subsidized_token_trap"><a class="anchor" href="#_the_subsidized_token_trap"></a>The Subsidized Token Trap</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To understand why the developers moved so fast toward public AI APIs&#8201;&#8212;&#8201;and why the CISO is right to be alarmed&#8201;&#8212;&#8201;you need to understand the economics behind the current AI token market.</p>
+</div>
+<div class="paragraph">
+<p>Public cloud AI providers are heavily subsidizing token costs to drive adoption and capture market share.
+Current market rates for frontier models range from approximately $3 to $15 per million input tokens.
+These prices are often <em>below</em> the actual cost of inference.
+The providers are burning venture capital and cloud margin to make AI APIs irresistibly cheap.
+This is not generosity&#8201;&#8212;&#8201;it is a deliberate acquisition strategy.</p>
+</div>
+<div class="paragraph">
+<p>The subsidized token trap unfolds in three predictable phases:</p>
+</div>
+<div class="paragraph">
+<p><strong>Phase 1: Adoption.</strong>
+Subsidized prices, easy-to-use APIs, and zero infrastructure to manage.
+Developers build features fast.
+Product managers see demos in days instead of quarters.
+The business sees immediate value.
+Nobody asks hard questions because the costs are negligible and the velocity is extraordinary.
+Teams build proof-of-concept applications that quietly become production services.
+Management celebrates the innovation velocity without examining the foundation it rests on.</p>
+</div>
+<div class="paragraph">
+<p><strong>Phase 2: Dependency.</strong>
+Workflows become hardcoded to specific model APIs.
+Prompt engineering is tuned to the behavior of a particular model version.
+Evaluation pipelines, output parsers, and downstream integrations all assume a specific provider.
+Switching costs grow silently.
+When the provider raises prices by 30-50%&#8201;&#8212;&#8201;and they will, because the subsidies are not sustainable&#8201;&#8212;&#8201;the cost of re-engineering exceeds the cost of simply paying more.
+The organization is locked in, not by a contract, but by accumulated technical debt.
+Internal teams have no institutional knowledge of how to run models themselves because they never needed to.
+The skills gap compounds the financial dependency.</p>
+</div>
+<div class="paragraph">
+<p><strong>Phase 3: Monetization.</strong>
+The provider now has leverage.
+They have processed millions of tokens of your proprietary data.
+Their terms of service may permit using interaction data to improve their models.
+Even if they do not explicitly train on your data, they accumulate metadata: what you query, how often, what patterns emerge, which topics generate the most tokens.
+For a financial services firm, this metadata alone is a competitive intelligence goldmine.
+A provider who knows that a firm is suddenly generating high volumes of queries about a specific company or sector can infer material non-public activity&#8201;&#8212;&#8201;even without reading the query content.</p>
+</div>
+<div class="paragraph">
+<p>This three-phase pattern is not theoretical.
+It follows the same playbook that cloud storage, SaaS CRM, and enterprise database providers have used for decades.
+The difference with AI tokens is that the data exposure risk in Phase 3 is orders of magnitude higher because the data itself&#8201;&#8212;&#8201;not just the application&#8201;&#8212;&#8201;passes through third-party infrastructure.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Do not claim that public AI providers are "stealing" customer data.
+That is an unbacked exfiltration claim that damages your credibility.
+Instead, focus on the <em>conceptual exposure risk</em>: the customer&#8217;s proprietary data traverses infrastructure they do not own, cannot audit, and cannot guarantee will not be used for purposes beyond their control.
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_conceptual_data_exposure"><a class="anchor" href="#_conceptual_data_exposure"></a>Conceptual Data Exposure</h3>
+<div class="paragraph">
+<p>In customer conversations, you will find that security teams, legal teams, and developer teams often conflate three very different levels of data risk.
+Separating these clearly is essential to having a productive conversation instead of a fear-driven one.</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 40%;">
+<col style="width: 40%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Risk Level</th>
+<th class="tableblock halign-left valign-top">What Happens</th>
+<th class="tableblock halign-left valign-top">Regulatory Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Direct Training</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Provider uses customer data to train or fine-tune their models</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">GDPR/SEC violation, intellectual property loss, potential insider trading exposure</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Metadata Leakage</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Query patterns, volumes, and timing reveal business intent even without reading content</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Competitive intelligence exposure, potential front-running risk</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Third-Party Subprocessing</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Provider routes requests through sub-providers, CDNs, or logging pipelines</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Loss of data chain-of-custody, inability to certify data handling to regulators</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>Even providers who contractually guarantee "we do not train on your data" may route requests through sub-processors, content delivery networks, or logging pipelines that the customer cannot independently audit.
+For a FINRA-regulated firm, the inability to prove chain-of-custody for data handling is <em>itself</em> a compliance violation&#8201;&#8212;&#8201;regardless of whether any actual data misuse occurs.
+The regulatory standard is not "prove that something bad happened."
+The regulatory standard is "prove that you maintained control at all times."
+When data leaves your infrastructure, that proof becomes extremely difficult to provide.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_business_translation"><a class="anchor" href="#_the_business_translation"></a>The Business Translation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The CISO speaks in risk.
+The CFO speaks in dollars.
+The developer lead speaks in velocity.
+To resolve this standoff, you need to frame the problem in a language that all three understand: <em>financial exposure</em>.</p>
+</div>
+<div class="paragraph">
+<p>Consider the numbers.
+If the firm sends 10 million tokens per day of proprietary financial data through external APIs, and a data breach or regulatory finding results from that practice, the potential downside dwarfs any savings on infrastructure.
+SEC fines for data handling violations average $5-50 million.
+GDPR fines can reach 4% of global annual revenue.
+A single compliance finding that the firm failed to maintain chain-of-custody for client data could trigger client lawsuits, regulatory investigations, and reputational damage that takes years to repair.</p>
+</div>
+<div class="paragraph">
+<p>The "cheap tokens" are not cheap when the tail risk is existential.</p>
+</div>
+<div class="paragraph">
+<p>But&#8201;&#8212;&#8201;and this is critical&#8201;&#8212;&#8201;do not position this as "never use public APIs."
+That makes you an obstacle, not an advisor.
+The CISO already tried the "block everything" approach and it created the standoff you are now trying to resolve.
+Blanket prohibitions do not work because developers will find workarounds&#8201;&#8212;&#8201;personal API keys, shadow IT, browser-based AI tools that bypass network controls entirely.</p>
+</div>
+<div class="paragraph">
+<p>Instead, position it as: "Use public APIs strategically, for the right workloads, with the right guardrails."
+Some workloads carry zero data sensitivity&#8201;&#8212;&#8201;code generation from open-source context, public research summarization, boilerplate drafting.
+Those should absolutely leverage external APIs for speed and cost efficiency.
+Other workloads carry significant sensitivity&#8201;&#8212;&#8201;anything involving client data, proprietary models, merger activity, or trading strategies.
+Those must remain on infrastructure the organization owns and controls.</p>
+</div>
+<div class="paragraph">
+<p>The key is building an architecture that enforces the distinction automatically, without relying on individual developer judgment.
+Developers should not have to decide which API endpoint to call based on the sensitivity of their data.
+The infrastructure should make that decision for them.</p>
+</div>
+<div class="paragraph">
+<p>This is the balanced hybrid methodology that sets up the solution in the next section.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+The developer team and the CISO are not actually in conflict. They both want the same thing: AI capabilities that do not destroy the business. Your job is to give them a shared vocabulary and a shared architecture.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_whats_next"><a class="anchor" href="#_whats_next"></a>What&#8217;s Next</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now that you can configure the MaaS routing strategy, the next section addresses the data governance narrative. You will learn to educate commercial customers on exposure risk and shared training data pools using objective, defensible claims.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="index.html">Risk, Data Governance, &amp; Hybrid Agility</a></span>
+  <span class="next"><a href="s2-data-governance.html">Conceptual Data Governance</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+<script defer src="../../../_/js/vendor/tabs.js"></script>
+<script defer src="../../../_/js/vendor/reading-time.js"></script>
+<script src="../../../_/js/progress-tracker.js"></script>  </body>
+</html>

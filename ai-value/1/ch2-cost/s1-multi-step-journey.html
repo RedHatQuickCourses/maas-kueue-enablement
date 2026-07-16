@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Mapping the Multi-Step Journey :: Business Value of AI</title>
+    <link rel="prev" href="index.html">
+    <link rel="next" href="s2-infrastructure-knobs.html">
+    <meta name="generator" content="Antora 3.1.3">
+<link rel="stylesheet" href="../../../_/css/site.css">
+<link rel="stylesheet" href="../../../_/css/vendor/tabs.css">
+<link rel="stylesheet" href="../../../_/css/vendor/collapsible.css">
+<link rel="stylesheet" href="../../../_/css/vendor/reading-time.css">
+<link rel="stylesheet" href="../../../_/css/progress-tracker.css">    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">Business Value of AI</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="ai-value" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Business Value of AI</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html" data-progress-path="/ai-value/1/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Home
+    </a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html" data-progress-path="/ai-value/1/LABENV/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Lab Environment
+    </a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-platform-strategy/index.html" data-progress-path="/ai-value/1/ch1-platform-strategy/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The Translation Gap &amp; Platform Strategy
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-platform-strategy/s1-ai-factory.html" data-progress-path="/ai-value/1/ch1-platform-strategy/s1-ai-factory.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The AI Factory Lifecycle
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-platform-strategy/s2-platform-rooted.html" data-progress-path="/ai-value/1/ch1-platform-strategy/s2-platform-rooted.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The Platform-Rooted Strategy
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html" data-progress-path="/ai-value/1/ch2-cost/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Cost &amp; Infrastructure Economics
+    </a>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s1-multi-step-journey.html" data-progress-path="/ai-value/1/ch2-cost/s1-multi-step-journey.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Mapping the Multi-Step Journey
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s2-infrastructure-knobs.html" data-progress-path="/ai-value/1/ch2-cost/s2-infrastructure-knobs.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Sizing the Infrastructure Knobs
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch3-risk/index.html" data-progress-path="/ai-value/1/ch3-risk/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Risk, Data Governance, &amp; Hybrid Agility
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-risk/s1-maas-coin.html" data-progress-path="/ai-value/1/ch3-risk/s1-maas-coin.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Balancing the MaaS Coin
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-risk/s2-data-governance.html" data-progress-path="/ai-value/1/ch3-risk/s2-data-governance.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Conceptual Data Governance
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch4-revenue/index.html" data-progress-path="/ai-value/1/ch4-revenue/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Revenue &amp; Rescuing "Decision Past"
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-revenue/s1-interconnect-loop.html" data-progress-path="/ai-value/1/ch4-revenue/s1-interconnect-loop.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The High-Speed Interconnect Loop
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch4-revenue/s2-decision-past.html" data-progress-path="/ai-value/1/ch4-revenue/s2-decision-past.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Rescuing the "Decision Past"
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch5-funding/index.html" data-progress-path="/ai-value/1/ch5-funding/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Securing Funding &amp; Adoption
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-funding/s1-financial-collaboration.html" data-progress-path="/ai-value/1/ch5-funding/s1-financial-collaboration.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Financial Team Collaboration
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-funding/s2-bottom-up-adoption.html" data-progress-path="/ai-value/1/ch5-funding/s2-bottom-up-adoption.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Securing Bottom-Up Adoption
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch6-wrapup/index.html" data-progress-path="/ai-value/1/ch6-wrapup/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The Customer Journey
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch6-wrapup/s1-customer-journey.html" data-progress-path="/ai-value/1/ch6-wrapup/s1-customer-journey.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Mapping the Journey
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Business Value of AI</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">Business Value of AI</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Business Value of AI</a></li>
+    <li><a href="index.html">Cost &amp; Infrastructure Economics</a></li>
+    <li><a href="s1-multi-step-journey.html">Mapping the Multi-Step Journey</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">Mapping the Multi-Step Journey</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>10 minutes</strong>.</em></p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Objective</dt>
+<dd>
+<p>Defeat the laptop illusion by breaking down the intermediate infrastructure steps between local testing and production to align hardware expectations.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_scenario"><a class="anchor" href="#_the_scenario"></a>The Scenario</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You open the second case file. A major logistics corporation invested $8M in a GPU-accelerated data center to power predictive routing, demand forecasting, and autonomous warehouse AI. The business case was compelling: replace three legacy optimization systems with a unified AI platform, cut delivery times by 20 percent, and reduce fuel costs through smarter route planning.</p>
+</div>
+<div class="paragraph">
+<p>Six months in, the CFO&#8217;s office ran a routine infrastructure audit and discovered that the average GPU utilization across the entire cluster was <strong>15 percent</strong>. Not during off-hours — <em>on average</em>, including peak operational windows.</p>
+</div>
+<div class="paragraph">
+<p>The CFO immediately froze all future AI funding, calling the investment "the most expensive space heater in the building."</p>
+</div>
+<div class="paragraph">
+<p>Your colleague had been working on a technical architecture review but never presented the utilization problem as a solvable financial equation. The engagement stalled because the conversation stayed in the server room instead of moving to the boardroom. The customer&#8217;s platform engineering team knows the hardware is underutilized — they just cannot explain to finance why <em>more spending</em> (on scheduling software, not more GPUs) will fix the problem.</p>
+</div>
+<div class="paragraph">
+<p>This is the pattern you see repeatedly in enterprise AI: the gap between what engineering knows and what finance will fund. The engineers speak in utilization percentages and queue depths; the CFO speaks in depreciation schedules and return on invested capital. Neither side is wrong — they are looking at the same problem through different lenses. Your job is to bridge that gap — not with jargon, but with a financial model that makes the solution obvious.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_laptop_illusion_at_scale"><a class="anchor" href="#_the_laptop_illusion_at_scale"></a>The Laptop Illusion at Scale</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In Module 1, you encountered the "laptop illusion" — the false belief that a model running on a developer&#8217;s workstation translates directly to a production deployment. The logistics corporation fell into exactly this trap, but at an $8M scale.</p>
+</div>
+<div class="paragraph">
+<p>Their data science team prototyped predictive routing models on high-end workstations equipped with consumer-grade GPUs. The models worked. Inference was fast. The team demonstrated results to leadership. The natural next request: "Give us the same thing, but bigger."</p>
+</div>
+<div class="paragraph">
+<p>What they actually needed was fundamentally different infrastructure — not a scaled-up laptop, but a shared compute platform with intelligent scheduling, workload isolation, and resource management. The difference matters because enterprise AI workloads are not one thing. They are at least three competing categories of work, all fighting for the same GPU resources:</p>
+</div>
+<div class="paragraph">
+<p><strong>Batch training jobs</strong> run for hours or days, consuming entire GPUs at high utilization while they execute. They are throughput-sensitive and can tolerate queuing delays — a training run that starts at 2 AM instead of midnight still delivers the same model. But they need large, contiguous blocks of GPU time.</p>
+</div>
+<div class="paragraph">
+<p><strong>Interactive development notebooks</strong> are the opposite pattern. Data scientists launch a Jupyter notebook, load a model, run a few experiments, review results, modify code, and repeat. The GPU is <em>actively</em> used perhaps 20 percent of the time the notebook is open. The other 80 percent, the GPU sits idle — allocated but doing nothing — because the data scientist might need it at any moment.</p>
+</div>
+<div class="paragraph">
+<p><strong>Always-on inference endpoints</strong> need guaranteed latency. A predictive routing API that takes 30 seconds to respond is worthless when a truck is waiting at a loading dock. These endpoints must have reserved capacity, but the reservation is often sized for peak traffic. At 3 AM, that reserved GPU is serving almost no requests.</p>
+</div>
+<div class="paragraph">
+<p>Without intelligent scheduling, these three workload types step on each other. Interactive notebooks "park" on GPUs that batch training desperately needs. Inference endpoints are over-provisioned "just in case" peak traffic materializes. The result is what the logistics corporation experienced: expensive hardware sitting mostly idle, with every team convinced they need <em>more</em> GPUs because <em>theirs</em> are always busy.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ai_unit_economics"><a class="anchor" href="#_ai_unit_economics"></a>AI Unit Economics</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The utilization problem is not just a technical inconvenience — it is a financial multiplier that determines whether an AI investment pays off in three years or thirty. To make this case to a CFO, you need a financial framework that translates utilization percentages into dollar figures.</p>
+</div>
+<div class="sect2">
+<h3 id="_gpu_depreciation_rate"><a class="anchor" href="#_gpu_depreciation_rate"></a>GPU Depreciation Rate</h3>
+<div class="paragraph">
+<p>Enterprise GPUs depreciate on a 3-5 year cycle. An NVIDIA H100 GPU at approximately $30,000 depreciates at roughly <strong>$25 per day</strong> on a 3-year schedule, or about $16 per day on a 5-year schedule. This depreciation clock runs continuously — it does not pause when the GPU is idle, when a team is on vacation, or when a model is being debugged.</p>
+</div>
+<div class="paragraph">
+<p>At 15 percent utilization, the effective cost per useful compute-hour is <strong>6.7 times higher</strong> than at 100 percent utilization. The customer is paying full price for a resource they use less than one-sixth of the time. Think of it as leasing a fleet of delivery trucks but only driving them on Mondays — the lease payments do not shrink because the trucks are parked Tuesday through Friday.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_stranded_capex"><a class="anchor" href="#_stranded_capex"></a>Stranded CapEx</h3>
+<div class="paragraph">
+<p>When a GPU sits idle, it generates what financial analysts call "stranded capital expenditure." The asset exists on the balance sheet at its depreciated book value, but it is not producing economic output proportional to its cost. For the logistics corporation&#8217;s $8M investment, the math is brutal:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>40 GPUs at 15 percent utilization means 34 GPU-equivalents are idle at any given time</p>
+</li>
+<li>
+<p>At $25/day depreciation per GPU, the idle fleet costs approximately <strong>$7,400 per day</strong> in stranded depreciation</p>
+</li>
+<li>
+<p>Over a full year, that is approximately <strong>$2.7M</strong> in capital that is depreciating without producing proportional value</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This is the number that changes a CFO&#8217;s mind. Not "utilization is low" — that is an engineering metric. "You are losing $2.7M per year in stranded depreciation" — that is a financial crisis.</p>
+</div>
+<div class="paragraph">
+<p>The following table summarizes the financial impact of moving from 15 percent to 80 percent utilization:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Metric</th>
+<th class="tableblock halign-left valign-top">At 15% Utilization</th>
+<th class="tableblock halign-left valign-top">At 80% Utilization</th>
+<th class="tableblock halign-left valign-top">Delta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Effective cost per GPU-hour</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">$167</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">$31</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-81%</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Annual stranded CapEx</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">$2.7M</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">$0.5M</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">-$2.2M saved</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Workloads served per GPU</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">1.2</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">6.4</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">+433%</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Break-even timeline</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">18+ years</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">3.4 years</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Achievable</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The "break-even timeline" row is particularly powerful in CFO conversations. At 15 percent utilization, the $8M investment would need over 18 years to generate enough value to justify its cost — far beyond the hardware&#8217;s useful life and well past the point where the GPUs are technologically obsolete. At 80 percent utilization, the break-even point falls within the standard depreciation cycle. The investment becomes rational. This is not an abstract improvement — it is the difference between an asset that appears on the balance sheet as a loss and one that justifies its next funding cycle.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_data_center_physics"><a class="anchor" href="#_data_center_physics"></a>Data Center Physics</h3>
+<div class="paragraph">
+<p>The utilization problem does not exist in isolation. It compounds with physical infrastructure constraints that add hidden costs to every idle GPU.</p>
+</div>
+<div class="paragraph">
+<p>Legacy enterprise data centers are designed for traditional compute workloads: file servers, databases, web application clusters. These racks are provisioned for <strong>10-15 kW per rack</strong>. Modern AI training workloads — especially distributed training across multiple GPUs — demand <strong>40-100+ kW per rack</strong>. This power density gap means that even when a customer has available rack space, they may lack the electrical and cooling capacity to fill it.</p>
+</div>
+<div class="paragraph">
+<p>The logistics corporation ran into exactly this problem. They had rack space for 60 GPUs but could only power and cool 40 of them. When they over-provisioned those 40 GPUs to ensure availability for each team (allocating dedicated GPUs per group rather than sharing a pool), they created a <strong>double waste</strong>: idle compute burning electricity and unused power headroom that could serve additional workloads if the existing GPUs were properly shared.</p>
+</div>
+<div class="paragraph">
+<p>There is a concept worth introducing to your CFO conversations: <strong>thermal CapEx</strong>. The cooling infrastructure required for high-density AI racks — liquid cooling loops, upgraded CRAC units, hot-aisle containment — often costs <strong>30-40 percent</strong> of the GPU hardware itself. For the logistics corporation, that means roughly $2.5M of their investment went to cooling infrastructure. If that cooling is serving GPUs at 15 percent utilization, a significant portion of the thermal CapEx is pure waste — the cooling system is provisioned for a heat load that never materializes because the GPUs are mostly idle.</p>
+</div>
+<div class="paragraph">
+<p>This physical reality strengthens the business case for scheduling and orchestration: better utilization of existing GPUs means the customer can defer expensive power and cooling upgrades. Every GPU-hour recovered from the existing cluster is a GPU-hour that does not require new rack space, new power circuits, or new cooling capacity.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_business_translation"><a class="anchor" href="#_the_business_translation"></a>The Business Translation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You now have the financial framework. The question is how to present it to a CFO who has already frozen AI funding.</p>
+</div>
+<div class="paragraph">
+<p>The instinct is to lead with the technical problem: "Your GPUs are underutilized because you lack workload scheduling." But the CFO already knows utilization is low — that is precisely <em>why</em> they froze funding. Leading with the problem just confirms their decision. Instead, lead with the asset.</p>
+</div>
+<div class="paragraph">
+<p>The correct framing: "Your $8M investment is not a failed bet — it is an <strong>unlocked asset</strong>. The hardware you already own is capable of delivering 5x the current output. The missing piece is scheduling software that converts fixed hardware silos into a shared utility pool. The incremental cost is less than 2 percent of the existing investment."</p>
+</div>
+<div class="paragraph">
+<p>This framing accomplishes three things:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>It validates the original purchase decision rather than undermining it. The CFO approved that $8M — telling them it was a mistake creates an adversary.</p>
+</li>
+<li>
+<p>It positions the solution as a small incremental spend, not a new capital request. Two percent of $8M is $160K — an operational line item, not a board-level expenditure.</p>
+</li>
+<li>
+<p>It introduces the <strong>Cost Reduction pillar</strong> of the value framework: every dollar spent on scheduling and orchestration <em>multiplies</em> the return on existing CapEx. The customer does not need more GPUs — they need to use the ones they have.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Never tell a CFO their investment was a mistake. Tell them their investment is an asset waiting to be activated. The first framing creates an adversary; the second creates a partner.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_whats_next"><a class="anchor" href="#_whats_next"></a>What&#8217;s Next</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now that you can map the infrastructure journey, the next section dives into the specific technical decisions that drive costs. You will evaluate how context length, dense vs. sparse architectures, and other choices act as financial knobs that directly impact GPU and memory budgets.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="index.html">Cost &amp; Infrastructure Economics</a></span>
+  <span class="next"><a href="s2-infrastructure-knobs.html">Sizing the Infrastructure Knobs</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+<script defer src="../../../_/js/vendor/tabs.js"></script>
+<script defer src="../../../_/js/vendor/reading-time.js"></script>
+<script src="../../../_/js/progress-tracker.js"></script>  </body>
+</html>

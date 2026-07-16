@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>The High-Speed Interconnect Loop :: Business Value of AI</title>
+    <link rel="prev" href="index.html">
+    <link rel="next" href="s2-decision-past.html">
+    <meta name="generator" content="Antora 3.1.3">
+<link rel="stylesheet" href="../../../_/css/site.css">
+<link rel="stylesheet" href="../../../_/css/vendor/tabs.css">
+<link rel="stylesheet" href="../../../_/css/vendor/collapsible.css">
+<link rel="stylesheet" href="../../../_/css/vendor/reading-time.css">
+<link rel="stylesheet" href="../../../_/css/progress-tracker.css">    <script>var uiRootPath = '../../../_'</script>
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://www.redhat.com" target="_blank"><img src="../../../_/img/redhat-logo.png" height="40px" alt="Red Hat"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="../../..">Business Value of AI</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://github.com/RedHatQuickCourses/REPLACEREPONAME/issues" target="_blank">Report Issues</a>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="ai-value" data-version="1">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="../index.html">Business Value of AI</a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../index.html" data-progress-path="/ai-value/1/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Home
+    </a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="../LABENV/index.html" data-progress-path="/ai-value/1/LABENV/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Lab Environment
+    </a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch1-platform-strategy/index.html" data-progress-path="/ai-value/1/ch1-platform-strategy/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The Translation Gap &amp; Platform Strategy
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-platform-strategy/s1-ai-factory.html" data-progress-path="/ai-value/1/ch1-platform-strategy/s1-ai-factory.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The AI Factory Lifecycle
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch1-platform-strategy/s2-platform-rooted.html" data-progress-path="/ai-value/1/ch1-platform-strategy/s2-platform-rooted.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The Platform-Rooted Strategy
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch2-cost/index.html" data-progress-path="/ai-value/1/ch2-cost/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Cost &amp; Infrastructure Economics
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cost/s1-multi-step-journey.html" data-progress-path="/ai-value/1/ch2-cost/s1-multi-step-journey.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Mapping the Multi-Step Journey
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch2-cost/s2-infrastructure-knobs.html" data-progress-path="/ai-value/1/ch2-cost/s2-infrastructure-knobs.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Sizing the Infrastructure Knobs
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch3-risk/index.html" data-progress-path="/ai-value/1/ch3-risk/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Risk, Data Governance, &amp; Hybrid Agility
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-risk/s1-maas-coin.html" data-progress-path="/ai-value/1/ch3-risk/s1-maas-coin.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Balancing the MaaS Coin
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch3-risk/s2-data-governance.html" data-progress-path="/ai-value/1/ch3-risk/s2-data-governance.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Conceptual Data Governance
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="index.html" data-progress-path="/ai-value/1/ch4-revenue/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Revenue &amp; Rescuing "Decision Past"
+    </a>
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="s1-interconnect-loop.html" data-progress-path="/ai-value/1/ch4-revenue/s1-interconnect-loop.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The High-Speed Interconnect Loop
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="s2-decision-past.html" data-progress-path="/ai-value/1/ch4-revenue/s2-decision-past.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Rescuing the "Decision Past"
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch5-funding/index.html" data-progress-path="/ai-value/1/ch5-funding/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Securing Funding &amp; Adoption
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-funding/s1-financial-collaboration.html" data-progress-path="/ai-value/1/ch5-funding/s1-financial-collaboration.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Financial Team Collaboration
+    </a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch5-funding/s2-bottom-up-adoption.html" data-progress-path="/ai-value/1/ch5-funding/s2-bottom-up-adoption.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Securing Bottom-Up Adoption
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="../ch6-wrapup/index.html" data-progress-path="/ai-value/1/ch6-wrapup/index.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      The Customer Journey
+    </a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../ch6-wrapup/s1-customer-journey.html" data-progress-path="/ai-value/1/ch6-wrapup/s1-customer-journey.html">
+      <span class="nav-progress-mark" aria-hidden="true">✓</span>
+      Mapping the Journey
+    </a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+<div class="nav-panel-explore" data-panel="explore">
+  <div class="context">
+    <span class="title">Business Value of AI</span>
+    <span class="version">1</span>
+  </div>
+  <ul class="components">
+    <li class="component is-current">
+      <a class="title" href="../index.html">Business Value of AI</a>
+      <ul class="versions">
+        <li class="version is-current is-latest">
+          <a href="../index.html">1</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="../index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="../index.html">Business Value of AI</a></li>
+    <li><a href="index.html">Revenue &amp; Rescuing "Decision Past"</a></li>
+    <li><a href="s1-interconnect-loop.html">The High-Speed Interconnect Loop</a></li>
+  </ul>
+</nav>
+</div>
+  <div class="content">
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+<article class="doc">
+<h1 class="page">The High-Speed Interconnect Loop</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p><em>Estimated reading time: <strong>10 minutes</strong>.</em></p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Objective</dt>
+<dd>
+<p>Diagnose a 2-node escalation where continuous token-sharing saturates high-speed interconnects, proving that model sizing must match physical footprints.</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_scenario"><a class="anchor" href="#_the_scenario"></a>The Scenario</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is the most urgent case.
+You receive a page at 6 AM&#8201;&#8212;&#8201;a customer escalation marked "relationship critical."</p>
+</div>
+<div class="paragraph">
+<p>An enterprise retail conglomerate hired an external strategy consultancy to accelerate their AI roadmap.
+The consultancy recommended deploying a state-of-the-art Mixture of Experts (MoE) model&#8201;&#8212;&#8201;141 billion parameters, 16 expert sub-networks&#8201;&#8212;&#8201;to power a customer-facing product recommendation engine expected to generate $50M in incremental annual revenue.</p>
+</div>
+<div class="paragraph">
+<p>The customer&#8217;s platform team, guided by the consultancy, deployed the model across a 2-node cluster with 8x H100 GPUs per node (16 GPUs total).
+On paper, the VRAM was sufficient: 141B parameters at FP16 requires ~282GB, and 16x H100s provide 1,280GB total.</p>
+</div>
+<div class="paragraph">
+<p>But the environment collapsed under load.
+Inference latency spiked from 200ms to 12 seconds.
+Token throughput dropped by 90%.
+The customer-facing application is returning timeouts.
+The CEO is threatening to cancel the entire AI program and fire the platform team.</p>
+</div>
+<div class="paragraph">
+<p>Your colleague&#8217;s last note in the file reads: "This is not a software problem. This is physics."</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_training_vs_inference_hardware"><a class="anchor" href="#_training_vs_inference_hardware"></a>Training vs. Inference Hardware</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The consultancy&#8217;s "VRAM is sufficient" analysis was fatally incomplete.
+VRAM capacity tells you whether a model <em>fits</em> in memory.
+It tells you nothing about whether the model can <em>perform</em> at production speed.
+MoE models have a fundamentally different hardware profile than dense models during inference, and ignoring that difference is what brought this environment to its knees.</p>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Dense Models (e.g., Llama-3 70B)</dt>
+<dd>
+<p>Every token passes through every parameter.
+The model weights are loaded once and reused.
+The primary bottleneck is VRAM capacity and memory bandwidth.
+Multi-node serving is possible with tensor parallelism, but the communication overhead is predictable and bounded.
+When you split a dense model across two nodes, each node handles a fixed slice of every layer.
+The data that crosses the network is consistent in volume and timing&#8201;&#8212;&#8201;you can measure it, predict it, and engineer for it.</p>
+</dd>
+<dt class="hdlist1">MoE Models (e.g., Mixtral, DBRX)</dt>
+<dd>
+<p>Only a subset of "expert" sub-networks activate per token (typically 2 of 16).
+This reduces compute per token&#8201;&#8212;&#8201;but creates a massive coordination problem.
+The routing layer must decide which experts to activate for each token, and those experts may reside on different nodes.
+Unlike tensor parallelism, where each node always processes the same slice, MoE routing is <em>dynamic</em>.
+Different tokens activate different experts.
+The network traffic pattern changes with every single inference request.</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>The following table summarizes the key differences:</p>
+</div>
+<table class="tableblock frame-all grid-all stretch">
+<colgroup>
+<col style="width: 33.3333%;">
+<col style="width: 33.3333%;">
+<col style="width: 33.3334%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Characteristic</th>
+<th class="tableblock halign-left valign-top">Dense Model</th>
+<th class="tableblock halign-left valign-top">MoE Model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Parameters active per token</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">100%</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">12-25% (2 of 8-16 experts)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Compute per token</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">High</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Lower</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Memory footprint</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Weight count x precision</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Full weight count (all experts loaded)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Inter-node communication</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Bounded (tensor splits)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Continuous (expert routing)</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Network sensitivity</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Moderate</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Extreme</p></td>
+</tr>
+</tbody>
+</table>
+<div class="paragraph">
+<p>The consultancy looked at the VRAM column and concluded the infrastructure was adequate.
+They never considered the inter-node communication row.
+That single oversight is the root cause of the catastrophic failure.</p>
+</div>
+<div class="sect2">
+<h3 id="_the_interconnect_saturation_loop"><a class="anchor" href="#_the_interconnect_saturation_loop"></a>The Interconnect Saturation Loop</h3>
+<div class="paragraph">
+<p>This is the core technical lesson of the module.
+The failure is not a single point of breakdown&#8201;&#8212;&#8201;it is a <em>feedback loop</em> that accelerates until the system becomes completely unresponsive.
+Here is how it unfolds, step by step:</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 1: Token generation begins.</strong>
+A user sends a request to the product recommendation engine.
+The model&#8217;s routing layer examines the input and selects 2 of 16 experts for the current token.
+This routing decision happens at the speed of a single GPU operation&#8201;&#8212;&#8201;microseconds.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 2: Expert activation.</strong>
+The selected experts may reside on Node A, Node B, or split across both.
+With 16 experts distributed across 2 nodes, the probability of a cross-node activation is high&#8201;&#8212;&#8201;roughly 50% for any given token.
+When the activation is split, the intermediate activations (the numerical outputs of one expert that feed into the combination layer) must transfer between nodes over the high-speed interconnect.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 3: The synchronization barrier.</strong>
+Before the next token can be generated, ALL expert outputs must be collected and combined.
+The routing layer on the primary node <em>waits</em> for the remote expert to respond.
+This is not optional&#8201;&#8212;&#8201;the model architecture requires the combined output of both experts to produce a single token.
+The wait time is bounded by network latency plus transfer time, not by GPU compute speed.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 4: The saturation loop.</strong>
+At production load (hundreds of concurrent requests), every token generation triggers cross-node communication.
+The high-speed interconnect (InfiniBand or RoCE) becomes the bottleneck&#8201;&#8212;&#8201;not the GPUs.
+The GPUs are actually idle 60-80% of the time, waiting for network transfers to complete.
+Each waiting request holds GPU memory for its KV-cache, reducing the available capacity for new requests.
+The interconnect, no matter how fast, has a fixed bandwidth ceiling.
+When hundreds of requests each demand their own cross-node expert activations, the aggregate bandwidth demand exceeds what the network can deliver.</p>
+</div>
+<div class="paragraph">
+<p><strong>Step 5: Cascade failure.</strong>
+As latency increases, request queues grow.
+More queued requests mean more concurrent expert routing.
+More routing means more network traffic.
+The system enters a death spiral where adding more requests makes <em>every</em> request slower.
+This is not a graceful degradation&#8201;&#8212;&#8201;it is an exponential collapse.
+The system went from 200ms to 12 seconds not because load doubled, but because the interconnect saturation loop compounded with every additional concurrent request.</p>
+</div>
+<div class="paragraph">
+<p>This failure mechanism is fundamentally different from a dense model&#8217;s tensor parallelism, where the communication pattern is predictable and the data volume per transfer is fixed.
+In tensor parallelism, Node A always sends the same size tensor slice to Node B at the same point in each layer.
+You can calculate the exact bandwidth requirement before you ever deploy the model.
+MoE routing is dynamic&#8201;&#8212;&#8201;different tokens activate different experts&#8201;&#8212;&#8201;so the network traffic pattern is unpredictable and bursty.
+You cannot engineer for the average case because the worst case is what kills you at production scale.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+The consultancy&#8217;s error was not incompetence&#8201;&#8212;&#8201;it was applying dense-model infrastructure logic to an MoE architecture. The VRAM was sufficient. The compute was sufficient. The network was not. This is a "Decision Past"&#8201;&#8212;&#8201;a decision made with incomplete information that now constrains all future options.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_when_physics_overrules_architecture"><a class="anchor" href="#_when_physics_overrules_architecture"></a>When Physics Overrules Architecture</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The CEO asked for the "biggest, best model" because the consultancy positioned model size as a proxy for capability.
+Bigger model, better recommendations, more revenue.
+That logic is not inherently wrong&#8201;&#8212;&#8201;larger models do tend to produce higher-quality outputs.
+But capability is irrelevant if the infrastructure cannot deliver it at production speed.</p>
+</div>
+<div class="paragraph">
+<p>The model is technically running.
+It is producing correct recommendations.
+It is just running 60x slower than required.</p>
+</div>
+<div class="paragraph">
+<p>Frame this using the Revenue Growth pillar: the $50M revenue projection is based on sub-200ms response times.
+At 12-second latency, the customer-facing application is unusable.
+Users abandon the page.
+The recommendation engine never renders.
+The revenue projection is zero.</p>
+</div>
+<div class="paragraph">
+<p>The infrastructure investment is not generating revenue&#8201;&#8212;&#8201;it is <em>blocking</em> it.
+The customer spent millions on GPUs, networking, and platform engineering to deploy a model that is functionally offline.
+Every day the system stays in this state, the business case for AI erodes further.
+The CEO&#8217;s threat to cancel the AI program is not irrational&#8201;&#8212;&#8201;from their perspective, the evidence says AI does not work.</p>
+</div>
+<div class="paragraph">
+<p>The reality is more nuanced: AI works.
+This <em>specific deployment architecture</em> does not work for <em>this specific model type</em> on <em>this specific infrastructure footprint</em>.
+Your job is to make that distinction clear, without blame, and with actionable options.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+When a customer is in a "Decision Past" crisis, resist the urge to say "you should have asked us first." Instead, say: "Let us focus on your options from here." The goal is to be the person who solves the problem, not the person who was right all along.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_whats_next"><a class="anchor" href="#_whats_next"></a>What&#8217;s Next</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now that you can diagnose the interconnect saturation, the next section puts you in the post-decision seat. You will step into a failing environment and confidently advise the CIO whether they need to procure more hardware or select a different model.</p>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="index.html">Revenue &amp; Rescuing "Decision Past"</a></span>
+  <span class="next"><a href="s2-decision-past.html">Rescuing the "Decision Past"</a></span>
+</nav>
+</article>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <img src="../../../_/img/rhl-logo-red.png" height="40px" alt="Red Hat"  href="https://redhat.com" >
+</footer><script id="site-script" src="../../../_/js/site.js" data-ui-root-path="../../../_"></script>
+<script async src="../../../_/js/vendor/highlight.js"></script>
+<script defer src="../../../_/js/vendor/tabs.js"></script>
+<script defer src="../../../_/js/vendor/reading-time.js"></script>
+<script src="../../../_/js/progress-tracker.js"></script>  </body>
+</html>
